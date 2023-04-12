@@ -21,6 +21,7 @@
         "thumbnails": true,
         "publishing": true,
         "importing": true,
+        "showBadges": false,
         "githubPackages": true,
         "cloudProviders": {
             "github": {}
@@ -137,7 +138,7 @@
         "githubCorePackage": "calliope-mini/microbit",
         "gittag": "v2.2.0-rc6-calliope.rc3-iss0.3",
         "serviceId": "calliope",
-        "dockerImage": "pext/yotta:latest"
+        "dockerImage": "pext/yotta:update-yotta3"
     },
     "runtime": {
         "mathBlocks": true,
@@ -340,6 +341,7 @@
         "extendFieldEditors": true,
         "enableTrace": true,
         "errorList": true,
+        "workspaceSearch": true,
         "allowPackageExtensions": true,
         "addNewTypeScriptFile": true,
         "experiments": [
@@ -349,6 +351,7 @@
             "bluetoothPartialFlashing",
             "simScreenshot",
             "simGif",
+            "identity",
             "blocksErrorList"
         ],
         "bluetoothUartFilters": [{
@@ -420,6 +423,7 @@
             "en",
             "ar",
             "bg",
+            "ca",
             "cs",
             "cy",
             "da",
@@ -453,11 +457,15 @@
         "monacoColors": {
             "editor.background": "#ecf0f1"
         },
+        "monacoFieldEditors": [
+            "soundeffect-editor"
+        ],
         "browserDbPrefixes": {
             "1": "v1",
             "2": "v2",
             "3": "v3",
-            "4": "v4"
+            "4": "v4",
+            "5": "v5"
         },
         "editorVersionPaths": {
             "0": "v0"
@@ -500,7 +508,9 @@
             "incompatibleHardwareImage": "/static/download/incompatible.png"
         },
         "winAppDeprImage": "/static/winapp.PNG",
-        "showWinAppDeprBanner": false
+        "showWinAppDeprBanner": false,
+        "editorTour": true,
+        "tutorialSimSidebarLayout": true
     },
     "queryVariants": {
         "hidemenu": {
@@ -514,6 +524,35 @@
             },
             "appTheme": {
                 "disableBlobObjectDownload": true
+            }
+        },
+        "identity=1": {
+            "cloud": {
+                "cloudProviders": {
+                    "github": {
+                        "id": "github",
+                        "name": "GitHub",
+                        "icon": "/static/providers/github-mark.png",
+                        "identity": false,
+                        "order": 3
+                    },
+                    "microsoft": {
+                        "id": "microsoft",
+                        "name": "Microsoft",
+                        "icon": "/static/providers/microsoft-logo.svg",
+                        "identity": true,
+                        "redirect": true,
+                        "order": 1
+                    },
+                    "google": {
+                        "id": "google",
+                        "name": "Google",
+                        "icon": "/static/providers/google-logo.svg",
+                        "identity": true,
+                        "redirect": true,
+                        "order": 2
+                    }
+                }
             }
         }
     },

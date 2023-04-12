@@ -31,6 +31,9 @@ namespace pxsim.visuals {
         .sim-button-group {
             cursor: pointer;
         }
+        .sim-head .sim-button {
+            pointer-events: unset;
+        }
         .sim-button {
             pointer-events: none;
         }

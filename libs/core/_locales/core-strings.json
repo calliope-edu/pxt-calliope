@@ -419,6 +419,7 @@
   "pins.pulseIn|block": "pulse in (µs)|pin %name|pulsed %value",
   "pins.servoSetPulse|block": "servo set pulse|pin %value|to (µs) %micros",
   "pins.servoWritePin|block": "servo write|pin %name|to %value",
+  "pins.setAudioPinEnabled|block": "set audio pin enabled $enabled",
   "pins.setAudioPin|block": "set audio pin $name",
   "pins.setEvents|block": "set pin %pin|to emit %type|events",
   "pins.setMatrixWidth|block": "neopixel matrix width|pin %pin %width",

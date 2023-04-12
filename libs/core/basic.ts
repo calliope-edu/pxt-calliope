@@ -55,7 +55,10 @@ namespace basic {
     //% interval.defl=150
     //% group="LED matrix"
     export function showNumber(value: number, interval?: number) {
-        showString(Math.roundWithPrecision(value, 2).toString(), interval);
+        if (isNaN(value))
+            showString("?")
+        else
+            showString(Math.roundWithPrecision(value, 2).toString(), interval);
     }
 
     /**
@@ -90,6 +93,7 @@ namespace basic {
  * @param ms how long to pause for, eg: 100, 200, 500, 1000, 2000
  */
     function pause(ms: number): void {
+    if (isNaN(ms)) ms = 20
     basic.pause(ms);
 }
 

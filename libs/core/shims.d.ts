@@ -556,6 +556,12 @@ declare namespace control {
     function deviceName(): string;
 
     /**
+     * Returns the major version of the microbit
+     */
+    //% help=control/hardware-version shim=control::_hardwareVersion
+    function _hardwareVersion(): string;
+
+    /**
      * Derive a unique, consistent serial number of this device from internal data.
      */
     //% blockId="control_device_serial_number" block="device serial number" weight=9
@@ -1119,6 +1125,15 @@ declare namespace pins {
     //% blockHidden=true
     //% group="Pitch" shim=pins::setAudioPin
     function setAudioPin(name: AnalogPin): void;
+
+    /**
+     * Sets whether or not audio will be output using a pin on the edge
+     * connector.
+     */
+    //% blockId=pin_set_audio_pin_enabled
+    //% block="set audio pin enabled $enabled"
+    //% weight=0 shim=pins::setAudioPinEnabled
+    function setAudioPinEnabled(enabled: boolean): void;
 }
 
 
@@ -1228,6 +1243,10 @@ declare namespace serial {
     //% blockId=serialSetTxBufferSize block="serial set tx buffer size to $size"
     //% advanced=true shim=serial::setTxBufferSize
     function setTxBufferSize(size: uint8): void;
+
+    /** Send DMESG debug buffer over serial. */
+    //% shim=serial::writeDmesg
+    function writeDmesg(): void;
 }
 
 
