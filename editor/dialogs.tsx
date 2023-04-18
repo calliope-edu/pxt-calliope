@@ -16,14 +16,26 @@ export async function showProgramTooLargeErrorAsync(variants: string[], confirmA
     });
 
     if (!choice) {
+        // try {
+        pxt.setAppTargetVariant("mbdal32")
         return {
             recompile: true,
-            useVariants: ["mbcodal"]
+            useVariants: [] as string[]
         }
+        // } catch(e) {
+        //     alert("failed")
+        //     console.log(e)
+
+        //     return {
+        //         recompile: false,
+        //         useVariants: []
+        //     }
+        // }
+        
     }
     return {
         recompile: false,
-        useVariants: []
+        useVariants: [] as string[]
     }
 }
 
