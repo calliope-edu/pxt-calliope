@@ -112,7 +112,6 @@
         "optionalConfig": {
             "microbit-dal": {
                 "bluetooth": {
-                    "enabled": 1,
                     "pairing_mode": 1,
                     "partial_flashing": 1,
                     "dfu_service": 1,
