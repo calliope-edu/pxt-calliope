@@ -28,9 +28,9 @@ enum class DigitalPin {
     A1_RX = MICROBIT_ID_IO_P2,   // RX // C16
     //% block="A1 TX"
     A1_TX = MICROBIT_ID_IO_P8,   // TX // C17
-    //% blockHidden=true
+    //% block="A0 SDA" blockHidden=true
     A0_SCL = MICROBIT_ID_IO_P19, // SCL // C19
-    //% blockHidden=true
+    //% block="A0 SDA" blockHidden=true
     A0_SDA = MICROBIT_ID_IO_P20,  // SDA // C18
 };
 

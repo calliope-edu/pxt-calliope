@@ -1,6 +1,6 @@
 {
     "name": "core",
-    "description": "The microbit core library",
+    "description": "The calliope core library",
     "dependencies": {},
     "files": [
         "README.md",
@@ -77,31 +77,6 @@
     "testFiles": [],
     "public": true,
     "additionalFilePath": "../../node_modules/pxt-common-packages/libs/base",
-    "dalDTS": {
-        "compileServiceVariant": "mbcodal",
-        "includeDirs": [
-            "libraries/codal-core/inc",
-            "libraries/codal-microbit/inc",
-            "libraries/codal-microbit/model",
-            "libraries/codal-microbit/inc/compat",
-            "pxtapp"
-        ],
-        "excludePrefix": [
-            "USB_",
-            "REQUEST_",
-            "LIS3DH_",
-            "FXOS8700_",
-            "MMA8",
-            "LSM303_",
-            "MAG_",
-            "MPU6050_",
-            "REF_TAG_",
-            "HF2_",
-            "PXT_REF_TAG_",
-            "MS_",
-            "SCSI_"
-        ]
-    },
     "yotta": {
         "config": {
             "microbit-dal": {
@@ -133,21 +108,21 @@
         },
         "userConfigs": [
             {
-                "description": "BLE coupling always available",
-                "config": {
-                    "microbit-dal": {
-                        "bluetooth": {
-                            "enabled": 1
-                        }
-                    }
-                }
-            },
-            {
                 "description": "Require A+B & Reset for BLE coupling (increases available RAM)",
                 "config": {
                     "microbit-dal": {
                         "bluetooth": {
                             "enabled": 0
+                        }
+                    }
+                }
+            },
+            {
+                "description": "Disable partial flashing (increases available RAM)",
+                "config": {
+                    "microbit-dal": {
+                        "bluetooth": {
+                            "partial_flashing": 0
                         }
                     }
                 }

@@ -5,7 +5,7 @@ export async function showProgramTooLargeErrorAsync(variants: string[], confirmA
 
     const choice = await confirmAsync({
         header: lf("Oops, there was a problem downloading your code"),
-        body: lf("Great coding skills! Unfortunately, your program is too large to fit on a calliope mini with 16KB 😢. You can go back and try to make your program smaller, or you can download your program onto a calliope mini using 32KB of RAM."),
+        body: lf("Great coding skills! Unfortunately, your program is too large to fit on a calliope mini 😢. You can go back and try to make your program smaller."),
         bigHelpButton: true,
         agreeLbl: lf("Go Back"),
         agreeClass: "cancel",
@@ -15,13 +15,13 @@ export async function showProgramTooLargeErrorAsync(variants: string[], confirmA
         disagreeIcon: "checkmark"
     });
 
-    if (!choice) {
+    // if (!choice) {
         // try {
-        pxt.setAppTargetVariant("mbdal32")
-        return {
-            recompile: true,
-            useVariants: [] as string[]
-        }
+        // pxt.setAppTargetVariant("mbcodal")
+        // return {
+        //     recompile: true,
+        //     useVariants: [] as string[]
+        // }
         // } catch(e) {
         //     alert("failed")
         //     console.log(e)
@@ -31,8 +31,8 @@ export async function showProgramTooLargeErrorAsync(variants: string[], confirmA
         //         useVariants: []
         //     }
         // }
-        
-    }
+    // }
+
     return {
         recompile: false,
         useVariants: [] as string[]

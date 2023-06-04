@@ -7,6 +7,8 @@
     "corepkg": "core",
     "bundleddirs": [
         "libs/core",
+        "libs/core-mini-v1",
+        "libs/core-mini-v2",
         "libs/radio",
         "libs/devices",
         "libs/bluetooth",
@@ -29,6 +31,7 @@
     },
     "compile": {
         "isNative": false,
+        "useUF2": false,
         "hasHex": true,
         "deployDrives": "MINI",
         "driveName": "MINI",
@@ -129,7 +132,7 @@
             "vid": "0x1366",
             "pid": "0x1025"
         }],
-        "webUSB": false,
+        "webUSB": true,
         "useNewFunctions": true
     },
     "compileService": {
@@ -140,28 +143,11 @@
         "serviceId": "calliope",
         "dockerImage": "pext/yotta:update-yotta3"
     },
-    "yottaConfig": {
-        "sram_end": "0x20004000",
-        "RAM_SIZE": "\"16K\""
-    },
     "variants": {
-        "mbdal16": {
-            "compile": {},
-            "compileService": {}
-        },
-        "mbdal32": {
+        "mbdal": {
             "compile": {
-                "flashUsableEnd": 487424,
-                "flashEnd": 524288,
-                "flashCodeAlign": 1024
             },
             "compileService": {
-            },
-            "yottaConfig": {
-                    "microbit-dal": {
-                        "sram_end": "0x20008000",
-                        "RAM_SIZE": "\"32K\""
-                    }
             }
         },
         "mbcodal": {
@@ -211,6 +197,7 @@
         "aspectRatio": 0.94,
         "parts": false,
         "partsAspectRatio": 0.7,
+        "dynamicBoardDefinition": true,
         "boardDefinition": {
             "visual": "calliope",
             "gpioPinBlocks": [
@@ -369,6 +356,7 @@
         "githubUrl": "https://github.com/Microsoft/pxt-calliope",
         "boardName": "Calliope mini",
         "driveDisplayName": "MINI",
+        "chooseBoardOnNewProject": true,
         "appStoreID": "1309545545",
         "crowdinProject": "makecode",
         "extendEditor": true,
@@ -522,7 +510,7 @@
         "immersiveReader": true,
         "tutorialCodeValidation": true,
         "downloadDialogTheme": {
-            "webUSBDeviceNames": ["Calliope mini CMSIS-DAP", "DAPLink CMSIS-DAP"],
+            "webUSBDeviceNames": ["Calliope mini CMSIS-DAP", "DAPLink CMSIS-DAP", "Calliope mini"],
             "minimumFirmwareVersion": "0249",
             "deviceIcon": "xicon microbit",
             "deviceSuccessIcon": "xicon microbit-check",

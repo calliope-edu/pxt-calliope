@@ -1,0 +1,21 @@
+{
+    "name": "core-mini-v1",
+    "description": "The calliope mini v1 core library",
+    "compileServiceVariant": "mbdal",
+    "core": true,
+    "dependencies": {
+        "core": "file:../core"
+    },
+    "files": [
+        "README.md",
+        "board.json"
+    ],
+    "yotta": {
+        "config": {
+            "microbit-dal": {
+                "sram_end": "0x20004000",
+                "RAM_SIZE": "\"16K\""
+            }
+        }
+    }
+}
