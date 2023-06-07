@@ -17,7 +17,7 @@ export async function showProgramTooLargeErrorAsync(variants: string[], confirmA
 
     // if (!choice) {
         // try {
-        // pxt.setAppTargetVariant("mbcodal")
+        // pxt.setAppTargetVariant("minicodal")
         // return {
         //     recompile: true,
         //     useVariants: [] as string[]

@@ -7,6 +7,8 @@
     "corepkg": "core",
     "bundleddirs": [
         "libs/core",
+        "libs/core---minidal",
+        "libs/core---minicodal",
         "libs/core-mini-v1",
         "libs/core-mini-v2",
         "libs/radio",
@@ -144,13 +146,13 @@
         "dockerImage": "pext/yotta:update-yotta3"
     },
     "variants": {
-        "mbdal": {
+        "minidal": {
             "compile": {
             },
             "compileService": {
             }
         },
-        "mbcodal": {
+        "minicodal": {
             "compile": {
                 "flashUsableEnd": 487424,
                 "flashEnd": 524288,

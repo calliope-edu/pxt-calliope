@@ -1,7 +1,7 @@
 {
     "name": "core-mini-v2",
     "description": "The calliope mini v2 core library",
-    "compileServiceVariant": "mbdal",
+    "compileServiceVariant": "minidal",
     "core": true,
     "dependencies": {
         "core": "file:../core"

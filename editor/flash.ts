@@ -244,8 +244,8 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
     get binName() {
         if (this.usesCODAL === undefined)
             console.warn('try to access codal information before it is computed')
-        // return (this.usesCODAL ? "mbcodal-" : "mbdal-") + pxtc.BINARY_HEX;
-        return (this.usesCODAL ? "mbcodal-" : "") + pxtc.BINARY_HEX;
+        // return (this.usesCODAL ? "minicodal-" : "minidal-") + pxtc.BINARY_HEX;
+        return (this.usesCODAL ? "minicodal-" : "") + pxtc.BINARY_HEX;
     }
 
     unsupportedParts() {

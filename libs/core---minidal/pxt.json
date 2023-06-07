@@ -1,0 +1,10 @@
+{
+    "name": "core-mini-dal",
+    "description": "The calliope mini dal core library",
+    "dependencies": {
+        "core": "file:../core"
+    },
+    "files": [
+        "README.md"
+    ]
+}

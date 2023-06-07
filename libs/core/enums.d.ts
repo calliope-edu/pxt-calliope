@@ -458,6 +458,46 @@ declare namespace motors {
 
 
     declare const enum DigitalPin {
+    #if MICROBIT_CODAL
+    P0 = 100,  // MICROBIT_ID_IO_P0
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+    P3 = 157,
+    P4 = 104,  // MICROBIT_ID_IO_P4
+    P5 = 105,  // MICROBIT_ID_IO_P5
+    P6 = 106,  // MICROBIT_ID_IO_P6
+    P7 = 107,  // MICROBIT_ID_IO_P7
+    P8 = 108,  // MICROBIT_ID_IO_P8
+    P9 = 109,  // MICROBIT_ID_IO_P9
+    P10 = 110,  // MICROBIT_ID_IO_P10
+    P11 = 111,  // MICROBIT_ID_IO_P11
+    P12 = 112,  // MICROBIT_ID_IO_P12
+    P13 = 113,  // MICROBIT_ID_IO_P13
+    P14 = 114,  // MICROBIT_ID_IO_P14
+    P15 = 115,  // MICROBIT_ID_IO_P15
+    P16 = 158,
+    P17 = 116,  // MICROBIT_ID_IO_P16
+    P18 = 103,  // MICROBIT_ID_IO_P3
+    RGB = 151,
+    M_AIN1 = 152,
+    M_AIN2 = 153,
+    M_BIN1 = 154,
+    M_BIN2 = 155,
+    M_MODE = 156,
+    //% blockHidden=1
+    P19 = 119,  // MICROBIT_ID_IO_P19
+    //% blockHidden=1
+    P20 = 120,  // MICROBIT_ID_IO_P20
+
+    //% block="A1 RX"
+    A1_RX = 158,
+    //% block="A1 TX"
+    A1_TX = 116,  // MICROBIT_ID_IO_P16
+    //% block="A0 SDA" blockHidden=true
+    A0_SCL = 119,  // MICROBIT_ID_IO_P19
+    //% block="A0 SDA" blockHidden=true
+    A0_SDA = 120,  // MICROBIT_ID_IO_P20
+    #else
     P0 = 112,  // MICROBIT_ID_IO_P12
     P1 = 100,  // MICROBIT_ID_IO_P0
     P2 = 101,  // MICROBIT_ID_IO_P1
@@ -482,10 +522,58 @@ declare namespace motors {
     A0_SCL = 119,  // MICROBIT_ID_IO_P19
     //% block="A0 SDA" blockHidden=true
     A0_SDA = 120,  // MICROBIT_ID_IO_P20
+    #endif
     }
 
 
     declare const enum AnalogPin {
+    #if MICROBIT_CODAL
+    P0 = 100,  // MICROBIT_ID_IO_P0
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+    //% block="P3 (write only)"
+    P3 = 157,
+    P4 = 104,  // MICROBIT_ID_IO_P4
+    P10 = 110,  // MICROBIT_ID_IO_P10
+    //% block="P5 (write only)"
+    P5 = 105,  // MICROBIT_ID_IO_P5
+    //% block="P6 (write only)"
+    P6 = 106,  // MICROBIT_ID_IO_P6
+    //% block="P7 (write only)"
+    P7 = 107,  // MICROBIT_ID_IO_P7
+    //% block="P8 (write only)"
+    P8 = 108,  // MICROBIT_ID_IO_P8
+    //% block="P9 (write only)"
+    P9 = 109,  // MICROBIT_ID_IO_P9
+    //% block="P11 (write only)"
+    P11 = 111,  // MICROBIT_ID_IO_P11
+    //% block="P12 (write only)"
+    P12 = 112,  // MICROBIT_ID_IO_P12
+    //% block="P13 (write only)"
+    P13 = 113,  // MICROBIT_ID_IO_P13
+    //% block="P14 (write only)"
+    P14 = 114,  // MICROBIT_ID_IO_P14
+    //% block="P15 (write only)"
+    P15 = 115,  // MICROBIT_ID_IO_P15
+    P16 = 158,
+    //% block="P17 (write only)"
+    P17 = 116,  // MICROBIT_ID_IO_P16
+    //% block="P18 (write only)"
+    //% blockHidden=0 // write and read
+    P18 = 103,  // MICROBIT_ID_IO_P3
+    RGB = 151,
+    M_AIN1 = 152,
+    M_AIN2 = 153,
+    M_BIN1 = 154,
+    M_BIN2 = 155,
+    M_MODE = 156,
+    //% block="P19 (write only)"
+    //% blockHidden=1
+    P19 = 119,  // MICROBIT_ID_IO_P19
+    //% block="P20 (write only)"
+    //% blockHidden=1
+    P20 = 120,  // MICROBIT_ID_IO_P20
+    #else
     P1 = 100,  // MICROBIT_ID_IO_P0
     P2 = 101,  // MICROBIT_ID_IO_P1
     C4 = 103,  // MICROBIT_ID_IO_P3
@@ -496,6 +584,7 @@ declare namespace motors {
     MIC = 121,  // MICROBIT_ID_IO_P21
     A1_RX = 102,  // MICROBIT_ID_IO_P2
     A1_TX = 108,  // MICROBIT_ID_IO_P8
+    #endif
     }
 
 

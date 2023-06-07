@@ -956,11 +956,12 @@ declare namespace pins {
      * @param name pin to modulate pitch from
      */
     //% blockId=device_analog_set_pitch_pin block="analog set pitch pin %name"
-    //% help=pins/analog-set-pitch-pin weight=3 advanced=true
+    //% help=pins/analog-set-pitch-pin advanced=true
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
-    //% blockHidden=true
-    //% group="Pitch" shim=pins::analogSetPitchPin
+    //% group="Pins"
+    //% weight=12
+    //% blockGap=8 shim=pins::analogSetPitchPin
     function analogSetPitchPin(name: AnalogPin): void;
 
     /**
@@ -970,8 +971,7 @@ declare namespace pins {
     //% blockId=device_analog_set_pitch_volume block="analog set pitch volume $volume"
     //% help=pins/analog-set-pitch-volume weight=3 advanced=true
     //% volume.min=0 volume.max=255
-    //% blockHidden=true
-    //% group="Pitch" shim=pins::analogSetPitchVolume
+    //% deprecated shim=pins::analogSetPitchVolume
     function analogSetPitchVolume(volume: int32): void;
 
     /**
@@ -979,8 +979,7 @@ declare namespace pins {
      */
     //% blockId=device_analog_pitch_volume block="analog pitch volume"
     //% help=pins/analog-pitch-volume weight=3 advanced=true
-    //% blockHidden=true
-    //% group="Pitch" shim=pins::analogPitchVolume
+    //% deprecated shim=pins::analogPitchVolume
     function analogPitchVolume(): int32;
 
     /**
@@ -989,21 +988,24 @@ declare namespace pins {
      * @param ms duration of the pitch in milli seconds.
      */
     //% blockId=device_analog_pitch block="analog pitch %frequency|for (ms) %ms"
-    //% help=pins/analog-pitch weight=4 async advanced=true blockGap=8
-    //% blockHidden=true
-    //% group="Pitch" shim=pins::analogPitch
+    //% help=pins/analog-pitch async advanced=true
+    //% group="Pins"
+    //% weight=14
+    //% blockGap=8 shim=pins::analogPitch
     function analogPitch(frequency: int32, ms: int32): void;
 
     /**
-     * Configure the pull directiion of of a pin.
+     * Configure the pull direction of of a pin.
      * @param name pin to set the pull mode on, eg: DigitalPin.P0
      * @param pull one of the mbed pull configurations, eg: PinPullMode.PullUp
      */
-    //% help=pins/set-pull weight=3 advanced=true
+    //% help=pins/set-pull advanced=true
     //% blockId=device_set_pull block="set pull|pin %pin|to %pull"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Digital" shim=pins::setPull
+    //% group="Pins"
+    //% weight=15
+    //% blockGap=8 shim=pins::setPull
     function setPull(name: DigitalPin, pull: PinPullMode): void;
 
     /**
@@ -1012,11 +1014,13 @@ declare namespace pins {
      * @param name pin to set the event mode on, eg: DigitalPin.P0
      * @param type the type of events for this pin to emit, eg: PinEventType.Edge
      */
-    //% help=pins/set-events weight=4 advanced=true
+    //% help=pins/set-events advanced=true
     //% blockId=device_set_pin_events block="set pin %pin|to emit %type|events"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Digital" shim=pins::setEvents
+    //% group="Pins"
+    //% weight=13
+    //% blockGap=8 shim=pins::setEvents
     function setEvents(name: DigitalPin, type: PinEventType): void;
 
     /**
@@ -1032,35 +1036,37 @@ declare namespace pins {
      * @param name pin of Neopixel strip, eg: DigitalPin.P1
      * @param value width of matrix (at least ``2``)
      */
-    //% help=pins/neopixel-matrix-width weight=3 advanced=true
-    //% blockId=pin_neopixel_matrix_width block="neopixel matrix width|pin %pin %width" blockGap=8
+    //% help=pins/neopixel-matrix-width advanced=true
+    //% blockId=pin_neopixel_matrix_width block="neopixel matrix width|pin %pin %width"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
     //% width.min=2
-    //% blockHidden=true width.defl=5 shim=pins::setMatrixWidth
+    //% group="Pins"
+    //% weight=11
+    //% blockGap=8 width.defl=5 shim=pins::setMatrixWidth
     function setMatrixWidth(pin: DigitalPin, width?: int32): void;
 
     /**
      * Read `size` bytes from a 7-bit I2C `address`.
      */
-    //%
-    //% group="i2c" repeat.defl=0 shim=pins::i2cReadBuffer
+    //% repeat.defl=0 shim=pins::i2cReadBuffer
     function i2cReadBuffer(address: int32, size: int32, repeat?: boolean): Buffer;
 
     /**
      * Write bytes to a 7-bit I2C `address`.
      */
-    //%
-    //% group="i2c" repeat.defl=0 shim=pins::i2cWriteBuffer
+    //% repeat.defl=0 shim=pins::i2cWriteBuffer
     function i2cWriteBuffer(address: int32, buf: Buffer, repeat?: boolean): int32;
 
     /**
      * Write to the SPI slave and return the response
      * @param value Data to be sent to the SPI slave
      */
-    //% help=pins/spi-write weight=5 advanced=true
+    //% help=pins/spi-write advanced=true
     //% blockId=spi_write block="spi write %value"
-    //% group="spi" shim=pins::spiWrite
+    //% group="SPI"
+    //% blockGap=8
+    //% weight=53 shim=pins::spiWrite
     function spiWrite(value: int32): int32;
 
     /**
@@ -1068,17 +1074,18 @@ declare namespace pins {
      * @param command Data to be sent to the SPI slave (can be null)
      * @param response Data received from the SPI slave (can be null)
      */
-    //% help=pins/spi-transfer argsNullable
-    //% group="spi" shim=pins::spiTransfer
+    //% help=pins/spi-transfer argsNullable shim=pins::spiTransfer
     function spiTransfer(command: Buffer, response: Buffer): void;
 
     /**
      * Set the SPI frequency
      * @param frequency the clock frequency, eg: 1000000
      */
-    //% help=pins/spi-frequency weight=4 advanced=true
+    //% help=pins/spi-frequency advanced=true
     //% blockId=spi_frequency block="spi frequency %frequency"
-    //% group="spi" shim=pins::spiFrequency
+    //% group="SPI"
+    //% blockGap=8
+    //% weight=55 shim=pins::spiFrequency
     function spiFrequency(frequency: int32): void;
 
     /**
@@ -1086,16 +1093,18 @@ declare namespace pins {
      * @param bits the number of bits, eg: 8
      * @param mode the mode, eg: 3
      */
-    //% help=pins/spi-format weight=3 advanced=true
+    //% help=pins/spi-format advanced=true
     //% blockId=spi_format block="spi format|bits %bits|mode %mode"
-    //% group="spi" shim=pins::spiFormat
+    //% group="SPI"
+    //% blockGap=8
+    //% weight=54 shim=pins::spiFormat
     function spiFormat(bits: int32, mode: int32): void;
 
     /**
      * Set the MOSI, MISO, SCK pins used by the SPI connection
      *
      */
-    //% help=pins/spi-pins weight=2 advanced=true
+    //% help=pins/spi-pins advanced=true
     //% blockId=spi_pins block="spi set pins|MOSI %mosi|MISO %miso|SCK %sck"
     //% mosi.fieldEditor="gridpicker" mosi.fieldOptions.columns=4
     //% mosi.fieldOptions.tooltips="false" mosi.fieldOptions.width="250"
@@ -1103,14 +1112,15 @@ declare namespace pins {
     //% miso.fieldOptions.tooltips="false" miso.fieldOptions.width="250"
     //% sck.fieldEditor="gridpicker" sck.fieldOptions.columns=4
     //% sck.fieldOptions.tooltips="false" sck.fieldOptions.width="250"
-    //% group="spi" shim=pins::spiPins
+    //% group="SPI"
+    //% blockGap=8
+    //% weight=51 shim=pins::spiPins
     function spiPins(mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin): void;
 
     /**
      * Mounts a push button on the given pin
      */
-    //% help=pins/push-button advanced=true
-    //% group="Digital" shim=pins::pushButton
+    //% help=pins/push-button advanced=true shim=pins::pushButton
     function pushButton(pin: DigitalPin): void;
 
     /**
@@ -1118,12 +1128,11 @@ declare namespace pins {
      * @param name pin to modulate pitch from
      */
     //% blockId=pin_set_audio_pin block="set audio pin $name"
-    //% help=pins/set-audio-pin weight=3
+    //% help=pins/set-audio-pin
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
     //% weight=1
-    //% blockHidden=true
-    //% group="Pitch" shim=pins::setAudioPin
+    //% blockGap=8 shim=pins::setAudioPin
     function setAudioPin(name: AnalogPin): void;
 
     /**

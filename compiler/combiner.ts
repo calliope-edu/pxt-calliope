@@ -4,15 +4,15 @@ namespace ts.pxtc.extension {
     pxtc.compilerHooks.postBinary = (program: ts.Program, opts: CompileOptions, res: CompileResult) => {
         if (!opts.target.isNative)
             return
-        const mbdal = res.outfiles["mbdal-binary.hex"]
-        const mbcodal = res.outfiles["mbcodal-binary.hex"]
-        if (!mbdal || !mbcodal)
+        const minidal = res.outfiles["minidal-binary.hex"]
+        const minicodal = res.outfiles["minicodal-binary.hex"]
+        if (!minidal || !minicodal)
             return
 
         let outp = ""
 
-        wrapHex(mbdal, 0x00, [0x99, 0x00, 0xc0, 0xde])
-        wrapHex(mbcodal, 0x0D, [0x99, 0x03, 0xc0, 0xde], true)
+        wrapHex(minidal, 0x00, [0x99, 0x00, 0xc0, 0xde])
+        wrapHex(minicodal, 0x0D, [0x99, 0x03, 0xc0, 0xde], true)
 
         outp += ":00000001FF\n"
 

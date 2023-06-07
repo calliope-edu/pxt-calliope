@@ -1,8 +1,8 @@
 # Projects
 
 * [Calliope](/boards/calliope)
-  * [mini v1](/boards/calliope-mini-v1)
-  * [mini v2](/boards/calliope-mini-v2)
+  * [v1](/boards/calliope-mini-v1)
+  * [v2](/boards/calliope-mini-v2)
 * [First Steps](/calliope/firststeps)
   * [Get Ready](/calliope/firststeps/firstSteps)
   * [The 5x5 LED matrix](/calliope/firststeps/5x5LED)

@@ -1,0 +1,10 @@
+{
+    "name": "core-mini-codal",
+    "description": "The calliope mini codal core library",
+    "dependencies": {
+        "core": "file:../core"
+    },
+    "files": [
+        "README.md"
+    ]
+}
