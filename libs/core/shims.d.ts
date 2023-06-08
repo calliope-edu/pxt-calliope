@@ -164,6 +164,16 @@ declare namespace basic {
     function showString(text: string, interval?: int32): void;
 
     /**
+     * Turn off all LEDs
+     */
+    //% help=basic/clear-screen weight=75
+    //% blockId=device_clear_display block="clear screen"
+    //% parts="ledmatrix"
+    //% group="LED matrix"
+    //% advanced=true shim=basic::clearScreen
+    function clearScreen(): void;
+
+    /**
      * Shows a sequence of LED screens as an animation.
      * @param leds pattern of LEDs to turn on/off
      * @param interval time in milliseconds between each redraw
@@ -181,16 +191,6 @@ declare namespace basic {
     //% parts="ledmatrix"
     //% group="LED matrix" imageLiteral=1 shim=basic::plotLeds
     function plotLeds(leds: string): void;
-
-    /**
-     * Turn off all LEDs
-     */
-    //% help=basic/clear-screen weight=75
-    //% blockId=device_clear_display block="clear screen"
-    //% parts="ledmatrix"
-    //% group="LED matrix"
-    //% advanced=true shim=basic::clearScreen
-    function clearScreen(): void;
 
     /**
      * Repeats the code forever in the background. On each iteration, allows other codes to run.
@@ -211,27 +211,6 @@ declare namespace basic {
     //% pause.shadow=timePicker
     //% group="Control" shim=basic::pause
     function pause(ms: int32): void;
-
-    /**
-     * Sets the color on the build-in LED. Set to 0 to turn off.
-     */
-    //% help=basic/set-led-color
-    //% blockId=device_set_led_color
-    //% block="set led to %color=colorNumberPicker"
-    //%
-    //% weight=10
-    //% group="RGB LED" color.defl=0xff0000 shim=basic::setLedColor
-    function setLedColor(color?: int32): void;
-
-    /**
-     * Sets the color on the build-in LED. Set to 0 to turn off.
-     */
-    //% blockId=device_turn_rgb_led_off block="turn build-in LED off"
-    //% help=basic/turn-rgb-led-off
-    //% weight=10
-    //% group="RGB LED"
-    //% advanced=true shim=basic::turnRgbLedOff
-    function turnRgbLedOff(): void;
 }
 
 
@@ -750,40 +729,6 @@ declare namespace led {
     //% parts="ledmatrix" shim=led::screenshot
     function screenshot(): Image;
 }
-
-
-    /**
-     * Blocks to control the onboard motors
-     */
-    //% color=#008272 weight=30 icon="\uf1b9"
-declare namespace motors {
-
-    /**
-     * Turns on the motor at a certain percent of power. Switches to single motor mode!
-     * @param power %percent of power sent to the motor. Negative power goes backward. eg: 50
-     */
-    //% blockId=motor_on block="motor on at %percent \\%"
-    //% parts=dcmotor weight=90 blockGap=8
-    //% percent.shadow="speedPicker"
-    //% power.defl=100 shim=motors::motorPower
-    function motorPower(power?: int32): void;
-
-    /**
-     * Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.
-     */
-    //% blockId=motor_command block="motor %command"
-    //% parts=dcmotor weight=85 shim=motors::motorCommand
-    function motorCommand(command: MotorCommand): void;
-
-    /**
-     * Controls two motors attached to the board. Switches to dual-motor mode!
-     */
-    //% blockId=block_dual_motor block="motor %motor|at %percent \\%"
-    //% percent.shadow="speedPicker"
-    //% weight=80
-    //% duty_percent.defl=100 shim=motors::dualMotorPower
-    function dualMotorPower(motor: Motor, duty_percent?: int32): void;
-}
 declare namespace music {
 
     /**
@@ -956,12 +901,11 @@ declare namespace pins {
      * @param name pin to modulate pitch from
      */
     //% blockId=device_analog_set_pitch_pin block="analog set pitch pin %name"
-    //% help=pins/analog-set-pitch-pin advanced=true
+    //% help=pins/analog-set-pitch-pin weight=3 advanced=true
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
-    //% group="Pins"
-    //% weight=12
-    //% blockGap=8 shim=pins::analogSetPitchPin
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogSetPitchPin
     function analogSetPitchPin(name: AnalogPin): void;
 
     /**
@@ -971,7 +915,8 @@ declare namespace pins {
     //% blockId=device_analog_set_pitch_volume block="analog set pitch volume $volume"
     //% help=pins/analog-set-pitch-volume weight=3 advanced=true
     //% volume.min=0 volume.max=255
-    //% deprecated shim=pins::analogSetPitchVolume
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogSetPitchVolume
     function analogSetPitchVolume(volume: int32): void;
 
     /**
@@ -979,7 +924,8 @@ declare namespace pins {
      */
     //% blockId=device_analog_pitch_volume block="analog pitch volume"
     //% help=pins/analog-pitch-volume weight=3 advanced=true
-    //% deprecated shim=pins::analogPitchVolume
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogPitchVolume
     function analogPitchVolume(): int32;
 
     /**
@@ -988,24 +934,21 @@ declare namespace pins {
      * @param ms duration of the pitch in milli seconds.
      */
     //% blockId=device_analog_pitch block="analog pitch %frequency|for (ms) %ms"
-    //% help=pins/analog-pitch async advanced=true
-    //% group="Pins"
-    //% weight=14
-    //% blockGap=8 shim=pins::analogPitch
+    //% help=pins/analog-pitch weight=4 async advanced=true blockGap=8
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogPitch
     function analogPitch(frequency: int32, ms: int32): void;
 
     /**
-     * Configure the pull direction of of a pin.
+     * Configure the pull directiion of of a pin.
      * @param name pin to set the pull mode on, eg: DigitalPin.P0
      * @param pull one of the mbed pull configurations, eg: PinPullMode.PullUp
      */
-    //% help=pins/set-pull advanced=true
+    //% help=pins/set-pull weight=3 advanced=true
     //% blockId=device_set_pull block="set pull|pin %pin|to %pull"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Pins"
-    //% weight=15
-    //% blockGap=8 shim=pins::setPull
+    //% group="Digital" shim=pins::setPull
     function setPull(name: DigitalPin, pull: PinPullMode): void;
 
     /**
@@ -1014,13 +957,11 @@ declare namespace pins {
      * @param name pin to set the event mode on, eg: DigitalPin.P0
      * @param type the type of events for this pin to emit, eg: PinEventType.Edge
      */
-    //% help=pins/set-events advanced=true
+    //% help=pins/set-events weight=4 advanced=true
     //% blockId=device_set_pin_events block="set pin %pin|to emit %type|events"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Pins"
-    //% weight=13
-    //% blockGap=8 shim=pins::setEvents
+    //% group="Digital" shim=pins::setEvents
     function setEvents(name: DigitalPin, type: PinEventType): void;
 
     /**
@@ -1036,37 +977,35 @@ declare namespace pins {
      * @param name pin of Neopixel strip, eg: DigitalPin.P1
      * @param value width of matrix (at least ``2``)
      */
-    //% help=pins/neopixel-matrix-width advanced=true
-    //% blockId=pin_neopixel_matrix_width block="neopixel matrix width|pin %pin %width"
+    //% help=pins/neopixel-matrix-width weight=3 advanced=true
+    //% blockId=pin_neopixel_matrix_width block="neopixel matrix width|pin %pin %width" blockGap=8
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
     //% width.min=2
-    //% group="Pins"
-    //% weight=11
-    //% blockGap=8 width.defl=5 shim=pins::setMatrixWidth
+    //% blockHidden=true width.defl=5 shim=pins::setMatrixWidth
     function setMatrixWidth(pin: DigitalPin, width?: int32): void;
 
     /**
      * Read `size` bytes from a 7-bit I2C `address`.
      */
-    //% repeat.defl=0 shim=pins::i2cReadBuffer
+    //%
+    //% group="i2c" repeat.defl=0 shim=pins::i2cReadBuffer
     function i2cReadBuffer(address: int32, size: int32, repeat?: boolean): Buffer;
 
     /**
      * Write bytes to a 7-bit I2C `address`.
      */
-    //% repeat.defl=0 shim=pins::i2cWriteBuffer
+    //%
+    //% group="i2c" repeat.defl=0 shim=pins::i2cWriteBuffer
     function i2cWriteBuffer(address: int32, buf: Buffer, repeat?: boolean): int32;
 
     /**
      * Write to the SPI slave and return the response
      * @param value Data to be sent to the SPI slave
      */
-    //% help=pins/spi-write advanced=true
+    //% help=pins/spi-write weight=5 advanced=true
     //% blockId=spi_write block="spi write %value"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=53 shim=pins::spiWrite
+    //% group="spi" shim=pins::spiWrite
     function spiWrite(value: int32): int32;
 
     /**
@@ -1074,18 +1013,17 @@ declare namespace pins {
      * @param command Data to be sent to the SPI slave (can be null)
      * @param response Data received from the SPI slave (can be null)
      */
-    //% help=pins/spi-transfer argsNullable shim=pins::spiTransfer
+    //% help=pins/spi-transfer argsNullable
+    //% group="spi" shim=pins::spiTransfer
     function spiTransfer(command: Buffer, response: Buffer): void;
 
     /**
      * Set the SPI frequency
      * @param frequency the clock frequency, eg: 1000000
      */
-    //% help=pins/spi-frequency advanced=true
+    //% help=pins/spi-frequency weight=4 advanced=true
     //% blockId=spi_frequency block="spi frequency %frequency"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=55 shim=pins::spiFrequency
+    //% group="spi" shim=pins::spiFrequency
     function spiFrequency(frequency: int32): void;
 
     /**
@@ -1093,18 +1031,16 @@ declare namespace pins {
      * @param bits the number of bits, eg: 8
      * @param mode the mode, eg: 3
      */
-    //% help=pins/spi-format advanced=true
+    //% help=pins/spi-format weight=3 advanced=true
     //% blockId=spi_format block="spi format|bits %bits|mode %mode"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=54 shim=pins::spiFormat
+    //% group="spi" shim=pins::spiFormat
     function spiFormat(bits: int32, mode: int32): void;
 
     /**
      * Set the MOSI, MISO, SCK pins used by the SPI connection
      *
      */
-    //% help=pins/spi-pins advanced=true
+    //% help=pins/spi-pins weight=2 advanced=true
     //% blockId=spi_pins block="spi set pins|MOSI %mosi|MISO %miso|SCK %sck"
     //% mosi.fieldEditor="gridpicker" mosi.fieldOptions.columns=4
     //% mosi.fieldOptions.tooltips="false" mosi.fieldOptions.width="250"
@@ -1112,15 +1048,14 @@ declare namespace pins {
     //% miso.fieldOptions.tooltips="false" miso.fieldOptions.width="250"
     //% sck.fieldEditor="gridpicker" sck.fieldOptions.columns=4
     //% sck.fieldOptions.tooltips="false" sck.fieldOptions.width="250"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=51 shim=pins::spiPins
+    //% group="spi" shim=pins::spiPins
     function spiPins(mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin): void;
 
     /**
      * Mounts a push button on the given pin
      */
-    //% help=pins/push-button advanced=true shim=pins::pushButton
+    //% help=pins/push-button advanced=true
+    //% group="Digital" shim=pins::pushButton
     function pushButton(pin: DigitalPin): void;
 
     /**
@@ -1128,11 +1063,12 @@ declare namespace pins {
      * @param name pin to modulate pitch from
      */
     //% blockId=pin_set_audio_pin block="set audio pin $name"
-    //% help=pins/set-audio-pin
+    //% help=pins/set-audio-pin weight=3
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
     //% weight=1
-    //% blockGap=8 shim=pins::setAudioPin
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::setAudioPin
     function setAudioPin(name: AnalogPin): void;
 
     /**
@@ -1367,49 +1303,6 @@ declare namespace control {
      */
     //% deprecated=1 shim=control::createBufferFromUTF8
     function createBufferFromUTF8(str: string): Buffer;
-}
-
-
-    /**
-     * Provides access to persistent storage functionality.
-     */
-
-declare namespace storage {
-
-    /**
-     * Saves a key value pair in the non volatile storage
-     * @param key the key for accesing the value
-     * @param value value to store
-     */
-    //% weight=100 blockGap=16
-    //% block="Put into %key a value of %value as Int"
-    //% blockId=storage_put_value_int
-    //%
-    //% group="Put"
-    //% blockHidden=true value.defl=0 shim=storage::putValueInt
-    function putValueInt(key: string, value?: int32): void;
-
-    /**
-     * Reads a key value pair from the non volatile storage
-     * @param key the key for accesing the value
-     */
-    //% weight=100 blockGap=16
-    //% block="get number from %key"
-    //% blockId=storage_get_value_int
-    //% group="Get"
-    //% blockHidden=true shim=storage::getValueInt
-    function getValueInt(key: string): int32;
-
-    /**
-     * Removes a key value pair from the non volatile storage
-     * @param key the key for accesing the value
-     */
-    //% weight=100 blockGap=16
-    //% block="remove %key"
-    //% blockId=storage_remove
-    //% group="Remove"
-    //% blockHidden=true shim=storage::remove
-    function remove(key: string): void;
 }
 declare namespace light {
 

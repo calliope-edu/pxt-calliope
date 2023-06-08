@@ -1,0 +1,16 @@
+{
+  "Colors": "Well known colors",
+  "basic": "Provides access to basic micro:bit functionality.\n\nProvides access to basic micro:bit functionality.\n\nProvides access to basic calliope mini functionality.",
+  "basic.color": "Converts the color name to a number",
+  "basic.rgb": "Converts red, green, blue channels into a RGB color",
+  "basic.rgb|param|blue": "value of the blue channel between 0 and 255. eg: 255",
+  "basic.rgb|param|green": "value of the green channel between 0 and 255. eg: 255",
+  "basic.rgb|param|red": "value of the red channel between 0 and 255. eg: 255",
+  "basic.setLedColor": "Sets the color on the build-in LED. Set to 0 to turn off.",
+  "basic.turnRgbLedOff": "Sets the color on the build-in LED. Set to 0 to turn off.",
+  "motors": "Blocks to control the onboard motors",
+  "motors.dualMotorPower": "Controls two motors attached to the board. Switches to dual-motor mode!",
+  "motors.motorCommand": "Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.",
+  "motors.motorPower": "Turns on the motor at a certain percent of power. Switches to single motor mode!",
+  "motors.motorPower|param|power": "%percent of power sent to the motor. Negative power goes backward. eg: 50"
+}

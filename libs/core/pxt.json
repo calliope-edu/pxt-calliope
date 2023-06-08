@@ -1,6 +1,6 @@
 {
     "name": "core",
-    "description": "The calliope core library",
+    "description": "The microbit core library",
     "dependencies": {},
     "files": [
         "README.md",
@@ -41,9 +41,6 @@
         "game.ts",
         "led.cpp",
         "led.ts",
-        "loops.ts",
-        "microphone.ts",
-        "motors.cpp",
         "music.cpp",
         "music.ts",
         "melodies.ts",
@@ -64,15 +61,12 @@
         "sendbuffer.s",
         "sendbuffernrf52.s",
         "sendbufferbrightness.s",
-        "storage.cpp",
-        "storage.ts",
         "light.cpp",
-        "compass.ts",
-        "parts/speaker.svg",
-        "parts/headphone.svg",
-        "parts/dcmotor.svg",
+        "loops.ts",
         "_locales/de/core-jsdoc-strings.json",
-        "_locales/de/core-strings.json"
+        "_locales/de/core-strings.json",
+        "parts/speaker.svg",
+        "parts/headphone.svg"
     ],
     "testFiles": [],
     "public": true,
@@ -128,6 +122,5 @@
                 }
             }
         ]
-    },
-    "partial": true
+    }
 }

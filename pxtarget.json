@@ -7,8 +7,9 @@
     "corepkg": "core",
     "bundleddirs": [
         "libs/core",
-        "libs/core---minidal",
-        "libs/core---minicodal",
+        "libs/core-mini",
+        "libs/core-minidal",
+        "libs/core-minicodal",
         "libs/core-mini-v1",
         "libs/core-mini-v2",
         "libs/radio",
@@ -154,11 +155,24 @@
         },
         "minicodal": {
             "compile": {
+                "flashCodeAlign": 4096,
                 "flashUsableEnd": 487424,
-                "flashEnd": 524288,
-                "flashCodeAlign": 4096
+                "flashEnd": 524288
             },
             "compileService": {
+                "buildEngine": "codal",
+                "codalTarget": {
+                    "name": "codal-microbit-v2",
+                    "url": "https://github.com/calliope-edu/codal-microbit-v2",
+                    "branch": "v0.2.50calli_proto2_4",
+                    "type": "git"
+                },
+                "codalBinary": "MICROBIT",
+                "githubCorePackage": "calliope-edu/microbit-v2-samples",
+                "gittag": "v0.2.12calli",
+                "serviceId": "mbcodal2",
+                "dockerImage": "pext/yotta:update-yotta3",
+                "yottaConfigCompatibility": true
             }
         }
     },
