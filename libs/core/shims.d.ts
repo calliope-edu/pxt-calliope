@@ -342,15 +342,6 @@ declare namespace input {
     function lightLevel(): int32;
 
     /**
-     * gets the level of loudness from 0 (silent) to 255 (loud)
-     */
-    //% help=input/sound-level
-    //% blockId="soundLevel" weight=58
-    //% block="soundLevel" blockGap=8
-    //% group="Sensors" shim=input::soundLevel
-    function soundLevel(): int32;
-
-    /**
      * Get the current compass heading in degrees.
      */
     //% help=input/compass-heading

@@ -21,5 +21,7 @@ declare namespace basic {
     }
 declare namespace motors {
 }
+declare namespace input {
+}
 
 // Auto-generated. Do not edit. Really.

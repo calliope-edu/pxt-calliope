@@ -18,11 +18,15 @@
   "basic.setLedColor|block": "set led to %color=colorNumberPicker",
   "basic.turnRgbLedOff|block": "turn build-in LED off",
   "basic|block": "basic",
+  "input.soundLevel|block": "soundLevel",
+  "input|block": "input",
   "motors.dualMotorPower|block": "motor %motor|at %percent \\%",
   "motors.motorCommand|block": "motor %command",
   "motors.motorPower|block": "motor on at %percent \\%",
   "motors|block": "motors",
   "{id:category}Basic": "Basic",
+  "{id:category}Input": "Input",
   "{id:category}Motors": "Motors",
-  "{id:group}RGB LED": "RGB LED"
+  "{id:group}RGB LED": "RGB LED",
+  "{id:group}Sensors": "Sensors"
 }

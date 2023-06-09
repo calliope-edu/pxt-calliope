@@ -462,7 +462,6 @@
   "input.runningTimeMicros": "Gets the number of microseconds elapsed since power on.",
   "input.setAccelerometerRange": "Sets the accelerometer sample range in gravities.",
   "input.setAccelerometerRange|param|range": "a value describe the maximum strengh of acceleration measured",
-  "input.soundLevel": "gets the level of loudness from 0 (silent) to 255 (loud)",
   "input.temperature": "Gets the temperature in Celsius degrees (°C).",
   "led": "Control of the LED screen.",
   "led.barGraphToConsole": "Controls where plotbargraph prints to the console",
