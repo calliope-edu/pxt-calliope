@@ -34,10 +34,18 @@ enum class Rotation {
 };
 
 enum class TouchPin {
+#if MICROBIT_CODAL
+    P0 = MICROBIT_ID_IO_P0,
+    P1 = MICROBIT_ID_IO_P1,
+    P2 = MICROBIT_ID_IO_P2,
+    P3 = 157,
+#else
     P0 = MICROBIT_ID_IO_P12,
     P1 = MICROBIT_ID_IO_P0,
     P2 = MICROBIT_ID_IO_P1,
     P3 = MICROBIT_ID_IO_P16
+#endif
+
 };
 
 enum class AcceleratorRange {
@@ -347,30 +355,6 @@ namespace input {
     //% group="Sensors"
     int lightLevel() {
         return uBit.display.readLightLevel();
-    }
-
-
-    /**
-     * gets the level of loudness from 0 (silent) to 255 (loud)
-     */
-    //% help=input/sound-level
-    //% blockId="soundLevel" weight=58
-    //% block="soundLevel" blockGap=8
-    //% group="Sensors"
-    int soundLevel() {
-        int level = uBit.io.P21.getAnalogValue();
-        int min = level;
-        int max = level;
-        for (int i = 0; i < 32; i++) {
-            level =  uBit.io.P21.getAnalogValue();
-            if (level > max) {
-                max = level;
-            } else if (level < min) {
-                min = level;
-            }
-        }
-        level = floor((max - min + 0.5) / 4); //max can be up to 1023; + 0,5 to prevent division by 0, floor to get rid of decimals, divide by 4 to get a value between 0 and 255
-        return level;
     }
 
     /**

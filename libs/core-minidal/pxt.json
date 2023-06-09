@@ -12,7 +12,8 @@
         "basic.ts",
         "microphone.ts",
         "motors.cpp",
-        "parts/dcmotor.svg"
+        "parts/dcmotor.svg",
+        "input.cpp"
     ],
     "public": true
 }
