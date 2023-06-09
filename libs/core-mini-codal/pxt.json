@@ -5,6 +5,11 @@
         "core": "file:../core"
     },
     "files": [
-        "README.md"
+        "shims.d.ts",
+        "enums.d.ts",
+        "README.md",
+        "music.cpp",
+        "music.ts",
+        "melodies.ts"
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "mini-v1",
+    "version": "1.0.0",
     "description": "The calliope mini v1 core library",
     "compileServiceVariant": "minidal",
     "core": true,

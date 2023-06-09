@@ -42,7 +42,7 @@ enum class AnalogPin {
     C6 = MICROBIT_ID_IO_P10,  // LED matrix C3
     C16 = MICROBIT_ID_IO_P2,  // RX
     C17 = MICROBIT_ID_IO_P8,  // TX
-    MIC = MICROBIT_ID_IO_P21,  // microphone
+    MIC = 121, // MICROBIT_ID_IO_P21,  // microphone
     A1_RX = MICROBIT_ID_IO_P2,   // RX // C16
     A1_TX = MICROBIT_ID_IO_P8   // TX // C17
 };
@@ -98,10 +98,11 @@ MicroBitPin *getPin(int id) {
         case MICROBIT_ID_IO_P16: return &uBit.io.P16;
         case MICROBIT_ID_IO_P19: return &uBit.io.P19;
         case MICROBIT_ID_IO_P20: return &uBit.io.P20;
-        case MICROBIT_ID_IO_P21: return &uBit.io.P21;
 #if MICROBIT_CODAL
         case 1001: return &uBit.io.usbTx;
         case 1002: return &uBit.io.usbRx;
+#else
+        case MICROBIT_ID_IO_P21: return &uBit.io.P21;
 #endif
         default: return NULL;
     }

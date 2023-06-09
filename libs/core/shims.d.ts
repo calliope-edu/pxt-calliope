@@ -392,35 +392,6 @@ declare namespace input {
     function calibrateCompass(): void;
 
     /**
-     * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
-    //% weight=19
-    //% group="System" shim=input::isCalibratedCompass
-    function isCalibratedCompass(): boolean;
-
-    /**
-     * Obsolete, compass calibration is automatic.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_clear_calibration" block="clear calibration compass"
-    //% weight=17
-    //% group="Configuration"
-    //% blockHidden=true shim=input::clearCalibrationCompass
-    function clearCalibrationCompass(): void;
-
-    /**
-     * Obsolete, compass calibration is automatic.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_assume_calibration" block="assume calibration compass"
-    //% weight=16
-    //% group="Configuration"
-    //% blockHidden=true shim=input::assumeCalibrationCompass
-    function assumeCalibrationCompass(): void;
-
-    /**
      * Sets the accelerometer sample range in gravities.
      * @param range a value describe the maximum strengh of acceleration measured
      */
@@ -719,42 +690,6 @@ declare namespace led {
     //% help=led/screenshot
     //% parts="ledmatrix" shim=led::screenshot
     function screenshot(): Image;
-}
-declare namespace music {
-
-    /**
-     * Plays a tone through ``speaker`` for the given duration.
-     * @param frequency pitch of the tone to play in Hertz (Hz)
-     * @param ms tone duration in milliseconds (ms)
-     */
-    //%
-    //% parts="speaker" async useEnumVal=1 shim=music::speakerPlayTone
-    function speakerPlayTone(frequency: int32, ms: int32): void;
-
-    /**
-     * Set the default output volume of the sound synthesizer.
-     * @param volume the volume 0...255
-     */
-    //% blockId=synth_set_volume block="set volume %volume"
-    //% volume.min=0 volume.max=255
-    //%
-    //% help=music/set-volume
-    //% weight=70
-    //% group="Volume"
-    //% blockGap=8
-    //% blockHidden=true volume.defl=127 shim=music::setVolume
-    function setVolume(volume?: int32): void;
-
-    /**
-     * Returns the current output volume of the sound synthesizer.
-     */
-    //% blockId=synth_get_volume block="volume"
-    //% help=music/volume
-    //% weight=69
-    //% group="Volume"
-    //% blockGap=8
-    //% blockHidden=true shim=music::volume
-    function volume(): int32;
 }
 declare namespace pins {
 

@@ -69,10 +69,10 @@ declare namespace basic {
 
 
     declare const enum TouchPin {
-    P0 = 112,  // MICROBIT_ID_IO_P12
-    P1 = 100,  // MICROBIT_ID_IO_P0
-    P2 = 101,  // MICROBIT_ID_IO_P1
-    P3 = 116,  // MICROBIT_ID_IO_P16
+    P0 = 100,  // MICROBIT_ID_IO_P0
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+    P3 = 103,  // MICROBIT_ID_IO_P3
     }
 
 
@@ -473,7 +473,7 @@ declare namespace led {
     C6 = 110,  // MICROBIT_ID_IO_P10
     C16 = 102,  // MICROBIT_ID_IO_P2
     C17 = 108,  // MICROBIT_ID_IO_P8
-    MIC = 121,  // MICROBIT_ID_IO_P21
+    MIC = 121,
     A1_RX = 102,  // MICROBIT_ID_IO_P2
     A1_TX = 108,  // MICROBIT_ID_IO_P8
     }

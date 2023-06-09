@@ -1,7 +1,7 @@
 {
     "name": "core",
     "description": "The microbit core library",
-    "dependencies": {},
+    "additionalFilePath": "../../node_modules/pxt-common-packages/libs/base",
     "files": [
         "README.md",
         "platform.h",
@@ -41,9 +41,6 @@
         "game.ts",
         "led.cpp",
         "led.ts",
-        "music.cpp",
-        "music.ts",
-        "melodies.ts",
         "pins.cpp",
         "pins.ts",
         "serial.cpp",
@@ -70,7 +67,7 @@
     ],
     "testFiles": [],
     "public": true,
-    "additionalFilePath": "../../node_modules/pxt-common-packages/libs/base",
+    "dependencies": {},
     "yotta": {
         "config": {
             "microbit-dal": {

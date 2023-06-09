@@ -34,10 +34,10 @@ enum class Rotation {
 };
 
 enum class TouchPin {
-    P0 = MICROBIT_ID_IO_P12,
-    P1 = MICROBIT_ID_IO_P0,
-    P2 = MICROBIT_ID_IO_P1,
-    P3 = MICROBIT_ID_IO_P16
+    P0 = MICROBIT_ID_IO_P0, //MICROBIT_ID_IO_P12,
+    P1 = MICROBIT_ID_IO_P1, //MICROBIT_ID_IO_P0,
+    P2 = MICROBIT_ID_IO_P2, //MICROBIT_ID_IO_P1,
+    P3 = MICROBIT_ID_IO_P3 //MICROBIT_ID_IO_P16
 };
 
 enum class AcceleratorRange {
@@ -422,42 +422,6 @@ namespace input {
     void calibrateCompass() {
         uBit.compass.calibrate();
     }
-
-  /**
-     * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
-    //% weight=19
-    //% group="System"
-    bool isCalibratedCompass() {
-        return (uBit.compass.isCalibrated() == 1);
-    }
-
-      /**
-     * Obsolete, compass calibration is automatic.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_clear_calibration" block="clear calibration compass"
-    //% weight=17
-    //% group="Configuration"
-    //% blockHidden=true
-    void clearCalibrationCompass() {
-        uBit.compass.clearCalibration();
-    }
-
-    /**
-     * Obsolete, compass calibration is automatic.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_assume_calibration" block="assume calibration compass"
-    //% weight=16
-    //% group="Configuration"
-    //% blockHidden=true
-    void assumeCalibrationCompass() {
-        uBit.compass.assumeCalibration();
-    }
-
 
     /**
      * Sets the accelerometer sample range in gravities.

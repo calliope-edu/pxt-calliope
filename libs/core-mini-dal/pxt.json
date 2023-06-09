@@ -1,6 +1,6 @@
 {
-    "name": "core-minidal",
-    "description": "The mini dal core library",
+    "name": "core-mini-dal",
+    "description": "The calliope mini dal core library",
     "dependencies": {
         "core": "file:../core",
         "core-mini": "file:../core-mini"
@@ -13,7 +13,10 @@
         "microphone.ts",
         "motors.cpp",
         "parts/dcmotor.svg",
-        "input.cpp"
+        "input.cpp",
+        "music.cpp",
+        "music.ts",
+        "melodies.ts"
     ],
     "public": true
 }

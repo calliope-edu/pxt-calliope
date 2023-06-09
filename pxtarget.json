@@ -8,8 +8,8 @@
     "bundleddirs": [
         "libs/core",
         "libs/core-mini",
-        "libs/core-minidal",
-        "libs/core-minicodal",
+        "libs/core-mini-dal",
+        "libs/core-mini-codal",
         "libs/core-mini-v1",
         "libs/core-mini-v2",
         "libs/core-mini-v3",

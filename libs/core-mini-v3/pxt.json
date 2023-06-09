@@ -1,7 +1,8 @@
 {
     "name": "mini-v3",
+    "version": "1.0.0",
     "description": "The calliope mini v3 core library",
-    "compileServiceVariant": "minidal",
+    "compileServiceVariant": "minicodal",
     "core": true,
     "dependencies": {
         "core": "file:../core"

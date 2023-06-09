@@ -1,11 +1,12 @@
 {
     "name": "mini-v2",
+    "version": "1.0.0",
     "description": "The calliope mini v2 core library",
     "compileServiceVariant": "minidal",
     "core": true,
     "dependencies": {
         "core": "file:../core",
-        "core-minidal": "file:../core-minidal"
+        "core-mini-dal": "file:../core-mini-dal"
     },
     "files": [
         "README.md",
