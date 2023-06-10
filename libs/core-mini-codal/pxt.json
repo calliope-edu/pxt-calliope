@@ -10,6 +10,8 @@
         "README.md",
         "music.cpp",
         "music.ts",
-        "melodies.ts"
+        "melodies.ts",
+        "soundexpressions.ts",
+        "soundexpressions.cpp"
     ]
 }

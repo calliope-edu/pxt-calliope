@@ -5,7 +5,8 @@
     "compileServiceVariant": "minidal",
     "core": true,
     "dependencies": {
-        "core": "file:../core"
+        "core": "file:../core",
+        "core-mini-dal": "file:../core-mini-dal"
     },
     "files": [
         "README.md",

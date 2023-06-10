@@ -48,5 +48,19 @@ declare namespace music {
     //% weight=1 level.defl=0 shim=music::setSilenceLevel
     function setSilenceLevel(level?: int32): void;
 }
+declare namespace music {
+
+    /**
+     * Internal use only
+     **/
+    //% async shim=music::__playSoundExpression
+    function __playSoundExpression(nodes: string, waitTillDone: boolean): void;
+
+    /**
+     * Internal use only
+     */
+    //% shim=music::__stopSoundExpressions
+    function __stopSoundExpressions(): void;
+}
 
 // Auto-generated. Do not edit. Really.

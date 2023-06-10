@@ -1,12 +1,13 @@
 {
     "name": "mini-v3",
-    "version": "1.0.0",
     "description": "The calliope mini v3 core library",
-    "compileServiceVariant": "minicodal",
     "core": true,
+    "compileServiceVariant": "minicodal",
     "dependencies": {
-        "core": "file:../core"
+        "core": "file:../core",
+        "core-mini-codal": "file:../core-mini-codal"
     },
+    "public": true,
     "files": [
         "README.md",
         "board.json"
