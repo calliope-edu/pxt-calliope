@@ -7,7 +7,6 @@
         "core": "file:../core",
         "core-mini-codal": "file:../core-mini-codal"
     },
-    "public": true,
     "files": [
         "README.md",
         "board.json"

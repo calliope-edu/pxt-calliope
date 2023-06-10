@@ -4,8 +4,8 @@ namespace ts.pxtc.extension {
     pxtc.compilerHooks.postBinary = (program: ts.Program, opts: CompileOptions, res: CompileResult) => {
         if (!opts.target.isNative)
             return
-        const minidal = res.outfiles["mini-dal-binary.hex"]
-        const minicodal = res.outfiles["mini-codal-binary.hex"]
+        const minidal = res.outfiles["minidal-binary.hex"]
+        const minicodal = res.outfiles["minicodal-binary.hex"]
         if (!minidal || !minicodal)
             return
 

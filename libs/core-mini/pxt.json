@@ -1,6 +1,4 @@
 {
-    "name": "core-mini",
-    "description": "The mini core library",
     "dependencies": {
         "core": "file:../core"
     },
@@ -10,6 +8,5 @@
         "compass.ts",
         "storage.cpp",
         "storage.ts"
-    ],
-    "public": true
+    ]
 }

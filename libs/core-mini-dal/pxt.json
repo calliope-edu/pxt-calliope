@@ -1,6 +1,4 @@
 {
-    "name": "core-mini-dal",
-    "description": "The calliope mini dal core library",
     "dependencies": {
         "core": "file:../core",
         "core-mini": "file:../core-mini"
@@ -17,6 +15,5 @@
         "music.cpp",
         "music.ts",
         "melodies.ts"
-    ],
-    "public": true
+    ]
 }
