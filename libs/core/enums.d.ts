@@ -438,44 +438,44 @@ declare namespace led {
 
 
     declare const enum DigitalPin {
-    P0 = 112,  // MICROBIT_ID_IO_P12
-    P1 = 100,  // MICROBIT_ID_IO_P0
-    P2 = 101,  // MICROBIT_ID_IO_P1
-    P3 = 116,  // MICROBIT_ID_IO_P16
-    C4 = 103,  // MICROBIT_ID_IO_P3
-    C5 = 104,  // MICROBIT_ID_IO_P4
-    C6 = 110,  // MICROBIT_ID_IO_P10
-    C7 = 113,  // MICROBIT_ID_IO_P13
-    C8 = 114,  // MICROBIT_ID_IO_P14
-    C9 = 115,  // MICROBIT_ID_IO_P15
-    C10 = 109,  // MICROBIT_ID_IO_P9
-    C11 = 107,  // MICROBIT_ID_IO_P7
-    C12 = 106,  // MICROBIT_ID_IO_P6
-    C16 = 102,  // MICROBIT_ID_IO_P2
-    C17 = 108,  // MICROBIT_ID_IO_P8
-    C18 = 120,  // MICROBIT_ID_IO_P20
+    P0 = 100,  // MICROBIT_ID_IO_P0
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+    P3 = 103,  // MICROBIT_ID_IO_P3
+    C4 = 104,  // MICROBIT_ID_IO_P4
+    C5 = 105,  // MICROBIT_ID_IO_P5
+    C6 = 106,  // MICROBIT_ID_IO_P6
+    C7 = 107,  // MICROBIT_ID_IO_P7
+    C8 = 108,  // MICROBIT_ID_IO_P8
+    C9 = 109,  // MICROBIT_ID_IO_P9
+    C10 = 110,  // MICROBIT_ID_IO_P10
+    C11 = 111,  // MICROBIT_ID_IO_P11
+    C12 = 112,  // MICROBIT_ID_IO_P12
+    C16 = 116,  // MICROBIT_ID_IO_P16
+    C17 = 117,  // MICROBIT_ID_IO_P17
+    C18 = 118,  // MICROBIT_ID_IO_P18
     //% block="A1 RX"
-    A1_RX = 102,  // MICROBIT_ID_IO_P2
+    A1_RX = 116,  // MICROBIT_ID_IO_P16
     //% block="A1 TX"
-    A1_TX = 108,  // MICROBIT_ID_IO_P8
+    A1_TX = 117,  // MICROBIT_ID_IO_P17
     //% block="A0 SDA" blockHidden=true
     A0_SCL = 119,  // MICROBIT_ID_IO_P19
     //% block="A0 SDA" blockHidden=true
-    A0_SDA = 120,  // MICROBIT_ID_IO_P20
+    A0_SDA = 118,  // MICROBIT_ID_IO_P18
     }
 
 
     declare const enum AnalogPin {
-    P1 = 100,  // MICROBIT_ID_IO_P0
-    P2 = 101,  // MICROBIT_ID_IO_P1
-    C4 = 103,  // MICROBIT_ID_IO_P3
-    C5 = 104,  // MICROBIT_ID_IO_P4
-    C6 = 110,  // MICROBIT_ID_IO_P10
-    C16 = 102,  // MICROBIT_ID_IO_P2
-    C17 = 108,  // MICROBIT_ID_IO_P8
-    MIC = 121,
-    A1_RX = 102,  // MICROBIT_ID_IO_P2
-    A1_TX = 108,  // MICROBIT_ID_IO_P8
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+    C4 = 104,  // MICROBIT_ID_IO_P4
+    C5 = 105,  // MICROBIT_ID_IO_P5
+    C6 = 106,  // MICROBIT_ID_IO_P6
+    C16 = 116,  // MICROBIT_ID_IO_P16
+    C17 = 117,  // MICROBIT_ID_IO_P17
+    MIC = 121,  // MICROBIT_ID_LOGO
+    A1_RX = 116,  // MICROBIT_ID_IO_P16
+    A1_TX = 117,  // MICROBIT_ID_IO_P17
     }
 
 

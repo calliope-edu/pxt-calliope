@@ -8,43 +8,66 @@
 #endif
 
 enum class DigitalPin {
-    P0 = MICROBIT_ID_IO_P12,   // edge connector 0
-    P1 = MICROBIT_ID_IO_P0,    // edge connector 1
-    P2 = MICROBIT_ID_IO_P1,    // edge connector 2
-    P3 = MICROBIT_ID_IO_P16,   // edge connector 3
-    C4 = MICROBIT_ID_IO_P3,    // LED matrix C1
-    C5 = MICROBIT_ID_IO_P4,    // LED matrix C2
-    C6 = MICROBIT_ID_IO_P10,   // LED matrix C3
-    C7 = MICROBIT_ID_IO_P13,   // LED matrix C4
-    C8 = MICROBIT_ID_IO_P14,   // LED matrix C5
-    C9 = MICROBIT_ID_IO_P15,   // LED matrix C6
-    C10 = MICROBIT_ID_IO_P9,   // LED matrix C7
-    C11 = MICROBIT_ID_IO_P7,   // LED matrix C8
-    C12 = MICROBIT_ID_IO_P6,   // LED matrix C9
-    C16 = MICROBIT_ID_IO_P2,   // RX
-    C17 = MICROBIT_ID_IO_P8,   // TX
-    C18 = MICROBIT_ID_IO_P20,  // SDA
+    P0 = MICROBIT_ID_IO_P0,   // edge connector 0
+    P1 = MICROBIT_ID_IO_P1,    // edge connector 1
+    P2 = MICROBIT_ID_IO_P2,    // edge connector 2
+    P3 = MICROBIT_ID_IO_P3,   // edge connector 3
+
+    C4 = MICROBIT_ID_IO_P4,    // LED matrix C1
+    P4 = MICROBIT_ID_IO_P4,    // LED matrix C1
+
+    C5 = MICROBIT_ID_IO_P5,    // LED matrix C2
+    P5 = MICROBIT_ID_IO_P5,    // LED matrix C2
+
+    C6 = MICROBIT_ID_IO_P6,   // LED matrix C3
+    P6 = MICROBIT_ID_IO_P6,   // LED matrix C3
+
+    C7 = MICROBIT_ID_IO_P7,   // LED matrix C4
+    P7 = MICROBIT_ID_IO_P7,   // LED matrix C4
+
+    C8 = MICROBIT_ID_IO_P8,   // LED matrix C5
+    P8 = MICROBIT_ID_IO_P8,   // LED matrix C5
+
+    C9 = MICROBIT_ID_IO_P9,   // LED matrix C6
+    P9 = MICROBIT_ID_IO_P9,   // LED matrix C6
+
+    C10 = MICROBIT_ID_IO_P10,   // LED matrix C7
+    P10 = MICROBIT_ID_IO_P10,   // LED matrix C7
+
+    C11 = MICROBIT_ID_IO_P11,   // LED matrix C8
+    P11 = MICROBIT_ID_IO_P11,   // LED matrix C8
+
+    C12 = MICROBIT_ID_IO_P12,   // LED matrix C9
+    P12 = MICROBIT_ID_IO_P12,   // LED matrix C9
+
+    // C16 = MICROBIT_ID_A1_RX,   // RX
+    // P16 = MICROBIT_ID_A1_RX,   // RX
+    // C17 = MICROBIT_ID_A1_TX,   // TX
+    // P17 = MICROBIT_ID_A1_TX,   // TX
+    // C18 = MICROBIT_ID_A0_SDA,  // SDA
+    // P18 = MICROBIT_ID_A0_SDA,  // SDA
+    
     //% block="A1 RX"
-    A1_RX = MICROBIT_ID_IO_P2,   // RX // C16
+    A1_RX = MICROBIT_ID_IO_A1_RX,   // RX // C16
     //% block="A1 TX"
-    A1_TX = MICROBIT_ID_IO_P8,   // TX // C17
-    //% block="A0 SDA" blockHidden=true
-    A0_SCL = MICROBIT_ID_IO_P19, // SCL // C19
-    //% block="A0 SDA" blockHidden=true
-    A0_SDA = MICROBIT_ID_IO_P20,  // SDA // C18
+    A1_TX = MICROBIT_ID_A1_TX,   // TX // C17
+    //% block="A0 SCL" blockHidden=true
+    A0_SCL = MICROBIT_ID_A0_SCL, // SCL // C19
+    //% block="A0 SDA"
+    A0_SDA = MICROBIT_ID_A0_SDA,  // SDA // C18
 };
 
 enum class AnalogPin {
-    P1 = MICROBIT_ID_IO_P0,    // edge connector 1
-    P2 = MICROBIT_ID_IO_P1,    // edge connector 2
-    C4 = MICROBIT_ID_IO_P3,   // LED matrix C1
-    C5 = MICROBIT_ID_IO_P4,   // LED matrix C2
-    C6 = MICROBIT_ID_IO_P10,  // LED matrix C3
-    C16 = MICROBIT_ID_IO_P2,  // RX
-    C17 = MICROBIT_ID_IO_P8,  // TX
-    MIC = 121, // MICROBIT_ID_IO_P21,  // microphone
-    A1_RX = MICROBIT_ID_IO_P2,   // RX // C16
-    A1_TX = MICROBIT_ID_IO_P8   // TX // C17
+    P1 = MICROBIT_ID_IO_P1,    // edge connector 1
+    P2 = MICROBIT_ID_IO_P2,    // edge connector 2
+    C4 = MICROBIT_ID_IO_P4,   // LED matrix C1
+    C5 = MICROBIT_ID_IO_P5,   // LED matrix C2
+    C6 = MICROBIT_ID_IO_P6,  // LED matrix C3
+    C16 = MICROBIT_ID_IO_P16,  // RX
+    C17 = MICROBIT_ID_IO_P17,  // TX
+    MIC = MICROBIT_ID_LOGO, // MICROBIT_ID_IO_P21,  // microphone
+    A1_RX = MICROBIT_ID_IO_P16,   // RX // C16
+    A1_TX = MICROBIT_ID_IO_P17   // TX // C17
 };
 
 enum class PulseValue {
@@ -102,7 +125,7 @@ MicroBitPin *getPin(int id) {
         case 1001: return &uBit.io.usbTx;
         case 1002: return &uBit.io.usbRx;
 #else
-        case MICROBIT_ID_IO_P21: return &uBit.io.P21;
+        case MICROBIT_ID_LOGO: return &uBit.io.P21;
 #endif
         default: return NULL;
     }
