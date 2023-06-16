@@ -40,21 +40,21 @@ enum class DigitalPin {
     C12 = MICROBIT_ID_IO_P12,   // LED matrix C9
     P12 = MICROBIT_ID_IO_P12,   // LED matrix C9
 
-    C16 = MICROBIT_ID_A1_RX,   // RX
+    C16 = MICROBIT_ID_IO_A1_RX,   // RX
     // P16 = MICROBIT_ID_A1_RX,   // RX
-    C17 = MICROBIT_ID_A1_TX,   // TX
+    C17 = MICROBIT_ID_IO_A1_TX,   // TX
     // P17 = MICROBIT_ID_A1_TX,   // TX
-    C18 = MICROBIT_ID_A0_SDA,  // SDA
+    C18 = MICROBIT_ID_IO_A0_SDA,  // SDA
     // P18 = MICROBIT_ID_A0_SDA,  // SDA
     
     //% block="A1 RX"
     A1_RX = MICROBIT_ID_IO_A1_RX,   // RX // C16
     //% block="A1 TX"
-    A1_TX = MICROBIT_ID_A1_TX,   // TX // C17
+    A1_TX = MICROBIT_ID_IO_A1_TX,   // TX // C17
     //% block="A0 SCL" blockHidden=true
-    A0_SCL = MICROBIT_ID_A0_SCL, // SCL // C19
+    A0_SCL = MICROBIT_ID_IO_A0_SCL, // SCL // C19
     //% block="A0 SDA"
-    A0_SDA = MICROBIT_ID_A0_SDA,  // SDA // C18
+    A0_SDA = MICROBIT_ID_IO_A0_SDA,  // SDA // C18
 };
 
 enum class AnalogPin {
@@ -71,11 +71,11 @@ enum class AnalogPin {
     P6 = MICROBIT_ID_IO_P6,  // LED matrix C3
 
     C16 = MICROBIT_ID_IO_A1_RX,  // RX
-    C17 = MICROBIT_ID_A1_TX,  // TX
+    C17 = MICROBIT_ID_IO_A1_TX,  // TX
 
     MIC = MICROBIT_ID_LOGO, // MICROBIT_ID_IO_P21,  // microphone
     A1_RX = MICROBIT_ID_IO_A1_RX,   // RX // C16
-    A1_TX = MICROBIT_ID_A1_TX   // TX // C17
+    A1_TX = MICROBIT_ID_IO_A1_TX   // TX // C17
 };
 
 enum class PulseValue {
@@ -129,15 +129,15 @@ MicroBitPin *getPin(int id) {
         case MICROBIT_ID_IO_A1RX: return &uBit.io.A1RX;
         case MICROBIT_ID_IO_A1TX: return &uBit.io.A1TX;
         case MICROBIT_ID_IO_A0SCL: return &uBit.io.A0SCL;
-        case MICROBIT_ID_IO_A0SDA: return &uBit.io.A0SDA;
-        case MICROBIT_ID_IO_RGB: return &uBit.io.RGB;
+        case MICROBIT_ID_IO_A0SDA: return &uBit.io.A0SDA; 
         case MICROBIT_ID_IO_LOGO: return &uBit.io.LOGO;
+#if MICROBIT_CODAL
+        case MICROBIT_ID_IO_RGB: return &uBit.io.RGB;
         case MICROBIT_ID_IO_M_A_IN1: return &uBit.io.M_A_IN1;
         case MICROBIT_ID_IO_M_A_IN2: return &uBit.io.M_A_IN2;
         case MICROBIT_ID_IO_M_B_IN1: return &uBit.io.M_B_IN1;
         case MICROBIT_ID_IO_M_B_IN2: return &uBit.io.M_B_IN2;
         case MICROBIT_ID_IO_M_MODE: return &uBit.io.M_MODE;
-#if MICROBIT_CODAL
         case 1001: return &uBit.io.usbTx;
         case 1002: return &uBit.io.usbRx;
 #else

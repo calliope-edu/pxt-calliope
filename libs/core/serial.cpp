@@ -5,12 +5,12 @@
 // make sure USB_TX and USB_RX don't overlap with other pin ids
 // also, 1001,1002 need to be kept in sync with getPin() function
 enum SerialPin {
-    P0 = MICROBIT_ID_IO_P12,
-    P1 = MICROBIT_ID_IO_P0,
-    P2 = MICROBIT_ID_IO_P1,
-    P3 = MICROBIT_ID_IO_P16,
-    C16 = MICROBIT_ID_IO_P2,
-    C17 = MICROBIT_ID_IO_P8,
+    P0 = MICROBIT_ID_IO_P0,
+    P1 = MICROBIT_ID_IO_P1,
+    P2 = MICROBIT_ID_IO_P2,
+    P3 = MICROBIT_ID_IO_P3,
+    C16 = MICROBIT_ID_IO_A1_RX,
+    C17 = MICROBIT_ID_IO_A1_TX,
     USB_TX = 1001,
     USB_RX = 1002
 };

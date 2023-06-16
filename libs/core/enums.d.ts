@@ -269,12 +269,12 @@ declare namespace input {
     MICROBIT_ID_IO_P14 = 114,  // MICROBIT_ID_IO_P14
     //% blockIdentity="control.eventSourceId"
     MICROBIT_ID_IO_P15 = 115,  // MICROBIT_ID_IO_P15
-    //% blockIdentity="control.eventSourceId"
-    MICROBIT_ID_IO_P16 = 116,  // MICROBIT_ID_IO_P16
-    //% blockIdentity="control.eventSourceId"
-    MICROBIT_ID_IO_P19 = 119,  // MICROBIT_ID_IO_P19
-    //% blockIdentity="control.eventSourceId"
-    MICROBIT_ID_IO_P20 = 120,  // MICROBIT_ID_IO_P20
+    // //% blockIdentity="control.eventSourceId"
+    // MICROBIT_ID_IO_P16_ = MICROBIT_ID_IO_P16,
+    // //% blockIdentity="control.eventSourceId"
+    // MICROBIT_ID_IO_P19_ = MICROBIT_ID_IO_P19,
+    // //% blockIdentity="control.eventSourceId"
+    // MICROBIT_ID_IO_P20_ = MICROBIT_ID_IO_P20,
     //% blockIdentity="control.eventSourceId"
     MES_DEVICE_INFO_ID = 1103,  // MES_DEVICE_INFO_ID
     //% blockIdentity="control.eventSourceId"
@@ -442,40 +442,71 @@ declare namespace led {
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
     P3 = 103,  // MICROBIT_ID_IO_P3
+
     C4 = 104,  // MICROBIT_ID_IO_P4
+    P4 = 104,  // MICROBIT_ID_IO_P4
+
     C5 = 105,  // MICROBIT_ID_IO_P5
+    P5 = 105,  // MICROBIT_ID_IO_P5
+
     C6 = 106,  // MICROBIT_ID_IO_P6
+    P6 = 106,  // MICROBIT_ID_IO_P6
+
     C7 = 107,  // MICROBIT_ID_IO_P7
+    P7 = 107,  // MICROBIT_ID_IO_P7
+
     C8 = 108,  // MICROBIT_ID_IO_P8
+    P8 = 108,  // MICROBIT_ID_IO_P8
+
     C9 = 109,  // MICROBIT_ID_IO_P9
+    P9 = 109,  // MICROBIT_ID_IO_P9
+
     C10 = 110,  // MICROBIT_ID_IO_P10
+    P10 = 110,  // MICROBIT_ID_IO_P10
+
     C11 = 111,  // MICROBIT_ID_IO_P11
+    P11 = 111,  // MICROBIT_ID_IO_P11
+
     C12 = 112,  // MICROBIT_ID_IO_P12
-    C16 = 116,  // MICROBIT_ID_IO_P16
-    C17 = 117,  // MICROBIT_ID_IO_P17
-    C18 = 118,  // MICROBIT_ID_IO_P18
+    P12 = 112,  // MICROBIT_ID_IO_P12
+
+    C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    // P16 = MICROBIT_ID_A1_RX,   // RX
+    C17 = 117,  // MICROBIT_ID_IO_A1_TX
+    // P17 = MICROBIT_ID_A1_TX,   // TX
+    C18 = 120,  // MICROBIT_ID_IO_A0_SDA
+    // P18 = MICROBIT_ID_A0_SDA,  // SDA
+
     //% block="A1 RX"
-    A1_RX = 116,  // MICROBIT_ID_IO_P16
+    A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
     //% block="A1 TX"
-    A1_TX = 117,  // MICROBIT_ID_IO_P17
-    //% block="A0 SDA" blockHidden=true
-    A0_SCL = 119,  // MICROBIT_ID_IO_P19
-    //% block="A0 SDA" blockHidden=true
-    A0_SDA = 118,  // MICROBIT_ID_IO_P18
+    A1_TX = 117,  // MICROBIT_ID_IO_A1_TX
+    //% block="A0 SCL" blockHidden=true
+    A0_SCL = 119,  // MICROBIT_ID_IO_A0_SCL
+    //% block="A0 SDA"
+    A0_SDA = 120,  // MICROBIT_ID_IO_A0_SDA
     }
 
 
     declare const enum AnalogPin {
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
+
     C4 = 104,  // MICROBIT_ID_IO_P4
+    P4 = 104,  // MICROBIT_ID_IO_P4
+
     C5 = 105,  // MICROBIT_ID_IO_P5
+    P5 = 105,  // MICROBIT_ID_IO_P5
+
     C6 = 106,  // MICROBIT_ID_IO_P6
-    C16 = 116,  // MICROBIT_ID_IO_P16
-    C17 = 117,  // MICROBIT_ID_IO_P17
+    P6 = 106,  // MICROBIT_ID_IO_P6
+
+    C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    C17 = 117,  // MICROBIT_ID_IO_A1_TX
+
     MIC = 121,  // MICROBIT_ID_LOGO
-    A1_RX = 116,  // MICROBIT_ID_IO_P16
-    A1_TX = 117,  // MICROBIT_ID_IO_P17
+    A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
+    A1_TX = 117,  // MICROBIT_ID_IO_A1_TX
     }
 
 
@@ -510,12 +541,12 @@ declare namespace led {
 
 
     declare const enum SerialPin {
-    P0 = 112,  // MICROBIT_ID_IO_P12
-    P1 = 100,  // MICROBIT_ID_IO_P0
-    P2 = 101,  // MICROBIT_ID_IO_P1
-    P3 = 116,  // MICROBIT_ID_IO_P16
-    C16 = 102,  // MICROBIT_ID_IO_P2
-    C17 = 108,  // MICROBIT_ID_IO_P8
+    P0 = 100,  // MICROBIT_ID_IO_P0
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+    P3 = 103,  // MICROBIT_ID_IO_P3
+    C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    C17 = 117,  // MICROBIT_ID_IO_A1_TX
     USB_TX = 1001,
     USB_RX = 1002,
     }

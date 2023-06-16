@@ -59,7 +59,7 @@
   "Delimiters.SemiColon|block": ";",
   "Delimiters.Space|block": "space",
   "Delimiters.Tab|block": "tab (\t)",
-  "DigitalPin.A0_SCL|block": "A0 SDA",
+  "DigitalPin.A0_SCL|block": "A0 SCL",
   "DigitalPin.A0_SDA|block": "A0 SDA",
   "DigitalPin.A1_RX|block": "A1 RX",
   "DigitalPin.A1_TX|block": "A1 TX",
