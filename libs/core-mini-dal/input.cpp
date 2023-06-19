@@ -15,7 +15,7 @@ namespace input {
         int max = 0;
 
         for (int i = 0; i < 32; i++) {
-            int level = uBit.io.P21.getAnalogValue();
+            int level = uBit.io.MICROPHONE.getAnalogValue();
             if (level > max) {
                 max = level;
             }

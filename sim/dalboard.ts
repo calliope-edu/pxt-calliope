@@ -52,10 +52,8 @@ namespace pxsim {
             });
             this.builtinParts["edgeconnector"] = this.edgeConnectorState = new EdgeConnectorState({
                 pins: [
-                    DAL.MICROBIT_ID_IO_P12,
                     DAL.MICROBIT_ID_IO_P0,
                     DAL.MICROBIT_ID_IO_P1,
-                    DAL.MICROBIT_ID_IO_P16,
                     DAL.MICROBIT_ID_IO_P2,
                     DAL.MICROBIT_ID_IO_P3,
                     DAL.MICROBIT_ID_IO_P4,
@@ -65,21 +63,23 @@ namespace pxsim {
                     DAL.MICROBIT_ID_IO_P8,
                     DAL.MICROBIT_ID_IO_P9,
                     DAL.MICROBIT_ID_IO_P10,
-                    DAL.MICROBIT_ID_IO_P11, 
-                    DAL.MICROBIT_ID_IO_P13,
+                    DAL.MICROBIT_ID_IO_P11,
+                    DAL.MICROBIT_ID_IO_P12,
+                    DAL.MICROBIT_ID_IO_P13, 
                     DAL.MICROBIT_ID_IO_P14,
                     DAL.MICROBIT_ID_IO_P15,
+                    DAL.MICROBIT_ID_IO_A1_RX,
                     0,
                     0,
-                    DAL.MICROBIT_ID_IO_P19,
-                    DAL.MICROBIT_ID_IO_P20,
-                    DAL.MICROBIT_ID_IO_P21
+                    DAL.MICROBIT_ID_IO_A0_SCL,
+                    DAL.MICROBIT_ID_IO_A0_SDA,
+                    DAL.MICROBIT_ID_LOGO
                 ],
                 servos: {
-                    "P0": DAL.MICROBIT_ID_IO_P12,
-                    "P1": DAL.MICROBIT_ID_IO_P0,
-                    "P2": DAL.MICROBIT_ID_IO_P1,
-                    "P3": DAL.MICROBIT_ID_IO_P16
+                    "P0": DAL.MICROBIT_ID_IO_P0,
+                    "P1": DAL.MICROBIT_ID_IO_P1,
+                    "P2": DAL.MICROBIT_ID_IO_P2,
+                    "P3": DAL.MICROBIT_ID_IO_P3
                 }
             });
             this.builtinParts["radio"] = this.radioState = new RadioState(runtime, this, {
