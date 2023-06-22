@@ -9,6 +9,7 @@
         "music.cpp",
         "music.ts",
         "melodies.ts",
+        "motors.ts",
         "soundexpressions.ts",
         "soundexpressions.cpp"
     ]

@@ -55,6 +55,16 @@ enum class DigitalPin {
     A0_SCL = MICROBIT_ID_IO_A0_SCL, // SCL // C19
     //% block="A0 SDA"
     A0_SDA = MICROBIT_ID_IO_A0_SDA,  // SDA // C18
+
+    //% blockHidden=true
+    M_MODE = MICROBIT_ID_IO_M_MODE,
+
+    //% blockHidden=true
+    M_A_IN1 = MICROBIT_ID_IO_M_A_IN1,
+
+    //% blockHidden=true
+    M_B_IN1 = MICROBIT_ID_IO_M_B_IN1
+
 };
 
 enum class AnalogPin {
@@ -73,9 +83,16 @@ enum class AnalogPin {
     C16 = MICROBIT_ID_IO_A1_RX,  // RX
     C17 = MICROBIT_ID_IO_A1_TX,  // TX
 
-    MIC = MICROBIT_ID_LOGO, // MICROBIT_ID_IO_P21,  // microphone
     A1_RX = MICROBIT_ID_IO_A1_RX,   // RX // C16
-    A1_TX = MICROBIT_ID_IO_A1_TX   // TX // C17
+    A1_TX = MICROBIT_ID_IO_A1_TX,   // TX // C17
+
+    //% blockHidden=true
+    MIC = MICROBIT_ID_LOGO, // MICROBIT_ID_IO_P21,  // microphone
+
+    //% blockHidden=true
+    M_A_IN2 = MICROBIT_ID_IO_M_A_IN2,
+    //% blockHidden=true
+    M_B_IN2 = MICROBIT_ID_IO_M_B_IN2
 };
 
 enum class PulseValue {

@@ -50,7 +50,7 @@ namespace motors {
     * Controls two motors attached to the board. Switches to dual-motor mode!
     */
     //% blockId=block_dual_motor block="motor %motor|at %percent \\%"
-     //% percent.shadow="speedPicker"
+    //% percent.shadow="speedPicker"
     //% weight=80
     //% duty_percent.defl=100
     void dualMotorPower(Motor motor, int duty_percent) {

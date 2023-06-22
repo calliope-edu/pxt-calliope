@@ -485,6 +485,16 @@ declare namespace led {
     A0_SCL = 119,  // MICROBIT_ID_IO_A0_SCL
     //% block="A0 SDA"
     A0_SDA = 120,  // MICROBIT_ID_IO_A0_SDA
+
+    //% blockHidden=true
+    M_MODE = 156,  // MICROBIT_ID_IO_M_MODE
+
+    //% blockHidden=true
+    M_A_IN1 = 152,  // MICROBIT_ID_IO_M_A_IN1
+
+    //% blockHidden=true
+    M_B_IN1 = 154,  // MICROBIT_ID_IO_M_B_IN1
+
     }
 
 
@@ -504,9 +514,16 @@ declare namespace led {
     C16 = 116,  // MICROBIT_ID_IO_A1_RX
     C17 = 117,  // MICROBIT_ID_IO_A1_TX
 
-    MIC = 121,  // MICROBIT_ID_LOGO
     A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
     A1_TX = 117,  // MICROBIT_ID_IO_A1_TX
+
+    //% blockHidden=true
+    MIC = 121,  // MICROBIT_ID_LOGO
+
+    //% blockHidden=true
+    M_A_IN2 = 153,  // MICROBIT_ID_IO_M_A_IN2
+    //% blockHidden=true
+    M_B_IN2 = 155,  // MICROBIT_ID_IO_M_B_IN2
     }
 
 
