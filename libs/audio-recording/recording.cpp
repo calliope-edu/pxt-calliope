@@ -29,29 +29,22 @@ using namespace pxt;
 namespace record {
 
 static StreamRecording *recording = NULL;
+static SplitterChannel *splitterChannel = NULL;
+static MixerChannel *channel = NULL;
 
-void enableMic() {
-    uBit.audio.activateMic();
-    uBit.audio.mic->enable();
-}
-
-void disableMic() {
-    uBit.audio.mic->disable();
-    uBit.audio.deactivateMic();
-}
-
-void checkEnv() {
+void checkEnv(int sampleRate = -1) {
     if (recording == NULL) {
+        if (sampleRate == -1)
+            sampleRate = 11000;
         MicroBitAudio::requestActivation();
 
-        recording = new StreamRecording(*uBit.audio.splitter);
+        splitterChannel = uBit.audio.splitter->createChannel();
 
-        MixerChannel *channel = uBit.audio.mixer.addChannel(*recording, 22000);
+        recording = new StreamRecording(*splitterChannel);
 
-        // By connecting to the mic channel, we activate it automatically, so shut it down again.
-        disableMic();
+        channel = uBit.audio.mixer.addChannel(*recording, sampleRate);
 
-        channel->setVolume(100.0);
+        channel->setVolume(75.0);
         uBit.audio.mixer.setVolume(1000);
         uBit.audio.setSpeakerEnabled(true);
     }
@@ -63,8 +56,7 @@ void checkEnv() {
 //% promise
 void record() {
     checkEnv();
-    enableMic();
-    recording->record();
+    recording->recordAsync();
 }
 
 /**
@@ -73,8 +65,7 @@ void record() {
 //%
 void play() {
     checkEnv();
-    disableMic();
-    recording->play();
+    recording->playAsync();
 }
 
 /**
@@ -83,7 +74,6 @@ void play() {
 //%
 void stop() {
     checkEnv();
-    disableMic();
     recording->stop();
 }
 
@@ -93,7 +83,6 @@ void stop() {
 //%
 void erase() {
     checkEnv();
-    disableMic();
     recording->erase();
 }
 
@@ -101,18 +90,8 @@ void erase() {
  * Set sensitity of the microphone input
  */
 //%
-void setMicrophoneGain(int gain) {
-    switch (gain) {
-    case 1:
-        uBit.audio.processor->setGain(0.1);
-        break;
-    case 2:
-        uBit.audio.processor->setGain(0.5);
-        break;
-    case 3:
-        uBit.audio.processor->setGain(1);
-        break;
-    }
+void setMicrophoneGain(float gain) {
+    uBit.audio.processor->setGain(gain);
 }
 
 /**
@@ -146,4 +125,36 @@ bool audioIsRecording() {
 bool audioIsStopped() {
     return recording->isStopped();
 }
+
+/**
+ * Change the sample rate of the splitter channel (audio input)
+ */
+//%
+void setInputSampleRate(int sampleRate) {
+    checkEnv();
+    splitterChannel->requestSampleRate(sampleRate);
+}
+
+
+/**
+ * Change the sample rate of the mixer channel (audio output)
+ */
+//%
+void setOutputSampleRate(int sampleRate) {
+    if (recording == NULL) {
+        checkEnv(sampleRate);
+    } else {
+        channel->setSampleRate(sampleRate);
+    }
+}
+
+/**
+ * Set the sample rate for both input and output
+*/
+//%
+void setBothSamples(int sampleRate) {
+    setOutputSampleRate(sampleRate);
+    splitterChannel->requestSampleRate(sampleRate);
+}
+
 } // namespace record

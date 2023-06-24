@@ -1,6 +1,6 @@
 {
     "name": "pxt-calliopemini",
-    "version": "5.1.15",
+    "version": "6.0.8",
     "description": "calliope mini target for Microsoft MakeCode (PXT)",
     "keywords": [
         "JavaScript",
@@ -33,6 +33,7 @@
         "docs/static/icons/favicon.ico"
     ],
     "devDependencies": {
+        "@types/dom-mediacapture-record": "^1.0.16",
         "@types/marked": "0.3.0",
         "@types/node": "8.10.66",
         "@types/react": "16.4.7",
@@ -45,7 +46,7 @@
         "typescript": "4.2.3"
     },
     "dependencies": {
-        "pxt-common-packages": "10.4.7",
-        "pxt-core": "8.6.20"
+        "pxt-common-packages": "11.0.1",
+        "pxt-core": "9.0.6"
     }
 }

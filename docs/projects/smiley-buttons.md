@@ -9,7 +9,7 @@ Code the buttons on the @boardname@ to show that it's happy or sad.
 
 ## Step 1 @fullscreen
 
-Place a ``||input:on button pressed||`` block to run code when button **A** is pressed.
+Use the ``||input:on button pressed||`` block to run code when button **A** is pressed.
 
 ```blocks
 input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), () => { 
@@ -28,8 +28,8 @@ input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), () => {
         . . . . .
         # . . . #
         . # # # .`
-        );
-});
+        )
+})
 ```
 
 ## Step 3 @fullscreen
@@ -79,3 +79,6 @@ If you have a @boardname@, connect it to USB and click ``|Download|`` to transfe
 
 Nice! Now go and show it off to your friends!
 
+```template
+input.onButtonPressed(Button.A, function() {})
+```

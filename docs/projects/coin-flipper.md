@@ -8,7 +8,7 @@ Let's create a coin flipping program to simulate a real coin toss. We'll use ico
 
 ## Step 1
 
-Get an ``||input:on button A pressed||`` block from the ``||input:Input||`` drawer in the toolbox. We'll put our coin flipping code in here.
+Let's start with the ``||input:on button A pressed||`` block on the Workspace. We'll put our coin flipping code in here.
 
 ```blocks
 input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), () => {
@@ -72,3 +72,7 @@ If you have a @boardname@, connect it to USB and click ``|Download|`` to transfe
 ## Step 7
 
 Press button **A** for a flip. Test your luck and guess ``heads`` or ``tails`` before the toss is over!
+
+```template
+input.onButtonPressed(Button.A, function() {})
+```

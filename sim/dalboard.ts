@@ -19,7 +19,8 @@ namespace pxsim {
         lightSensorState: LightSensorState;
         buttonPairState: ButtonPairState;
         radioState: RadioState;
-        microphoneState: AnalogSensorState;
+        microphoneState: MicrophoneState;
+        recordingState: RecordingState;
         lightState: pxt.Map<CommonNeoPixelState>;
         rgbLedState: number;
         speakerState: SpeakerState;
@@ -86,7 +87,8 @@ namespace pxsim {
                 ID_RADIO: DAL.MICROBIT_ID_RADIO,
                 RADIO_EVT_DATAGRAM: DAL.MICROBIT_RADIO_EVT_DATAGRAM
             });
-            this.builtinParts["microphone"] = this.microphoneState = new AnalogSensorState(3001 /* DEVICE_ID_MICROPHONE */, 0, 255, 75, 180);
+            this.builtinParts["microphone"] = this.microphoneState = new MicrophoneState(DAL.DEVICE_ID_MICROPHONE, 0, 255, 75, 180);
+            this.builtinParts["recording"] = this.recordingState = new RecordingState();
             this.builtinParts["accelerometer"] = this.accelerometerState = new AccelerometerState(runtime);
             this.builtinParts["serial"] = this.serialState = new SerialState(runtime, this);
             this.builtinParts["thermometer"] = this.thermometerState = new ThermometerState();
@@ -159,6 +161,9 @@ namespace pxsim {
             document.body.innerHTML = ""; // clear children
             document.body.appendChild(this.view = this.viewHost.getView());
 
+            if (msg.theme === "mbcodal") {
+                this.ensureHardwareVersion(2);
+            }
             return Promise.resolve();
         }
 

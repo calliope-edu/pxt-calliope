@@ -29,7 +29,7 @@ declare namespace record {
      * Set sensitity of the microphone input
      */
     //% shim=record::setMicrophoneGain
-    function setMicrophoneGain(gain: int32): void;
+    function setMicrophoneGain(gain: number): void;
 
     /**
      * Get how long the recorded audio clip is
@@ -54,6 +54,24 @@ declare namespace record {
      */
     //% shim=record::audioIsStopped
     function audioIsStopped(): boolean;
+
+    /**
+     * Change the sample rate of the splitter channel (audio input)
+     */
+    //% shim=record::setInputSampleRate
+    function setInputSampleRate(sampleRate: int32): void;
+
+    /**
+     * Change the sample rate of the mixer channel (audio output)
+     */
+    //% shim=record::setOutputSampleRate
+    function setOutputSampleRate(sampleRate: int32): void;
+
+    /**
+     * Set the sample rate for both input and output
+     */
+    //% shim=record::setBothSamples
+    function setBothSamples(sampleRate: int32): void;
 }
 
 // Auto-generated. Do not edit. Really.

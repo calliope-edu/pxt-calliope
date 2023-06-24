@@ -239,6 +239,17 @@
             "Microsoft/pxt-microturtle",
             "Microsoft/pxt-neopixel",
             "CalliTGS3/pxt-calliope-grovePCF85063TP"
+        ],
+        "approvedRepoLib": {
+            "microsoft/pxt-neopixel": {
+                "tags": [ "Lights and Display" ],
+                "preferred": true
+            }
+        },
+        "approvedEditorExtensionUrls": [
+            "https://microsoft.github.io/jacdac-docs/tools/makecode-editor-extension"
+        ],
+        "extensionsToolboxDisallowDelete": [
         ]
     },
     "galleries": {

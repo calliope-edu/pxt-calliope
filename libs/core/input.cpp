@@ -400,8 +400,10 @@ namespace input {
     //% advanced=true
     //% group="Sensors"
     TNumber magneticForce(Dimension dimension) {
+        /* https://github.com/microsoft/pxt-microbit/issues/4995
         if (!uBit.compass.isCalibrated())
             uBit.compass.calibrate();
+        */
         double d = 0;        
         switch (dimension) {
             case Dimension::X: d = uBit.compass.getX(); break;

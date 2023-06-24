@@ -1113,6 +1113,9 @@ namespace pxsim.visuals {
             let theme = this.props.theme;
 
             this.updateMicrophone();
+            this.updateRecordingActive();
+            this.updateButtonPairs();
+            this.updateLEDMatrix();
             this.updatePins();
             this.updateTilt();
             this.updateHeading();
@@ -1217,6 +1220,23 @@ namespace pxsim.visuals {
             const b = board();
             if (!b || !b.microphoneState.sensorUsed) return;
             this.updateSoundLevel();
+        }
+
+        private updateRecordingActive() {
+            const b = board();
+            if (!b)
+                return;
+
+            let theme = this.props.theme;
+            if (this.microphoneLed) {
+                if (b.recordingState.currentlyRecording || b.microphoneState.soundLevelRequested) {
+                    svg.fills([this.microphoneLed], theme.ledOn);
+                    svg.filter(this.microphoneLed, `url(#ledglow)`);
+                } else if (!(b.microphoneState.onSoundRegistered || b.microphoneState.soundLevelRequested)) {
+                    svg.fills([this.microphoneLed], theme.ledOff);
+                    svg.filter(this.microphoneLed, `url(#none)`);
+                }
+            }
         }
 
         private updateButtonAB() {

@@ -63,7 +63,8 @@
         "_locales/de/core-jsdoc-strings.json",
         "_locales/de/core-strings.json",
         "parts/speaker.svg",
-        "parts/headphone.svg"
+        "parts/headphone.svg",
+        "playable.ts"
     ],
     "testFiles": [],
     "public": true,
