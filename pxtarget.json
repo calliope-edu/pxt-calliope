@@ -18,7 +18,12 @@
         "libs/bluetooth",
         "libs/servo",
         "libs/radio-broadcast",
-        "libs/microphone"
+        "libs/microphone",
+        "libs/settings",
+        "libs/flashlog",
+        "libs/datalogger",
+        "libs/color",
+        "libs/audio-recording"
     ],
     "cloud": {
         "workspace": false,
@@ -165,7 +170,7 @@
                 "codalTarget": {
                     "name": "codal-microbit-v2",
                     "url": "https://github.com/calliope-edu/codal-microbit-v2",
-                    "branch": "v0.2.50callibranch2_pinout_",
+                    "branch": "v0.2.55-calliope3",
                     "type": "git"
                 },
                 "codalBinary": "MICROBIT",

@@ -1,0 +1,16 @@
+{
+    "name": "audio-recording",
+    "description": "Record sound clips. micro:bit (V2) only",
+    "dependencies": {
+        "core": "file:../core"
+    },
+    "files": [
+        "recording.ts",
+        "recording.cpp",
+        "shims.d.ts"
+    ],
+    "public": true,
+    "disablesVariants": [
+        "mbdal"
+    ]
+}

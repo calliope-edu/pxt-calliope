@@ -443,39 +443,51 @@ declare namespace led {
     P2 = 102,  // MICROBIT_ID_IO_P2
     P3 = 103,  // MICROBIT_ID_IO_P3
 
+    //% blockHidden=true
     C4 = 104,  // MICROBIT_ID_IO_P4
     P4 = 104,  // MICROBIT_ID_IO_P4
 
     C5 = 105,  // MICROBIT_ID_IO_P5
     P5 = 105,  // MICROBIT_ID_IO_P5
 
+    //% blockHidden=true
     C6 = 106,  // MICROBIT_ID_IO_P6
     P6 = 106,  // MICROBIT_ID_IO_P6
 
+    //% blockHidden=true
     C7 = 107,  // MICROBIT_ID_IO_P7
     P7 = 107,  // MICROBIT_ID_IO_P7
 
+    //% blockHidden=true
     C8 = 108,  // MICROBIT_ID_IO_P8
     P8 = 108,  // MICROBIT_ID_IO_P8
 
+    //% blockHidden=true
     C9 = 109,  // MICROBIT_ID_IO_P9
     P9 = 109,  // MICROBIT_ID_IO_P9
 
+    //% blockHidden=true
     C10 = 110,  // MICROBIT_ID_IO_P10
     P10 = 110,  // MICROBIT_ID_IO_P10
 
+    //% blockHidden=true
     C11 = 111,  // MICROBIT_ID_IO_P11
     P11 = 111,  // MICROBIT_ID_IO_P11
 
+    //% blockHidden=true
     C12 = 112,  // MICROBIT_ID_IO_P12
     P12 = 112,  // MICROBIT_ID_IO_P12
 
+    P13 = 113,  // MICROBIT_ID_IO_P13
+    P14 = 114,  // MICROBIT_ID_IO_P14
+    P15 = 115,  // MICROBIT_ID_IO_P15
+
+    //% blockHidden=true
     C16 = 116,  // MICROBIT_ID_IO_A1_RX
-    // P16 = MICROBIT_ID_A1_RX,   // RX
+    //% blockHidden=true
     C17 = 117,  // MICROBIT_ID_IO_A1_TX
-    // P17 = MICROBIT_ID_A1_TX,   // TX
-    C18 = 120,  // MICROBIT_ID_IO_A0_SDA
-    // P18 = MICROBIT_ID_A0_SDA,  // SDA
+    //% blockHidden=true
+    C18 = 118,  // MICROBIT_ID_IO_A0_SDA
 
     //% block="A1 RX"
     A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
@@ -484,7 +496,7 @@ declare namespace led {
     //% block="A0 SCL" blockHidden=true
     A0_SCL = 119,  // MICROBIT_ID_IO_A0_SCL
     //% block="A0 SDA"
-    A0_SDA = 120,  // MICROBIT_ID_IO_A0_SDA
+    A0_SDA = 118,  // MICROBIT_ID_IO_A0_SDA
 
     //% blockHidden=true
     M_MODE = 156,  // MICROBIT_ID_IO_M_MODE
@@ -499,19 +511,25 @@ declare namespace led {
 
 
     declare const enum AnalogPin {
+    P0 = 100,  // MICROBIT_ID_IO_P0
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
 
+    //% blockHidden=true
     C4 = 104,  // MICROBIT_ID_IO_P4
     P4 = 104,  // MICROBIT_ID_IO_P4
 
+    //% blockHidden=true
     C5 = 105,  // MICROBIT_ID_IO_P5
     P5 = 105,  // MICROBIT_ID_IO_P5
 
+    //% blockHidden=true
     C6 = 106,  // MICROBIT_ID_IO_P6
     P6 = 106,  // MICROBIT_ID_IO_P6
 
+    //% blockHidden=true
     C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% blockHidden=true
     C17 = 117,  // MICROBIT_ID_IO_A1_TX
 
     A1_RX = 116,  // MICROBIT_ID_IO_A1_RX

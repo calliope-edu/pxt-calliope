@@ -242,11 +242,9 @@
         ]
     },
     "galleries": {
-        "Calliope": "/boards/calliope",
         "First Steps": "calliope/firststeps",
         "Tutorials": "calliope/tutorials",
-        "Calliope Links": "calliope/links",
-        "Boards": "/boards"
+        "Calliope Links": "calliope/links"
     },
     "electronManifest": {
         "latest": "v5.0.12"

@@ -68,6 +68,31 @@
     "testFiles": [],
     "public": true,
     "dependencies": {},
+    "dalDTS": {
+        "compileServiceVariant": "minicodal",
+        "includeDirs": [
+            "libraries/codal-core/inc",
+            "libraries/codal-microbit-v2/inc",
+            "libraries/codal-microbit-v2/model",
+            "libraries/codal-microbit-v2/inc/compat",
+            "pxtapp"
+        ],
+        "excludePrefix": [
+            "USB_",
+            "REQUEST_",
+            "LIS3DH_",
+            "FXOS8700_",
+            "MMA8",
+            "LSM303_",
+            "MAG_",
+            "MPU6050_",
+            "REF_TAG_",
+            "HF2_",
+            "PXT_REF_TAG_",
+            "MS_",
+            "SCSI_"
+        ]
+    },
     "yotta": {
         "config": {
             "microbit-dal": {

@@ -3,11 +3,6 @@
 ```codecard
 [
     {
-        "name": "Calliope",
-        "url": "/boards/calliope",
-        "imageUrl": "/calliope/templates/16KB.png"
-    },
-    {
         "name": "First Steps",
         "url": "/calliope/firststeps",
         "imageUrl": "/calliope/firststeps/connecting.jpg",
@@ -22,20 +17,13 @@
         "name": "Calliope Links",
         "url": "/calliope/links",
         "imageUrl": "/calliope/links/thumbnail_shop.gif"
-    },
-    {
-        "name": "Boards",
-        "url": "/boards",
-        "imageUrl": "/calliope/templates/16KB.png"
     }
 ]
 ```
 
 ## See Also
 
-[Calliope](/boards/calliope),
 [First Steps](/calliope/firststeps),
 [Tutorials](/calliope/tutorials),
-[Calliope Links](/calliope/links),
-[Boards](/boards)
+[Calliope Links](/calliope/links)
 
