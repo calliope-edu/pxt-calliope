@@ -1,27 +1,28 @@
 import * as React from "react";
 
 export async function showProgramTooLargeErrorAsync(variants: string[], confirmAsync: (opts: any) => Promise<number>) {
+    
     if (variants.length !== 2) return undefined;
 
-    if (pxt.packetio.isConnected() && pxt.packetio.deviceVariant() === "mbcodal" && !saveOnly) {
-        // connected micro:bit V2 will be flashed; don't give warning dialog
-        return {
-            recompile: true,
-            useVariants: ["mbcodal"]
-        }
-    }
+    // if (pxt.packetio.isConnected() && pxt.packetio.deviceVariant() === "mbcodal" && !saveOnly) {
+    //     // connected micro:bit V2 will be flashed; don't give warning dialog
+    //     return {
+    //         recompile: true,
+    //         useVariants: ["mbcodal"]
+    //     }
+    // }
 
-    const choice = await confirmAsync({
-        header: lf("Oops, there was a problem downloading your code"),
-        body: lf("Great coding skills! Unfortunately, your program is too large to fit on a calliope mini 😢. You can go back and try to make your program smaller."),
-        bigHelpButton: true,
-        agreeLbl: lf("Go Back"),
-        agreeClass: "cancel",
-        agreeIcon: "cancel",
-        disagreeLbl: lf("Download for 32KB only"),
-        disagreeClass: "positive",
-        disagreeIcon: "checkmark"
-    });
+    // const choice = await confirmAsync({
+    //     header: lf("Oops, there was a problem downloading your code"),
+    //     body: lf("Great coding skills! Unfortunately, your program is too large to fit on a calliope mini 😢. You can go back and try to make your program smaller."),
+    //     bigHelpButton: true,
+    //     agreeLbl: lf("Go Back"),
+    //     agreeClass: "cancel",
+    //     agreeIcon: "cancel",
+    //     disagreeLbl: lf("Download for 32KB only"),
+    //     disagreeClass: "positive",
+    //     disagreeIcon: "checkmark"
+    // });
 
     // if (!choice) {
         // try {

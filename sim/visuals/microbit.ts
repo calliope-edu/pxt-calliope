@@ -1125,14 +1125,24 @@ namespace pxsim.visuals {
             this.updateGestures();
             this.updateRgbLed();
 			this.updateSpeaker();
-            this.updateRSSI();
+            this.updateRSSI();           
 
-            let bpState = state.buttonPairState;
-            let buttons = [bpState.aBtn, bpState.bBtn, bpState.abBtn];
+            if (!runtime || runtime.dead) U.addClass(this.element, "grayscale");
+            else U.removeClass(this.element, "grayscale");
+        }
+
+        private updateButtonPairs() {
+            const state = this.board;
+            const theme = this.props.theme;
+            const bpState = state.buttonPairState;
+            const buttons = [bpState.aBtn, bpState.bBtn, bpState.abBtn];
             buttons.forEach((btn, index) => {
                 svg.fill(this.buttons[index], btn.pressed ? (btn.virtual ? theme.virtualButtonDown : theme.buttonDown) : (btn.virtual ? theme.virtualButtonUp : theme.buttonUps[index]));
             });
+        }
 
+        private updateLEDMatrix() {
+            const state = this.board;
             if (state.ledMatrixState.disabled) {
                 this.leds.forEach((led, i) => {
                     const sel = (<SVGStyleElement><any>led)
@@ -1156,10 +1166,6 @@ namespace pxsim.visuals {
                     }
                 })
             }
-            
-
-            if (!runtime || runtime.dead) U.addClass(this.element, "grayscale");
-            else U.removeClass(this.element, "grayscale");
         }
 
         private updateRgbLed() {

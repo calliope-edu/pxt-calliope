@@ -574,12 +574,11 @@
             "downloadHelpURL": "/device/usb",
             "troubleshootWebUSBHelpURL": "/device/usb/webusb/troubleshoot",
             "incompatibleHardwareHelpURL": "/device/v2",
-
             "dragFileImage": "./static/download/transfer.png",
             "connectDeviceImage": "./static/download/connect.png",
             "selectDeviceImage": "./static/download/pair.png",
             "connectionSuccessImage": "/static/download/connected.png",
-            "incompatibleHardwareImage": "/static/download/incompatible.png"
+            "incompatibleHardwareImage": "/static/download/incompatible.png",
             "usbDeviceForgottenImage": "/static/download/device-forgotten.gif",
             "browserUnpairImage": "/static/download/browser-unpair-image.gif"
         },

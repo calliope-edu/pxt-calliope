@@ -11,6 +11,7 @@
         "melodies.ts",
         "motors.ts",
         "soundexpressions.ts",
-        "soundexpressions.cpp"
+        "soundexpressions.cpp",
+        "playable.ts"
     ]
 }
