@@ -101,6 +101,10 @@ enum class AnalogPin {
     //% blockHidden=true
     C17 = MICROBIT_ID_IO_A1_TX,  // TX // -> A1_TX
 
+    //% blockHidden=true
+    // C18 = MICROBIT_ID_IO_P18,  // P18
+    // P18 = MICROBIT_ID_IO_P18,  // P18
+
     A1_RX = MICROBIT_ID_IO_A1_RX,   // RX
     A1_TX = MICROBIT_ID_IO_A1_TX,   // TX
 
@@ -168,6 +172,7 @@ MicroBitPin *getPin(int id) {
         case MICROBIT_ID_IO_A1_TX: return &uBit.io.A1TX;
         
 #if MICROBIT_CODAL
+        // case MICROBIT_ID_IO_P18: return &uBit.io.P18; // ?
         case MICROBIT_ID_LOGO: return &uBit.io.logo;
         case MICROBIT_ID_IO_RGB: return &uBit.io.RGB;
         case MICROBIT_ID_IO_M_A_IN1: return &uBit.io.M_A_IN1;
@@ -179,6 +184,7 @@ MicroBitPin *getPin(int id) {
         case 1002: return &uBit.io.usbRx;
 #else
         case MICROBIT_ID_LOGO: return &uBit.io.MICROPHONE;
+        // case MICROBIT_ID_IO_P18: return &uBit.io.A0SDA; //
 #endif
         default: return NULL;
     }

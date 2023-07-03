@@ -532,6 +532,10 @@ declare namespace led {
     //% blockHidden=true
     C17 = 117,  // MICROBIT_ID_IO_A1_TX
 
+    //% blockHidden=true
+    // C18 = MICROBIT_ID_IO_P18,  // P18
+    // P18 = MICROBIT_ID_IO_P18,  // P18
+
     A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
     A1_TX = 117,  // MICROBIT_ID_IO_A1_TX
 
