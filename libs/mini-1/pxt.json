@@ -1,8 +1,11 @@
 {
-    "name": "mini-v1",
+    "name": "mini-1",
     "version": "1.0.0",
-    "description": "The calliope mini v1 core library",
+    "description": "The calliope mini 1 core library",
     "compileServiceVariant": "minidal",
+    "disablesVariants": [
+        "minicodal"
+    ],
     "core": true,
     "dependencies": {
         "core": "file:../core",

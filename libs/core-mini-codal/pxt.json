@@ -2,6 +2,9 @@
     "dependencies": {
         "core": "file:../core"
     },
+    "disablesVariants": [
+        "minidal"
+    ],
     "files": [
         "shims.d.ts",
         "enums.d.ts",

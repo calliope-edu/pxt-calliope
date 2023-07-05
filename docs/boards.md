@@ -6,14 +6,14 @@ This editor supports various calliope boards.
 
 ### ~ codecard
 
-* name: mini v1
-* url: /boards/calliope-mini-v1
+* name: mini 1
+* url: /boards/calliope-mini-1
 * imageUrl: /calliope/templates/16KB.png
 
 ---
 
-* name: mini v2
-* url: /boards/calliope-mini-v2
+* name: mini 2
+* url: /boards/calliope-mini-2
 * imageUrl: /calliope/templates/32KB.png
 
 ### ~

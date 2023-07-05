@@ -1,9 +1,9 @@
 # Calliope mini v2
 
 ```sim
-basic.showString("v2")
+basic.showString("mini 2")
 ```
 
 ```package
-core-mini-v2
+core-mini-2
 ```

@@ -3,6 +3,9 @@
         "core": "file:../core",
         "core-mini": "file:../core-mini"
     },
+    "disablesVariants": [
+        "minicodal"
+    ],
     "files": [
         "shims.d.ts",
         "enums.d.ts",

@@ -6,7 +6,7 @@
     ],
     "public": true,
     "disablesVariants": [
-        "mbdal"
+        "minidal"
     ],
     "dependencies": {
         "core": "file:../core",
