@@ -11,8 +11,5 @@
         "recording.cpp",
         "shims.d.ts"
     ],
-    "public": true,
-    "disablesVariants": [
-        "mbdal"
-    ]
+    "public": true
 }
