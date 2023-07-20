@@ -30,7 +30,7 @@ declare namespace music {
      * @param enabled whether the built-in speaker is enabled in addition to the sound pin
      */
     //% blockId=music_set_built_in_speaker_enable block="set built-in speaker $enabled"
-    //% group="micro:bit (V2)"
+    //% group="State"
     //% parts=builtinspeaker
     //% help=music/set-built-in-speaker-enabled
     //% enabled.shadow=toggleOnOff
@@ -41,7 +41,7 @@ declare namespace music {
      * Check whether any sound is being played, no matter the source
      */
     //% blockId=music_sound_is_playing block="sound is playing"
-    //% group="Volume"
+    //% group="State"
     //% help=music/volume
     //% weight=0 shim=music::isSoundPlaying
     function isSoundPlaying(): boolean;
@@ -49,27 +49,13 @@ declare namespace music {
     /**
      * Defines an optional sample level to generate during periods of silence.
      **/
-    //% group="micro:bit (V2)"
+    //% group="State"
     //% help=music/set-silence-level
     //% level.min=0
     //% level.max=1024
     //%
     //% weight=1 level.defl=0 shim=music::setSilenceLevel
     function setSilenceLevel(level?: int32): void;
-}
-declare namespace music {
-
-    /**
-     * Internal use only
-     **/
-    //% async shim=music::__playSoundExpression
-    function __playSoundExpression(nodes: string, waitTillDone: boolean): void;
-
-    /**
-     * Internal use only
-     */
-    //% shim=music::__stopSoundExpressions
-    function __stopSoundExpressions(): void;
 }
 
 // Auto-generated. Do not edit. Really.

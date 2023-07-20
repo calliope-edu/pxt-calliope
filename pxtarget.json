@@ -197,7 +197,7 @@
                 },
                 "codalBinary": "MICROBIT",
                 "githubCorePackage": "calliope-edu/microbit-v2-samples",
-                "gittag": "v0.2.12calli",
+                "gittag": "pxt",
                 "serviceId": "mbcodal2",
                 "dockerImage": "pext/yotta:update-yotta3",
                 "yottaConfigCompatibility": true

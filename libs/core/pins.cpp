@@ -473,19 +473,23 @@ namespace pins {
      * @param ms duration of the pitch in milli seconds.
      */
     //% blockId=device_analog_pitch block="analog pitch %frequency|for (ms) %ms"
-    //% help=pins/analog-pitch weight=4 async advanced=true blockGap=8
-    //% blockHidden=true
+    //% help=pins/analog-pitch async advanced=true
     //% group="Pitch"
+    //% blockHidden=true
+    //% weight=14
+    //% blockGap=8
     void analogPitch(int frequency, int ms) {
         // init pins if needed
         if (NULL == pitchPin) {
-            pitchPin = getPin((int)DigitalPin::P1);
-#ifdef SOUND_MIRROR_EXTENSION
-            pitchPin2 = &SOUND_MIRROR_EXTENSION;
+#if MICROBIT_CODAL
+            pitchPin = &uBit.audio.virtualOutputPin;
+#else
+            pitchPin = getPin((int)AnalogPin::P0);
 #endif
         }
         // set pitch
         analogTonePlaying = true;
+
 #if MICROBIT_CODAL
         if (NULL != pitchPin)
             pinAnalogSetPitch(pitchPin, frequency, ms);

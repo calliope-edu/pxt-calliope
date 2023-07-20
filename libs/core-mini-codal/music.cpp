@@ -6,6 +6,7 @@ namespace pins {
 }
 
 namespace music {
+
 /**
  * Set the default output volume of the sound synthesizer.
  * @param volume the volume 0...255
@@ -41,13 +42,14 @@ int volume() {
 #endif
 }
 
+
 /**
 * Turn the built-in speaker on or off.
 * Disabling the speaker resets the sound pin to the default of P0.
 * @param enabled whether the built-in speaker is enabled in addition to the sound pin
 */
 //% blockId=music_set_built_in_speaker_enable block="set built-in speaker $enabled"
-//% group="micro:bit (V2)"
+//% group="State"
 //% parts=builtinspeaker
 //% help=music/set-built-in-speaker-enabled
 //% enabled.shadow=toggleOnOff
@@ -63,11 +65,12 @@ void setBuiltInSpeakerEnabled(bool enabled) {
 #endif
 }
 
+
 /**
 * Check whether any sound is being played, no matter the source
 */
 //% blockId=music_sound_is_playing block="sound is playing"
-//% group="Volume"
+//% group="State"
 //% help=music/volume
 //% weight=0
 bool isSoundPlaying() {
@@ -81,7 +84,7 @@ bool isSoundPlaying() {
 /**
  * Defines an optional sample level to generate during periods of silence.
  **/
-//% group="micro:bit (V2)"
+//% group="State"
 //% help=music/set-silence-level
 //% level.min=0
 //% level.max=1024

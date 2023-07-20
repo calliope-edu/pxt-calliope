@@ -14,9 +14,6 @@
         "microphone.ts",
         "motors.cpp",
         "parts/dcmotor.svg",
-        "input.cpp",
-        "music.cpp",
-        "music.ts",
-        "melodies.ts"
+        "input.cpp"
     ]
 }

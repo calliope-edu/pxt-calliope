@@ -41,6 +41,9 @@
         "game.ts",
         "led.cpp",
         "led.ts",
+        "music.cpp",
+        "music.ts",
+        "melodies.ts",
         "pins.cpp",
         "pins.ts",
         "serial.cpp",
@@ -62,6 +65,7 @@
         "loops.ts",
         "_locales/de/core-jsdoc-strings.json",
         "_locales/de/core-strings.json",
+        "soundexpressions.cpp",
         "parts/speaker.svg",
         "parts/headphone.svg"
     ],

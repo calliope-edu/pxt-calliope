@@ -691,6 +691,17 @@ declare namespace led {
     //% parts="ledmatrix" shim=led::screenshot
     function screenshot(): Image;
 }
+declare namespace music {
+
+    /**
+     * Plays a tone through ``speaker`` for the given duration.
+     * @param frequency pitch of the tone to play in Hertz (Hz)
+     * @param ms tone duration in milliseconds (ms)
+     */
+    //%
+    //% parts="speaker" async useEnumVal=1 shim=music::speakerPlayTone
+    function speakerPlayTone(frequency: int32, ms: int32): void;
+}
 declare namespace pins {
 
     /**
@@ -860,9 +871,11 @@ declare namespace pins {
      * @param ms duration of the pitch in milli seconds.
      */
     //% blockId=device_analog_pitch block="analog pitch %frequency|for (ms) %ms"
-    //% help=pins/analog-pitch weight=4 async advanced=true blockGap=8
+    //% help=pins/analog-pitch async advanced=true
+    //% group="Pitch"
     //% blockHidden=true
-    //% group="Pitch" shim=pins::analogPitch
+    //% weight=14
+    //% blockGap=8 shim=pins::analogPitch
     function analogPitch(frequency: int32, ms: int32): void;
 
     /**
@@ -1250,6 +1263,20 @@ declare namespace light {
     //% advanced=true
     //% shim=light::setMode
     function setMode(pin: int32, mode: int32): void;
+}
+declare namespace music {
+
+    /**
+     * Internal use only
+     **/
+    //% async shim=music::__playSoundExpression
+    function __playSoundExpression(nodes: string, waitTillDone: boolean): void;
+
+    /**
+     * Internal use only
+     */
+    //% shim=music::__stopSoundExpressions
+    function __stopSoundExpressions(): void;
 }
 
 // Auto-generated. Do not edit. Really.
