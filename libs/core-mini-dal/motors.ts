@@ -21,7 +21,7 @@ namespace motors {
     */
     //% blockId=motor_command block="motor %command"
     //% parts=dcmotor weight=85
-    export function motorCommand(command: number) {
+    export function motorCommand(command: MotorCommand) {
         motors.motorCommandDal(command)
     }
 
@@ -32,7 +32,7 @@ namespace motors {
     //% percent.shadow="speedPicker"
     //% weight=80
     //% duty_percent.defl=100
-    export function dualMotorPower(motor: number, duty_percent: number) {
+    export function dualMotorPower(motor: Motor, duty_percent: number) {
 
         const power = Math.clamp(Math.map(duty_percent, -100, 100, -1023, 1023), -1023, 1023);
 
