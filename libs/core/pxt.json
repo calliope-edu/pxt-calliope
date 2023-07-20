@@ -44,6 +44,8 @@
         "music.cpp",
         "music.ts",
         "melodies.ts",
+        "motors.cpp",
+        "motors.ts",
         "pins.cpp",
         "pins.ts",
         "serial.cpp",

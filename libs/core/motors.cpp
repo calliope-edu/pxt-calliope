@@ -12,48 +12,46 @@ enum MotorCommand {
 enum Motor {
     A,
     B,
-    //% block="A and B"
+    //% block="A & B"
     AB
 };
 
-/**
-* Blocks to control the onboard motors
-*/
-//% color=#008272 weight=30 icon="\uf1b9"
 namespace motors {
+
     /**
     * Turns on the motor at a certain percent of power. Switches to single motor mode!
     * @param power %percent of power sent to the motor. Negative power goes backward. eg: 50
     */
-    //% blockId=motor_on block="motor on at %percent \\%"
-    //% parts=dcmotor weight=90 blockGap=8
-    //% percent.shadow="speedPicker"
-    //% power.defl=100
-    void motorPower(int power) {
+   //% blockId=motor_power_dal
+    void motorPowerDal(int power) {
+#if MICROBIT_CODAL
+#else
         uBit.soundmotor.motorOn(power);
+#endif
     }
 
     /**
     * Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.
     */
-    //% blockId=motor_command block="motor %command"
-    //% parts=dcmotor weight=85
-    void motorCommand(MotorCommand command) {
+   //% blockId=motor_command_dal
+    void motorCommandDal(MotorCommand command) {
+#if MICROBIT_CODAL
+#else
         switch(command) {
             case MotorCommand::Coast: uBit.soundmotor.motorCoast();break;
             case MotorCommand::Break: uBit.soundmotor.motorBreak();break;
             case MotorCommand::Sleep: uBit.soundmotor.motorSleep();break;
         }
+#endif
     }
 
     /**
     * Controls two motors attached to the board. Switches to dual-motor mode!
     */
-    //% blockId=block_dual_motor block="motor %motor|at %percent \\%"
-    //% percent.shadow="speedPicker"
-    //% weight=80
-    //% duty_percent.defl=100
-    void dualMotorPower(Motor motor, int duty_percent) {
+   //% blockId=dual_motor_power_dal
+    void dualMotorPowerDal(Motor motor, int duty_percent) {
+#if MICROBIT_CODAL
+#else
         switch(motor) {
             case Motor::A: 
                 if (duty_percent <= 0) uBit.soundmotor.motorAOff();
@@ -73,5 +71,6 @@ namespace motors {
                 }
                 break;
         }
+#endif
     }
 }

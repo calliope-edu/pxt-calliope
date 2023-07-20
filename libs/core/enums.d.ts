@@ -437,6 +437,24 @@ declare namespace led {
 }
 
 
+    declare const enum MotorCommand {
+    //% block=coast
+    Coast = 0,
+    //% block=break
+    Break = 1,
+    //% block=sleep
+    Sleep = 2,
+    }
+
+
+    declare const enum Motor {
+    A = 0,
+    B = 1,
+    //% block="A & B"
+    AB = 2,
+    }
+
+
     declare const enum DigitalPin {
     P0 = 100,  // MICROBIT_ID_IO_P0
     P1 = 101,  // MICROBIT_ID_IO_P1

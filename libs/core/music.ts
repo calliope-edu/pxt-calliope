@@ -199,7 +199,6 @@ namespace music {
     //% parts="speaker"
     //% useEnumVal=1
     //% group="Tone"
-    //% deprecated=1
     export function playTone(frequency: number, ms: number): void {
         if (isNaN(frequency) || isNaN(ms)) return;
         if (_playTone) _playTone(frequency, ms);
@@ -370,9 +369,8 @@ namespace music {
     //% melody.shadow="melody_editor"
     //% tempo.min=40 tempo.max=500
     //% tempo.defl=120
-    //% parts=headphone
+    //% parts="speaker"
     //% group="Melody"
-    //% deprecated=1
     export function playMelody(melody: string, tempo: number) {
         melody = melody || "";
         setTempo(tempo);

@@ -1,20 +1,3 @@
-
-enum MotorCommand {
-    //% block=coast
-    Coast,
-    //% block=break
-    Break,
-    //% block=sleep
-    Sleep
-};
-
-enum Motor {
-    A,
-    B,
-    //% block="A & B"
-    AB
-};
-
 /**
 * Blocks to control the onboard motors
 */
@@ -74,17 +57,20 @@ namespace motors {
 
         pins.digitalWritePin(DigitalPin.M_MODE, 1);
 
-        const power = Math.clamp(Math.map(duty_percent, -100, 100, -1023, 1023), -1023, 1023);
+        const power = Math.clamp(-1023, 1023, Math.map(duty_percent, -100, 100, -1023, 1023));
         
         if (motor === Motor.A || motor === Motor.AB) {
-            pins.digitalWritePin(DigitalPin.M_A_IN1, power >= 0 ? 1 : 0);
-            pins.analogWritePin(AnalogPin.M_A_IN2, Math.abs(power));
+            pins.digitalWritePin(DigitalPin.M_A_IN1, ((power < 0) ? 0 : 1))
+            pins.analogWritePin(AnalogPin.M_A_IN2, Math.abs(power))
         }
     
         if (motor === Motor.B || motor === Motor.AB) {
-            pins.digitalWritePin(DigitalPin.M_B_IN1, power >= 0 ? 1 : 0);
-            pins.analogWritePin(AnalogPin.M_B_IN2, Math.abs(power));
+            pins.digitalWritePin(DigitalPin.M_B_IN1, ((power < 0) ? 0 : 1))
+            pins.analogWritePin(AnalogPin.M_B_IN2, Math.abs(power))
         }
     }
 
 }
+
+
+
