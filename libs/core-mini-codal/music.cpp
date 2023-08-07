@@ -75,7 +75,11 @@ void setBuiltInSpeakerEnabled(bool enabled) {
 //% weight=0
 bool isSoundPlaying() {
 #if MICROBIT_CODAL
-    uBit.audio.isPlaying();
+    if (uBit.audio.mixer.getSilenceStartTime() == 0) {
+        return false;
+    } else {
+        return uBit.audio.isPlaying();
+    }
 #else
     target_panic(PANIC_VARIANT_NOT_SUPPORTED);
 #endif

@@ -192,12 +192,12 @@
                 "codalTarget": {
                     "name": "codal-microbit-v2",
                     "url": "https://github.com/calliope-edu/codal-microbit-v2",
-                    "branch": "v0.2.55-calliope3",
+                    "branch": "v0.2.57-calliope",
                     "type": "git"
                 },
                 "codalBinary": "MICROBIT",
                 "githubCorePackage": "calliope-edu/microbit-v2-samples",
-                "gittag": "pxt",
+                "gittag": "v0.2.13-calliope",
                 "serviceId": "mbcodal2",
                 "dockerImage": "pext/yotta:update-yotta3",
                 "yottaConfigCompatibility": true
