@@ -38,8 +38,13 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
         classCode: 0xff,
         subclassCode: 0x00 // the custom CMSIS2 endpoint
     }, {
-        vendorId: 0x1366,
-        productId: 0x1025
+        vendorId: 0x1366, // Segger
+        productId: 0x1015 // Mini 2.0
+    }, {
+        vendorId: 0x1366, // Segger
+        productId: 0x1025 // Mini 2.1
+    }, {
+        vendorId: 0x1366 // Segger
     }])
 
     res.mkPacketIOWrapper = flash.mkDAPLinkPacketIOWrapper;

@@ -565,11 +565,10 @@
         "immersiveReader": true,
         "tutorialCodeValidation": true,
         "downloadDialogTheme": {
-            "webUSBDeviceNames": ["Calliope mini CMSIS-DAP", "DAPLink CMSIS-DAP", "Calliope mini"],
+            "webUSBDeviceNames": ["Calliope mini CMSIS-DAP", "DAPLink CMSIS-DAP", "Calliope mini", "J-Link"],
             "minimumFirmwareVersion": "0249",
             "deviceIcon": "xicon microbit",
             "deviceSuccessIcon": "xicon microbit-check",
-
             "downloadMenuHelpURL": "/device/usb",
             "downloadHelpURL": "/device/usb",
             "troubleshootWebUSBHelpURL": "/device/usb/webusb/troubleshoot",
