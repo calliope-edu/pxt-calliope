@@ -119,9 +119,9 @@
                     "event_service": 0,
                     "device_info_service": 1,
                     "private_addressing": 0,
-                    "open": 1,
-                    "security_level": null,
-                    "whitelist": 0,
+                    "open": 0,
+                    "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM",
+                    "whitelist": 1,
                     "advertising_timeout": 0,
                     "tx_power": 6
                 },
