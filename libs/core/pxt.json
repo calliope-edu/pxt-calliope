@@ -115,8 +115,8 @@
                     "event_service": 0,
                     "device_info_service": 1,
                     "private_addressing": 0,
-                    "open": 1,
-                    "security_level": null,
+                    "open": 0,
+                    "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM",
                     "whitelist": 0,
                     "advertising_timeout": 0,
                     "tx_power": 6
@@ -130,7 +130,7 @@
         },
         "userConfigs": [
             {
-                "description": "Require A+B & Reset for BLE coupling (increases available RAM)",
+                "description": "Only load Bluetooth while Paring-Mode is activated (holding A+B and briefly the Reset button)",
                 "config": {
                     "microbit-dal": {
                         "bluetooth": {

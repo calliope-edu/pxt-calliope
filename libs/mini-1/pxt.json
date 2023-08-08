@@ -18,8 +18,18 @@
     "yotta": {
         "config": {
             "microbit-dal": {
+                "bluetooth": {
+                    "enabled": 0
+                },
                 "sram_end": "0x20004000",
                 "RAM_SIZE": "\"16K\""
+            }
+        },
+        "optionalConfig": {
+            "microbit-dal": {
+                "bluetooth": {
+                    "enabled": 0
+                }
             }
         }
     }

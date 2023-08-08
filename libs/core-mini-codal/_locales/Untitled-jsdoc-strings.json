@@ -8,7 +8,7 @@
   "motors.motorCommand": "Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.",
   "motors.motorPower": "Turns on the motor at a certain percent of power. Switches to single motor mode!",
   "motors.motorPower|param|power": "%percent of power sent to the motor. Negative power goes backward. eg: 50",
-  "music": "Generation of music tones.\r\n\nGeneration of music tones.",
+  "music": "Generation of music tones.",
   "music.builtInPlayableMelody": "Gets the melody array of a built-in melody.",
   "music.builtInPlayableMelody|param|melody": "the melody name",
   "music.builtinPlayableSoundEffect": "Get the sound expression string for a built-in sound effect.",
