@@ -1,7 +1,8 @@
 {
     "dependencies": {
         "core": "file:../core",
-        "core-mini": "file:../core-mini"
+        "core-mini": "file:../core-mini",
+        "microphone": "file:../microphone"
     },
     "disablesVariants": [
         "minidal"

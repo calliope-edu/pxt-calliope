@@ -435,6 +435,8 @@ declare namespace control {
     }
 declare namespace led {
 }
+declare namespace input {
+}
 
 
     declare const enum MotorCommand {

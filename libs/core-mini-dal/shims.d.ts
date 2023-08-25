@@ -35,15 +35,6 @@ declare namespace basic {
 declare namespace input {
 
     /**
-     * gets the level of loudness from 0 (silent) to 255 (loud)
-     */
-    //% help=input/sound-level
-    //% blockId="soundLevel" weight=58
-    //% block="soundLevel" blockGap=8
-    //% group="Sensors" shim=input::soundLevel
-    function soundLevel(): int32;
-
-    /**
      * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
      */
     //% help=input/calibrate-compass advanced=true

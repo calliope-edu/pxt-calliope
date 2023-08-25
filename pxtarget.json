@@ -35,34 +35,11 @@
         "showBadges": false,
         "githubPackages": true,
         "cloudProviders": {
-            "github": {
-                "id": "github",
-                "name": "GitHub",
-                "icon": "/static/providers/github-mark.png",
-                "identity": false,
-                "order": 3
-            },
-            "microsoft": {
-                "id": "microsoft",
-                "name": "Microsoft",
-                "icon": "/static/providers/microsoft-logo.svg",
-                "identity": true,
-                "redirect": true,
-                "order": 1
-            },
-            "google": {
-                "id": "google",
-                "name": "Google",
-                "icon": "/static/providers/google-logo.svg",
-                "identity": true,
-                "redirect": true,
-                "order": 2
-            }
+            "github": {}
         }
     },
     "compile": {
         "isNative": false,
-        "useUF2": false,
         "hasHex": true,
         "deployDrives": "MINI",
         "driveName": "MINI",
@@ -177,6 +154,7 @@
     "variants": {
         "minidal": {
             "compile": {
+                "useUF2": false
             },
             "compileService": {
             }
@@ -185,7 +163,8 @@
             "compile": {
                 "flashCodeAlign": 4096,
                 "flashUsableEnd": 487424,
-                "flashEnd": 524288
+                "flashEnd": 524288,
+                "useUF2": false
             },
             "compileService": {
                 "buildEngine": "codal",
@@ -423,6 +402,8 @@
             "debugExtensionCode",
             "bluetoothUartConsole",
             "bluetoothPartialFlashing",
+            "simScreenshot",
+            "simGif",
             "identity",
             "blocksErrorList"
         ],
@@ -432,10 +413,6 @@
         "docMenu": [{
                 "name": "Support",
                 "path": "https://calliope.cc/en/impressum"
-            },
-            {
-                "name": "Reference",
-                "path": "/about"
             },
             {
                 "name": "Hardware",
@@ -569,17 +546,20 @@
             "minimumFirmwareVersion": "0249",
             "deviceIcon": "xicon microbit",
             "deviceSuccessIcon": "xicon microbit-check",
-            "downloadMenuHelpURL": "/device/usb",
-            "downloadHelpURL": "/device/usb",
+
+            "downloadMenuHelpURL" : "/device/usb",
+            "downloadHelpURL" : "/device/usb",
+            "firmwareHelpURL": "/device/usb/webusb/troubleshoot",
             "troubleshootWebUSBHelpURL": "/device/usb/webusb/troubleshoot",
             "incompatibleHardwareHelpURL": "/device/v2",
-            "dragFileImage": "./static/download/transfer.png",
-            "connectDeviceImage": "./static/download/connect.png",
-            "selectDeviceImage": "./static/download/pair.png",
+
+            "dragFileImage": "/static/download/transfer.png",
+            "connectDeviceImage": "/static/download/connect.png",
+            "selectDeviceImage": "/static/download/pair.png",
             "connectionSuccessImage": "/static/download/connected.png",
-            "incompatibleHardwareImage": "/static/download/incompatible.png",
-            "usbDeviceForgottenImage": "/static/download/device-forgotten.gif",
-            "browserUnpairImage": "/static/download/browser-unpair-image.gif"
+            "checkFirmwareVersionImage": "/static/download/firmware.png",
+            "checkUSBCableImage": "/static/download/connect.png",
+            "incompatibleHardwareImage": "/static/download/incompatible.png"
         },
         "winAppDeprImage": "/static/winapp.PNG",
         "showWinAppDeprBanner": false,
@@ -607,16 +587,31 @@
                 "disableBlobObjectDownload": true
             }
         },
-        "clever=1": {
+        "identity=1": {
             "cloud": {
                 "cloudProviders": {
-                    "clever": {
-                        "id": "clever",
-                        "name": "Clever",
-                        "icon": "/static/providers/clever-logo.png",
+                    "github": {
+                        "id": "github",
+                        "name": "GitHub",
+                        "icon": "/static/providers/github-mark.png",
+                        "identity": false,
+                        "order": 3
+                    },
+                    "microsoft": {
+                        "id": "microsoft",
+                        "name": "Microsoft",
+                        "icon": "/static/providers/microsoft-logo.svg",
                         "identity": true,
                         "redirect": true,
-                        "order": 3
+                        "order": 1
+                    },
+                    "google": {
+                        "id": "google",
+                        "name": "Google",
+                        "icon": "/static/providers/google-logo.svg",
+                        "identity": true,
+                        "redirect": true,
+                        "order": 2
                     }
                 }
             }

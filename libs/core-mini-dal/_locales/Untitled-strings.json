@@ -17,7 +17,7 @@
   "input.assumeCalibrationCompass|block": "assume calibration compass",
   "input.clearCalibrationCompass|block": "clear calibration compass",
   "input.isCalibratedCompass|block": "is compass calibrated",
-  "input.soundLevel|block": "soundLevel",
+  "input.loudness|block": "Loudness",
   "input|block": "input",
   "motors.dualMotorPower|block": "motor %motor|at %percent \\%",
   "motors.motorCommand|block": "motor %command",
@@ -28,6 +28,5 @@
   "{id:category}Motors": "Motors",
   "{id:group}Configuration": "Configuration",
   "{id:group}RGB LED": "RGB LED",
-  "{id:group}Sensors": "Sensors",
   "{id:group}System": "System"
 }
