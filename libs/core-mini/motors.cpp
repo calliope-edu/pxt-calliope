@@ -16,6 +16,7 @@ enum Motor {
     AB
 };
 
+//% color=#008272 weight=30 icon="\uf1b9"
 namespace motors {
 
     /**
@@ -34,6 +35,7 @@ namespace motors {
     * Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.
     */
    //% blockId=motor_command_dal
+   //% hidden=1
     void motorCommandDal(MotorCommand command) {
 #if MICROBIT_CODAL
 #else
@@ -49,6 +51,7 @@ namespace motors {
     * Controls two motors attached to the board. Switches to dual-motor mode!
     */
    //% blockId=dual_motor_power_dal
+   //% hidden=1
     void dualMotorPowerDal(Motor motor, int duty_percent) {
 #if MICROBIT_CODAL
 #else

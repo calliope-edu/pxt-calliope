@@ -10,6 +10,7 @@
         "core": "file:../core",
         "core-mini-codal": "file:../core-mini-codal"
     },
+    "icon": "./static/devices/mini3.png",
     "files": [
         "README.md",
         "board.json"

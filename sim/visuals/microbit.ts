@@ -733,7 +733,6 @@ namespace pxsim.visuals {
         "G_A1_RX", "G_A1_TX", "G_A1_VCC", "G_A1_GND"
     ];
     const pinTitles = [
-        
         "P0", "P1, ANALOG IN", "P2, ANALOG IN", "P3", "GND", "+3v3",
         "Button A", "Button B",
         "GND", "GND", "GND", "GND", "+3v3", "+3v3",

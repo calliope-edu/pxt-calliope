@@ -9,8 +9,6 @@
     "files": [
         "shims.d.ts",
         "enums.d.ts",
-        "basic.cpp",
-        "basic.ts",
         "microphone.ts",
         "motors.ts",
         "parts/dcmotor.svg",

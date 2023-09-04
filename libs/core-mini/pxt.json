@@ -6,7 +6,10 @@
         "shims.d.ts",
         "enums.d.ts",
         "compass.ts",
+        "motors.cpp",
         "storage.cpp",
-        "storage.ts"
+        "storage.ts",
+        "rgbled.cpp",
+        "rgbled.ts"
     ]
 }

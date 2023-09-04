@@ -9,7 +9,16 @@ enum SerialPin {
     P1 = MICROBIT_ID_IO_P1,
     P2 = MICROBIT_ID_IO_P2,
     P3 = MICROBIT_ID_IO_P3,
+    P8 = MICROBIT_ID_IO_P8,
+    P12 = MICROBIT_ID_IO_P12,
+    P13 = MICROBIT_ID_IO_P13,
+    P14 = MICROBIT_ID_IO_P14,
+    P15 = MICROBIT_ID_IO_P15,
+    P16 = MICROBIT_ID_IO_A1_RX,
+    //% blockHidden=true
     C16 = MICROBIT_ID_IO_A1_RX,
+    P17 = MICROBIT_ID_IO_A1_TX,
+    //% blockHidden=true
     C17 = MICROBIT_ID_IO_A1_TX,
     USB_TX = 1001,
     USB_RX = 1002

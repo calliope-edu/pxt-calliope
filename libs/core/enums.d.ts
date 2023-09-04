@@ -439,24 +439,6 @@ declare namespace input {
 }
 
 
-    declare const enum MotorCommand {
-    //% block=coast
-    Coast = 0,
-    //% block=break
-    Break = 1,
-    //% block=sleep
-    Sleep = 2,
-    }
-
-
-    declare const enum Motor {
-    A = 0,
-    B = 1,
-    //% block="A & B"
-    AB = 2,
-    }
-
-
     declare const enum DigitalPin {
     P0 = 100,  // MICROBIT_ID_IO_P0
     P1 = 101,  // MICROBIT_ID_IO_P1
@@ -526,6 +508,9 @@ declare namespace input {
 
     //% blockHidden=true
     M_B_IN1 = 154,  // MICROBIT_ID_IO_M_B_IN1
+
+    //% blockHidden=true
+    RGB = 151,  // MICROBIT_ID_IO_RGB
 
     }
 
@@ -604,7 +589,16 @@ declare namespace input {
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
     P3 = 103,  // MICROBIT_ID_IO_P3
+    P8 = 108,  // MICROBIT_ID_IO_P8
+    P12 = 112,  // MICROBIT_ID_IO_P12
+    P13 = 113,  // MICROBIT_ID_IO_P13
+    P14 = 114,  // MICROBIT_ID_IO_P14
+    P15 = 115,  // MICROBIT_ID_IO_P15
+    P16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% blockHidden=true
     C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    P17 = 117,  // MICROBIT_ID_IO_A1_TX
+    //% blockHidden=true
     C17 = 117,  // MICROBIT_ID_IO_A1_TX
     USB_TX = 1001,
     USB_RX = 1002,

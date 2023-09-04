@@ -718,27 +718,6 @@ declare namespace music {
     //% parts="speaker" async useEnumVal=1 shim=music::speakerPlayTone
     function speakerPlayTone(frequency: int32, ms: int32): void;
 }
-declare namespace motors {
-
-    /**
-     * Turns on the motor at a certain percent of power. Switches to single motor mode!
-     * @param power %percent of power sent to the motor. Negative power goes backward. eg: 50
-     */
-    //% blockId=motor_power_dal shim=motors::motorPowerDal
-    function motorPowerDal(power: int32): void;
-
-    /**
-     * Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.
-     */
-    //% blockId=motor_command_dal shim=motors::motorCommandDal
-    function motorCommandDal(command: MotorCommand): void;
-
-    /**
-     * Controls two motors attached to the board. Switches to dual-motor mode!
-     */
-    //% blockId=dual_motor_power_dal shim=motors::dualMotorPowerDal
-    function dualMotorPowerDal(motor: Motor, duty_percent: int32): void;
-}
 declare namespace pins {
 
     /**

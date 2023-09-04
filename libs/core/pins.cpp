@@ -75,7 +75,10 @@ enum class DigitalPin {
     M_A_IN1 = MICROBIT_ID_IO_M_A_IN1,
 
     //% blockHidden=true
-    M_B_IN1 = MICROBIT_ID_IO_M_B_IN1
+    M_B_IN1 = MICROBIT_ID_IO_M_B_IN1,
+
+    //% blockHidden=true
+    RGB = MICROBIT_ID_IO_RGB
 
 };
 

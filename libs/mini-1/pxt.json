@@ -11,6 +11,7 @@
         "core": "file:../core",
         "core-mini-dal": "file:../core-mini-dal"
     },
+    "icon": "./static/devices/mini1.png",
     "files": [
         "README.md",
         "board.json"
