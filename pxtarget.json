@@ -374,7 +374,7 @@
         "organizationLogo": "./static/Logo_Calliope_Woman.svg",
         "organizationWideLogo": "./static/Microsoft-logo_rgb_c-white.png",
         "homeScreenHero": {
-            "imageUrl": "./static/hero.jpg",
+            "imageUrl": "./calliope/hero/hero.jpg",
             "name": "Flashing Heart",
             "url": "/calliope/firststeps/firstSteps",
             "description": "Let's go – start your first tutorial with Calliope mini",
