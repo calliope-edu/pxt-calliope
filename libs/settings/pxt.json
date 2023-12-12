@@ -1,0 +1,8 @@
+{
+    "hidden": true,
+    "disablesVariants": [
+        "minidal",
+        "minidalusb"
+    ],
+    "additionalFilePath": "../../node_modules/pxt-common-packages/libs/settings"
+}

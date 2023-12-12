@@ -34,10 +34,10 @@ enum class Rotation {
 };
 
 enum class TouchPin {
-    P0 = MICROBIT_ID_IO_P12,
-    P1 = MICROBIT_ID_IO_P0,
-    P2 = MICROBIT_ID_IO_P1,
-    P3 = MICROBIT_ID_IO_P16
+    P0 = MICROBIT_ID_IO_P0, //MICROBIT_ID_IO_P12,
+    P1 = MICROBIT_ID_IO_P1, //MICROBIT_ID_IO_P0,
+    P2 = MICROBIT_ID_IO_P2, //MICROBIT_ID_IO_P1,
+    P3 = MICROBIT_ID_IO_P3 //MICROBIT_ID_IO_P16
 };
 
 enum class AcceleratorRange {
@@ -167,7 +167,7 @@ enum class MesDpadButtonInfo {
     _4Up = MES_DPAD_BUTTON_4_UP,
 };
 
-//% color=#B4009E weight=99 icon="\uf192"
+//% color=#c90072 weight=99 icon="\uf192"
 namespace input {
 
 
@@ -187,7 +187,7 @@ namespace input {
     }
 
     /**
-     * Do something when when a gesture is done (like shaking the micro:bit).
+     * Do something when when a gesture is done (like shaking the Calliope mini).
      * @param gesture the type of gesture to track, eg: Gesture.Shake
      * @param body code to run when gesture is raised
      */
@@ -349,30 +349,6 @@ namespace input {
         return uBit.display.readLightLevel();
     }
 
-
-    /**
-     * gets the level of loudness from 0 (silent) to 255 (loud)
-     */
-    //% help=input/sound-level
-    //% blockId="soundLevel" weight=58
-    //% block="soundLevel" blockGap=8
-    //% group="Sensors"
-    int soundLevel() {
-        int level = uBit.io.P21.getAnalogValue();
-        int min = level;
-        int max = level;
-        for (int i = 0; i < 32; i++) {
-            level =  uBit.io.P21.getAnalogValue();
-            if (level > max) {
-                max = level;
-            } else if (level < min) {
-                min = level;
-            }
-        }
-        level = floor((max - min + 0.5) / 4); //max can be up to 1023; + 0,5 to prevent division by 0, floor to get rid of decimals, divide by 4 to get a value between 0 and 255
-        return level;
-    }
-
     /**
      * Get the current compass heading in degrees.
      */
@@ -424,8 +400,10 @@ namespace input {
     //% advanced=true
     //% group="Sensors"
     TNumber magneticForce(Dimension dimension) {
+        /* https://github.com/microsoft/pxt-microbit/issues/4995
         if (!uBit.compass.isCalibrated())
             uBit.compass.calibrate();
+        */
         double d = 0;        
         switch (dimension) {
             case Dimension::X: d = uBit.compass.getX(); break;
@@ -447,42 +425,6 @@ namespace input {
         uBit.compass.calibrate();
     }
 
-  /**
-     * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
-    //% weight=19
-    //% group="System"
-    bool isCalibratedCompass() {
-        return (uBit.compass.isCalibrated() == 1);
-    }
-
-      /**
-     * Obsolete, compass calibration is automatic.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_clear_calibration" block="clear calibration compass"
-    //% weight=17
-    //% group="Configuration"
-    //% blockHidden=true
-    void clearCalibrationCompass() {
-        uBit.compass.clearCalibration();
-    }
-
-    /**
-     * Obsolete, compass calibration is automatic.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_assume_calibration" block="assume calibration compass"
-    //% weight=16
-    //% group="Configuration"
-    //% blockHidden=true
-    void assumeCalibrationCompass() {
-        uBit.compass.assumeCalibration();
-    }
-
-
     /**
      * Sets the accelerometer sample range in gravities.
      * @param range a value describe the maximum strengh of acceleration measured
@@ -496,4 +438,17 @@ namespace input {
     void setAccelerometerRange(AcceleratorRange range) {
         uBit.accelerometer.setRange((int)range);
     }
+
+    /**
+    * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
+    */
+    //% help=input/calibrate-compass advanced=true
+    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
+    //% weight=19
+    //% group="System"
+    //% deprecated=true
+    bool isCalibratedCompass() {
+        return (uBit.compass.isCalibrated() == 1);
+    }
+    
 }

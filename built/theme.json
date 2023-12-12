@@ -1,0 +1,523 @@
+{
+    "accentColor": "#249899",
+    "defaultLocale": "de",
+    "logoUrl": "https://calliope.cc/",
+    "logo": "docs/static/Calliopeminieditor.svg",
+    "docsLogo": "docs/static/Logo_Calliope_Woman.svg",
+    "portraitLogo": "docs/static/Logo_Calliope_Woman.svg",
+    "footerLogo": "docs/static/Calliopeminieditor.svg",
+    "cardLogo": "docs/static/icons/apple-touch-icon.png",
+    "appLogo": "docs/static/icons/apple-touch-icon.png",
+    "organization": "Microsoft MakeCode",
+    "organizationUrl": "https://makecode.com/",
+    "organizationLogo": "docs/static/Logo_Calliope_Woman.svg",
+    "organizationWideLogo": "docs/static/Microsoft-logo_rgb_c-white.png",
+    "homeScreenHero": {
+        "imageUrl": "docs/static/calliope/hero/hero.jpg",
+        "name": "Flashing Heart",
+        "url": "/calliope/firststeps/firstSteps",
+        "description": "Let's go – start your first tutorial with Calliope mini",
+        "cardType": "tutorial"
+    },
+    "homeScreenHeroGallery": "/hero-banner",
+    "homeUrl": "https://makecode.calliope.cc/",
+    "embedUrl": "https://makecode.calliope.cc/",
+    "shareUrl": "https://makecode.calliope.cc/",
+    "privacyUrl": "https://go.microsoft.com/fwlink/?LinkId=521839",
+    "termsOfUseUrl": "https://go.microsoft.com/fwlink/?LinkID=206977",
+    "githubUrl": "https://github.com/Microsoft/pxt-calliope",
+    "boardName": "Calliope mini",
+    "driveDisplayName": "MINI",
+    "chooseBoardOnNewProject": true,
+    "appStoreID": "1309545545",
+    "crowdinProject": "makecode",
+    "extendEditor": true,
+    "extendFieldEditors": true,
+    "enableTrace": true,
+    "errorList": true,
+    "workspaceSearch": true,
+    "allowPackageExtensions": true,
+    "addNewTypeScriptFile": true,
+    "experiments": [
+        "accessibleBlocks",
+        "debugExtensionCode",
+        "bluetoothUartConsole",
+        "bluetoothPartialFlashing",
+        "simScreenshot",
+        "simGif",
+        "identity",
+        "blocksErrorList"
+    ],
+    "bluetoothUartFilters": [
+        {
+            "namePrefix": "Calliope mini"
+        }
+    ],
+    "docMenu": [
+        {
+            "name": "Support",
+            "path": "https://calliope.cc/en/impressum"
+        },
+        {
+            "name": "Hardware",
+            "path": "https://calliope.cc/en/calliope-mini/tech-facts/"
+        },
+        {
+            "name": "Buy",
+            "path": "https://shop.calliope.cc/"
+        },
+        {
+            "name": "Forum",
+            "path": "https://forum.calliope.cc/"
+        }
+    ],
+    "hasReferenceDocs": false,
+    "usbDocs": "/device/usb",
+    "hideHomeDetailsVideo": true,
+    "invertedMenu": true,
+    "coloredToolbox": true,
+    "monacoToolbox": true,
+    "hasAudio": true,
+    "socialOptions": {
+        "orgTwitterHandle": "calliopemini",
+        "hashtags": "calliopemini",
+        "discourse": "https://forum.calliope.cc/",
+        "discourseCategory": "Probleme-Software"
+    },
+    "blocklyOptions": {
+        "grid": {
+            "spacing": 45,
+            "length": 7,
+            "colour": "rgba(189, 195, 199, 0.30)",
+            "snap": false
+        }
+    },
+    "blockColors": {
+        "basic": "#54C9C9",
+        "input": "#C94600",
+        "music": "#DF4600",
+        "led": "#8169E6",
+        "radio": "#E3008C",
+        "motors": "#008272",
+        "logic": "#006970",
+        "loops": "#107C10",
+        "math": "#712672",
+        "variables": "#A80000",
+        "text": "#996600",
+        "advanced": "#42495f",
+        "functions": "#005A9E",
+        "arrays": "#E65722"
+    },
+    "blocksCollapsing": true,
+    "highContrast": true,
+    "greenScreen": true,
+    "print": true,
+    "selectLanguage": true,
+    "availableLocales": [
+        "en",
+        "ar",
+        "bg",
+        "ca",
+        "cs",
+        "cy",
+        "da",
+        "de",
+        "el",
+        "es-ES",
+        "fi",
+        "fr",
+        "he",
+        "hu",
+        "is",
+        "it",
+        "ja",
+        "ko",
+        "nl",
+        "nb",
+        "nn-NO",
+        "pl",
+        "pt-BR",
+        "pt-PT",
+        "ru",
+        "si-LK",
+        "sk",
+        "sr",
+        "sv-SE",
+        "tr",
+        "uk",
+        "zh-CN",
+        "zh-TW"
+    ],
+    "monacoColors": {
+        "editor.background": "#ecf0f1"
+    },
+    "monacoFieldEditors": [
+        "soundeffect-editor"
+    ],
+    "browserDbPrefixes": {
+        "1": "v1",
+        "2": "v2",
+        "3": "v3",
+        "4": "v4",
+        "5": "v5",
+        "6": "v6"
+    },
+    "editorVersionPaths": {
+        "0": "v0"
+    },
+    "showProjectSettings": true,
+    "scriptManager": true,
+    "debugger": true,
+    "simGifTransparent": "rgba(0,0,0,0)",
+    "simGifMaxFrames": 44,
+    "simScreenshot": true,
+    "simScreenshotMaxUriLength": 300000,
+    "simGif": true,
+    "simGifWidth": 240,
+    "qrCode": true,
+    "importExtensionFiles": true,
+    "nameProjectFirst": true,
+    "githubEditor": true,
+    "tutorialBlocksDiff": false,
+    "chooseLanguageRestrictionOnNewProject": true,
+    "openProjectNewTab": true,
+    "python": true,
+    "appFlashingTroubleshoot": "/device/windows-app/troubleshoot",
+    "immersiveReader": true,
+    "tutorialCodeValidation": true,
+    "downloadDialogTheme": {
+        "webUSBDeviceNames": [
+            "Calliope mini CMSIS-DAP",
+            "DAPLink CMSIS-DAP",
+            "Calliope mini",
+            "J-Link"
+        ],
+        "minimumFirmwareVersion": "0249",
+        "deviceIcon": "usb",
+        "deviceSuccessIcon": "check",
+        "downloadMenuHelpURL": "/device/usb",
+        "downloadHelpURL": "/device/usb",
+        "firmwareHelpURL": "/device/usb/webusb/troubleshoot",
+        "troubleshootWebUSBHelpURL": "/device/usb/webusb/troubleshoot",
+        "incompatibleHardwareHelpURL": "/device/v2",
+        "dragFileImage": "docs/static/download/transfer.png",
+        "connectDeviceImage": "docs/static/download/connect.png",
+        "selectDeviceImage": "docs/static/download/pair.png",
+        "connectionSuccessImage": "docs/static/download/connected.png",
+        "checkFirmwareVersionImage": "docs/static/download/firmware.png",
+        "checkUSBCableImage": "docs/static/download/connect.png",
+        "incompatibleHardwareImage": "docs/static/download/incompatible.png"
+    },
+    "winAppDeprImage": "docs/static/winapp.PNG",
+    "showWinAppDeprBanner": false,
+    "tours": {
+        "editor": "/tours/editor-tour"
+    },
+    "tutorialSimSidebarLayout": true,
+    "preferWebUSBDownload": true,
+    "hideReplaceMyCode": true,
+    "matchWebUSBDeviceInSim": true,
+    "condenseProfile": true,
+    "cloudProfileIcon": "docs/static/profile/microbit-cloud.png",
+    "TOC": [
+        {
+            "name": "About",
+            "path": "/about",
+            "subitems": []
+        },
+        {
+            "name": "FAQ",
+            "path": "/faq",
+            "subitems": []
+        },
+        {
+            "name": "Projects",
+            "path": "/projects",
+            "subitems": []
+        },
+        {
+            "name": "GitHub",
+            "path": "/github",
+            "subitems": []
+        },
+        {
+            "name": "Blocks",
+            "path": "/blocks",
+            "subitems": [
+                {
+                    "name": "On Start",
+                    "path": "/blocks/on-start",
+                    "subitems": []
+                },
+                {
+                    "name": "Loops",
+                    "path": "/blocks/loops",
+                    "subitems": [
+                        {
+                            "name": "repeat",
+                            "path": "/blocks/loops/repeat",
+                            "subitems": []
+                        },
+                        {
+                            "name": "for",
+                            "path": "/blocks/loops/for",
+                            "subitems": []
+                        },
+                        {
+                            "name": "while",
+                            "path": "/blocks/loops/while",
+                            "subitems": []
+                        },
+                        {
+                            "name": "for of",
+                            "path": "/blocks/loops/for-of",
+                            "subitems": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Logic",
+                    "path": "/blocks/logic",
+                    "subitems": [
+                        {
+                            "name": "if",
+                            "path": "/blocks/logic/if",
+                            "subitems": []
+                        },
+                        {
+                            "name": "Boolean",
+                            "path": "/blocks/logic/boolean",
+                            "subitems": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Variables",
+                    "path": "/blocks/variables",
+                    "subitems": [
+                        {
+                            "name": "assign",
+                            "path": "/blocks/variables/assign",
+                            "subitems": []
+                        },
+                        {
+                            "name": "change var",
+                            "path": "/blocks/variables/change",
+                            "subitems": []
+                        },
+                        {
+                            "name": "var",
+                            "path": "/blocks/variables/var",
+                            "subitems": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Math",
+                    "path": "/blocks/math",
+                    "subitems": []
+                },
+                {
+                    "name": "JavaScript blocks",
+                    "path": "/blocks/javascript-blocks",
+                    "subitems": []
+                },
+                {
+                    "name": "Custom blocks",
+                    "path": "/blocks/custom",
+                    "subitems": []
+                }
+            ]
+        },
+        {
+            "name": "Python",
+            "path": "/python",
+            "subitems": [
+                {
+                    "name": "Calling",
+                    "path": "/python/call",
+                    "subitems": []
+                },
+                {
+                    "name": "Sequencing",
+                    "path": "/python/sequence",
+                    "subitems": []
+                },
+                {
+                    "name": "Variables",
+                    "path": "/python/variables",
+                    "subitems": []
+                },
+                {
+                    "name": "Operators",
+                    "path": "/python/operators",
+                    "subitems": []
+                },
+                {
+                    "name": "Statements",
+                    "path": "/python/statements",
+                    "subitems": []
+                },
+                {
+                    "name": "Functions",
+                    "path": "/python/functions",
+                    "subitems": []
+                },
+                {
+                    "name": "Classes",
+                    "path": "/python/classes",
+                    "subitems": []
+                }
+            ]
+        },
+        {
+            "name": "JavaScript",
+            "path": "/javascript",
+            "subitems": [
+                {
+                    "name": "Calling",
+                    "path": "/javascript/call",
+                    "subitems": []
+                },
+                {
+                    "name": "Sequencing",
+                    "path": "/javascript/sequence",
+                    "subitems": []
+                },
+                {
+                    "name": "Variables",
+                    "path": "/javascript/variables",
+                    "subitems": []
+                },
+                {
+                    "name": "Operators",
+                    "path": "/javascript/operators",
+                    "subitems": []
+                },
+                {
+                    "name": "Statements",
+                    "path": "/javascript/statements",
+                    "subitems": []
+                },
+                {
+                    "name": "Functions",
+                    "path": "/javascript/functions",
+                    "subitems": []
+                },
+                {
+                    "name": "Types",
+                    "path": "/javascript/types",
+                    "subitems": []
+                },
+                {
+                    "name": "Classes",
+                    "path": "/javascript/classes",
+                    "subitems": []
+                },
+                {
+                    "name": "Interfaces",
+                    "path": "/javascript/interfaces",
+                    "subitems": []
+                },
+                {
+                    "name": "Generics",
+                    "path": "/javascript/generics",
+                    "subitems": []
+                }
+            ]
+        },
+        {
+            "name": "Types",
+            "path": "/types",
+            "subitems": [
+                {
+                    "name": "Number",
+                    "path": "/types/number",
+                    "subitems": []
+                },
+                {
+                    "name": "String",
+                    "path": "/types/string",
+                    "subitems": []
+                },
+                {
+                    "name": "Boolean",
+                    "path": "/types/boolean",
+                    "subitems": []
+                },
+                {
+                    "name": "Array",
+                    "path": "/types/array",
+                    "subitems": []
+                },
+                {
+                    "name": "Function",
+                    "path": "/types/function",
+                    "subitems": []
+                }
+            ]
+        },
+        {
+            "name": "Miscellaneous",
+            "path": "",
+            "subitems": [
+                {
+                    "name": "About",
+                    "path": "/about",
+                    "subitems": []
+                },
+                {
+                    "name": "Support",
+                    "path": "/support",
+                    "subitems": []
+                },
+                {
+                    "name": "Translate",
+                    "path": "/translate",
+                    "subitems": []
+                },
+                {
+                    "name": "Sharing projects",
+                    "path": "/share",
+                    "subitems": []
+                },
+                {
+                    "name": "Offline support",
+                    "path": "/offline",
+                    "subitems": []
+                },
+                {
+                    "name": "Save",
+                    "path": "/save",
+                    "subitems": []
+                }
+            ]
+        },
+        {
+            "name": "Developers",
+            "path": "",
+            "subitems": [
+                {
+                    "name": "Command Line Interface",
+                    "path": "/cli",
+                    "subitems": []
+                },
+                {
+                    "name": "Visual Studio Code support",
+                    "path": "/code",
+                    "subitems": []
+                },
+                {
+                    "name": "Blocks Embed",
+                    "path": "/blocks-embed",
+                    "subitems": []
+                }
+            ]
+        }
+    ],
+    "id": "calliopemini",
+    "title": "Microsoft MakeCode for Calliope mini",
+    "name": "makecode.calliope.cc",
+    "description": "A Blocks / JavaScript code editor for the Calliope mini powered by Microsoft MakeCode.",
+    "htmlDocIncludes": {}
+}
