@@ -53,6 +53,41 @@ jobs:
           sudo npm install -g pxt
           npm ci
 
+      - name: Update Tauri version in tauri.conf.json (ubuntu)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          # Extract semver version
+          VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//; s/^\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/')
+
+          echo $VERSION
+
+          # Update tauri.conf.json with the new version
+          sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
+      
+      - name: Update Tauri version in tauri.conf.json (macos)
+        if: matrix.platform == 'macos-latest'
+        run: |
+          # Extract semver version
+          VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/v([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+
+          echo $VERSION
+
+          # Update tauri.conf.json with the new version
+          sed -i '' "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
+
+          #cat src-tauri/tauri.conf.json
+
+      - name: Update Tauri version in tauri.conf.json (windows)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          # Extract semver version
+          $version = "${{ github.ref_name }}" -replace '^v(\d+\.\d+\.\d+).*$', '$1'
+
+          echo $version
+
+          # Update tauri.conf.json with the new version
+          (Get-Content -Path "src-tauri/tauri.conf.json") -replace '"version": ".*"', "`"version`": `"$version`"" | Set-Content -Path "src-tauri/tauri.conf.json"
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
 
@@ -60,7 +95,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'MakeCode Calliope mini ${{ github.ref_name }}' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: true
           prerelease: false
