@@ -53,6 +53,14 @@ jobs:
           sudo npm install -g pxt
           npm ci
 
+      - name: Update Tauri version in tauri.conf.json
+        run: |
+          # Extract version without 'v' prefix
+          VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//')
+        
+          # Update tauri.conf.json with the new version
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" src-tauri/tauri.conf.json
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
 
@@ -60,7 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'MakeCode Calliope mini ${{ github.ref_name }}' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: true
           prerelease: false
