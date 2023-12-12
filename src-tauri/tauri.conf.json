@@ -4,7 +4,7 @@
     "beforeBuildCommand": "pxt staticpkg --route /",
     "beforeDevCommand": "pxt serve",
     "devPath": "http://localhost:3232",
-    "distDir": "../../build/packaged"
+    "distDir": "../built/packaged"
   },
   "package": {
     "productName": "MakeCode Calliope mini",
