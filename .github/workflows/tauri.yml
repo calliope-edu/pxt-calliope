@@ -42,7 +42,10 @@ jobs:
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: npm ci # Change this to npm, yarn or pnpm.
+        run: |
+          sudo apt-get install xvfb
+          sudo npm install -g pxt
+          npm ci
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
