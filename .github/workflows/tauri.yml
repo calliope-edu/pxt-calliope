@@ -39,6 +39,16 @@ jobs:
           # Update tauri.conf.json with the new version
           sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
 
+      - name: share files with release job
+        uses: actions/upload-artifact@v3
+        with:
+          name: files
+          path: |
+            src-tauri/
+            built/packaged/
+            package.json
+            package-lock.json
+
   release:
     needs: build
     permissions:
@@ -50,8 +60,10 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
@@ -68,16 +80,16 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Install frontend dependencies (windows & macos)
-        if: matrix.platform != 'ubuntu-20.04'
-        run: |
-          npm ci
+      # - name: Install frontend dependencies (windows & macos)
+      #   if: matrix.platform != 'ubuntu-20.04'
+      #   run: |
+      #     npm ci
 
       - name: Install frontend dependencies (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get install xvfb
-          npm ci
+          # npm ci
 
       # - name: Build staticpkg
       #   run: |
