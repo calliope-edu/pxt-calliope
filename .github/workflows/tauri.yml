@@ -1,4 +1,4 @@
-name: Release
+name: Release Tauri App
 on:
   push:
     tags:
@@ -6,7 +6,52 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm' # Set this to npm, yarn or pnpm.
+
+      - name: Install dependencies
+        run: |
+          sudo npm install -g pxt
+          npm ci
+
+      - name: Build staticpkg
+        run: |
+            pxt staticpkg --route /
+
+      - name: Update Tauri version in tauri.conf.json
+        run: |
+          # Extract semver version
+          VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//; s/^\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/')
+
+          echo $VERSION
+
+          # Update tauri.conf.json with the new version
+          sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
+
+      - name: share files with release job
+        uses: actions/upload-artifact@v3
+        with:
+          name: files
+          path: |
+            src-tauri/
+            built/packaged/
+            package.json
+            package-lock.json
+          retention-days: 1
+
   release:
+    needs: build
     permissions:
       contents: write
     strategy:
@@ -16,15 +61,17 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev librsvg2-dev
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
@@ -34,59 +81,20 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies (windows & macos)
-        if: matrix.platform != 'ubuntu-20.04'
-        run: |
-          npm install -g pxt
-          npm ci
+      # - name: Install frontend dependencies (windows & macos)
+      #   if: matrix.platform != 'ubuntu-20.04'
+      #   run: |
+      #     npm ci
 
       - name: Install frontend dependencies (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get install xvfb
-          sudo npm install -g pxt
-          npm ci
+          # npm ci
 
-      - name: Update Tauri version in tauri.conf.json (ubuntu)
-        if: matrix.platform == 'ubuntu-20.04'
-        run: |
-          # Extract semver version
-          VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//; s/^\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/')
-
-          echo $VERSION
-
-          # Update tauri.conf.json with the new version
-          sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
-      
-      - name: Update Tauri version in tauri.conf.json (macos)
-        if: matrix.platform == 'macos-latest'
-        run: |
-          # Extract semver version
-          VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/v([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
-
-          echo $VERSION
-
-          # Update tauri.conf.json with the new version
-          sed -i '' "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
-
-          #cat src-tauri/tauri.conf.json
-
-      - name: Update Tauri version in tauri.conf.json (windows)
-        if: matrix.platform == 'windows-latest'
-        run: |
-          # Extract semver version
-          $version = "${{ github.ref_name }}" -replace '^v(\d+\.\d+\.\d+).*$', '$1'
-
-          echo $version
-
-          # Update tauri.conf.json with the new version
-          (Get-Content -Path "src-tauri/tauri.conf.json") -replace '"version": ".*"', "`"version`": `"$version`"" | Set-Content -Path "src-tauri/tauri.conf.json"
+      # - name: Build staticpkg
+      #   run: |
+      #     pxt staticpkg --route /
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
@@ -97,5 +105,5 @@ jobs:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
           releaseName: 'MakeCode Calliope mini ${{ github.ref_name }}' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
