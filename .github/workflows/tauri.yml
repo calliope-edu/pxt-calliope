@@ -8,7 +8,7 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     
     steps:
       - name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
          
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     permissions:
       contents: read
       deployments: write
@@ -60,6 +60,10 @@ jobs:
       
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
+
+      - name: Install wrangler
+        run: |
+          npm install wrangler --save-dev
 
       - name: Publish
         uses: cloudflare/pages-action@1
