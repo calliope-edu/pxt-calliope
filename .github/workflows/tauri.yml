@@ -48,6 +48,7 @@ jobs:
             built/packaged/
             package.json
             package-lock.json
+          retention-days: 1
 
   release:
     needs: build
