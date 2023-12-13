@@ -6,7 +6,31 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm' # Set this to npm, yarn or pnpm.
+
+      - name: Install dependencies
+        run: |
+          sudo npm install -g pxt
+          npm ci
+
+      - name: Build staticpkg
+        run: |
+            pxt staticpkg --route /
+
   release:
+    needs: build
     permissions:
       contents: write
     strategy:
@@ -34,24 +58,20 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies (windows & macos)
-        if: matrix.platform != 'ubuntu-20.04'
-        run: |
-          npm install -g pxt
-          npm ci
+      # - name: Install frontend dependencies (windows & macos)
+      #   if: matrix.platform != 'ubuntu-20.04'
+      #   run: |
+      #     npm ci
 
       - name: Install frontend dependencies (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get install xvfb
-          sudo npm install -g pxt
-          npm ci
+          # npm ci
+
+      # - name: Build staticpkg
+      #   run: |
+      #     pxt staticpkg --route /
 
       - name: Update Tauri version in tauri.conf.json (ubuntu)
         if: matrix.platform == 'ubuntu-20.04'
@@ -97,5 +117,5 @@ jobs:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
           releaseName: 'MakeCode Calliope mini ${{ github.ref_name }}' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
