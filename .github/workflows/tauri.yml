@@ -1,4 +1,4 @@
-name: Release Tauri App
+name: Publish static releases
 on:
   push:
     tags:
@@ -47,6 +47,28 @@ jobs:
             package.json
             package-lock.json
           retention-days: 1
+
+         
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Deploy to Cloudflare Pages
+    steps:
+      
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Publish
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: pxt-calliope 
+          directory: built/packaged
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     needs: build
