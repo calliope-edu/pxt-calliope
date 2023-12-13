@@ -29,6 +29,16 @@ jobs:
         run: |
             pxt staticpkg --route /
 
+      - name: Update Tauri version in tauri.conf.json
+        run: |
+          # Extract semver version
+          VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//; s/^\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/')
+
+          echo $VERSION
+
+          # Update tauri.conf.json with the new version
+          sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
+
   release:
     needs: build
     permissions:
@@ -72,41 +82,6 @@ jobs:
       # - name: Build staticpkg
       #   run: |
       #     pxt staticpkg --route /
-
-      - name: Update Tauri version in tauri.conf.json (ubuntu)
-        if: matrix.platform == 'ubuntu-20.04'
-        run: |
-          # Extract semver version
-          VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//; s/^\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/')
-
-          echo $VERSION
-
-          # Update tauri.conf.json with the new version
-          sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
-      
-      - name: Update Tauri version in tauri.conf.json (macos)
-        if: matrix.platform == 'macos-latest'
-        run: |
-          # Extract semver version
-          VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/v([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
-
-          echo $VERSION
-
-          # Update tauri.conf.json with the new version
-          sed -i '' "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
-
-          #cat src-tauri/tauri.conf.json
-
-      - name: Update Tauri version in tauri.conf.json (windows)
-        if: matrix.platform == 'windows-latest'
-        run: |
-          # Extract semver version
-          $version = "${{ github.ref_name }}" -replace '^v(\d+\.\d+\.\d+).*$', '$1'
-
-          echo $version
-
-          # Update tauri.conf.json with the new version
-          (Get-Content -Path "src-tauri/tauri.conf.json") -replace '"version": ".*"', "`"version`": `"$version`"" | Set-Content -Path "src-tauri/tauri.conf.json"
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
