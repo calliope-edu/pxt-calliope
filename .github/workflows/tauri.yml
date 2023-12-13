@@ -31,10 +31,8 @@ jobs:
 
       - name: Update Tauri version in tauri.conf.json
         run: |
-          # Extract semver version
+          # Extract semver version (remove leading v and limit to 3 version numbers)
           VERSION=$(echo "${{ github.ref_name }}" | sed 's/v//; s/^\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/')
-
-          echo $VERSION
 
           # Update tauri.conf.json with the new version
           sed -i "s#\"version\": \".*\"#\"version\": \"$VERSION\"#g" src-tauri/tauri.conf.json
@@ -61,14 +59,12 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v4
+
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev librsvg2-dev
@@ -81,21 +77,6 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      # - name: Install frontend dependencies (windows & macos)
-      #   if: matrix.platform != 'ubuntu-20.04'
-      #   run: |
-      #     npm ci
-
-      - name: Install frontend dependencies (ubuntu)
-        if: matrix.platform == 'ubuntu-20.04'
-        run: |
-          sudo apt-get install xvfb
-          # npm ci
-
-      # - name: Build staticpkg
-      #   run: |
-      #     pxt staticpkg --route /
-
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
 
@@ -103,7 +84,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'MakeCode Calliope mini ${{ github.ref_name }}' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'MakeCode Calliope mini v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: false
           prerelease: false
