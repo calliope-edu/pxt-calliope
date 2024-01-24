@@ -54,6 +54,14 @@
                 "identity": true,
                 "redirect": true,
                 "order": 2
+            },
+            "clever": {
+                "id": "clever",
+                "name": "Clever",
+                "icon": "/static/providers/clever-logo.png",
+                "identity": true,
+                "redirect": true,
+                "order": 3
             }
         }
     },
@@ -189,7 +197,7 @@
                 "codalTarget": {
                     "name": "codal-microbit-v2",
                     "url": "https://github.com/lancaster-university/codal-microbit-v2",
-                    "branch": "v0.2.57",
+                    "branch": "v0.2.63",
                     "type": "git"
                 },
                 "codalBinary": "MICROBIT",
@@ -242,6 +250,12 @@
             "jacdac": {
                 "url": "https://microsoft.github.io/jacdac-docs/tools/makecode-sim?webusb=0&parentOrigin=$PARENT_ORIGIN$",
                 "localHostUrl": "http://localhost:8000/tools/makecode-sim?webusb=0&parentOrigin=$PARENT_ORIGIN$",
+                "aspectRatio": 1.22,
+                "permanent": true
+            },
+            "robot": {
+                "url": "https://microsoft.github.io/microbit-robot/?parentOrigin=$PARENT_ORIGIN$",
+                "localHostUrl": "http://localhost:3000/microbit-robot/?parentOrigin=$PARENT_ORIGIN$",
                 "aspectRatio": 1.22,
                 "permanent": true
             }
@@ -594,20 +608,6 @@
             },
             "appTheme": {
                 "disableBlobObjectDownload": true
-            }
-        },
-        "clever=1": {
-            "cloud": {
-                "cloudProviders": {
-                    "clever": {
-                        "id": "clever",
-                        "name": "Clever",
-                        "icon": "/static/providers/clever-logo.png",
-                        "identity": true,
-                        "redirect": true,
-                        "order": 3
-                    }
-                }
             }
         },
         "skillsMap=1": {
