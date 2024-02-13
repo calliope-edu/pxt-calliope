@@ -21,7 +21,6 @@
         "libs/settings",
         "libs/flashlog",
         "libs/datalogger",
-        "libs/color",
         "libs/audio-recording"
     ],
     "cloud": {
@@ -34,7 +33,13 @@
         "showBadges": false,
         "githubPackages": true,
         "cloudProviders": {
-            "github": {}
+            "github": {
+                "id": "github",
+                "name": "GitHub",
+                "icon": "/static/providers/github-mark.png",
+                "identity": false,
+                "order": 3
+            }
         }
     },
     "compile": {
