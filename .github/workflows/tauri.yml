@@ -25,9 +25,14 @@ jobs:
           sudo npm install -g pxt
           npm ci
 
-      - name: Build staticpkg
+      - name: Built staticpkg
         run: |
             pxt staticpkg --route /
+
+      - name: Copy static files
+        run: |
+          mkdir -p /built/packaged/static/
+          cp -r /built/packaged/docs/static/. /built/packaged/static/
 
       - name: Update Tauri version in tauri.conf.json
         run: |
@@ -114,3 +119,4 @@ jobs:
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: false
           prerelease: false
+          includeUpdaterJson: true
