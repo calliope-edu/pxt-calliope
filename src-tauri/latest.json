@@ -1,0 +1,19 @@
+{
+    "version": "6.0.27",
+    "notes": "See the assets to download and install this version.",
+    "pub_date": "2024-02-14T12:51:23.083Z",
+    "platforms": {
+      "linux-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEkrcjV1V3I0MURVVHJ6N3g1TUpuMzBGMll5VEh5eXNQMmZHclBCU1llS1pVWWRJQkowbVBZZjBrL3pjaG52NXpsazlPMStwWEQycnlabzZjelg4c2dFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE0OTA3CWZpbGU6bWFrZS1jb2RlLWNhbGxpb3BlLW1pbmlfNi4wLjI3X2FtZDY0LkFwcEltYWdlLnRhci5negpXNjA3anh6eGF4dlNsQit0MHc4WDdKM0c2M3h6TmN5eDFQSkVNY1Z2K2x3RVJTbnhyZ0V4Z09uR2tRYnh0emRoWXREWUE1T1N5WDB5Q05TUlQ5bW5CQT09Cg==",
+        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.27.24/make-code-calliope-mini_6.0.27_amd64.AppImage.tar.gz"
+      },
+      "windows-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEV3dDY5aG52RWZ6azdocDV5MmxPL1ppc01ZL1hWOTkrSVQ5aXNRdklFcnpVN09hcVhWUG1kUllVM2d3d2h6NjBOa05WbEsrckd5WnpKZjhrOUw3dEFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE1MDU5CWZpbGU6TWFrZUNvZGUgQ2FsbGlvcGUgbWluaV82LjAuMjdfeDY0X2VuLVVTLm1zaS56aXAKdDRUdVIxbjVtSmtneW0zRUxKd0pXWTBtWVE2bWNHd283SEFFcitXL1dLRGdnSDFQWUZmWjNsTjcyWUdjZ2hGV0xWdGZyREs1QjBCbnJPbER4SXg0RFE9PQo=",
+        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.27.24/MakeCode.Calliope.mini_6.0.27_x64_en-US.msi.zip"
+      },
+      "darwin-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEpKazYrYzFoejZFTUxWeU9TV3NVRUxKUVIzQTdKUFRjWUFQRnRGRitWK2F2MGxnR0dRWmR2Y2hIT1RJZWFYNVg0SW1ZSjF0K0M2WTMvRzlQVFNLRUFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE1MDczCWZpbGU6TWFrZUNvZGUgQ2FsbGlvcGUgbWluaS5hcHAudGFyLmd6CmhucGV5UEx6YjFxc2VOYmI3bWJCeURIb3hQbG1XRk1PTnVNV3FkK1IxWUhWYjdVR2NSSFpOWk15cHM2R1pJcjNRR1BiNFJ0dnp0aHRndVZaRmI2dUNBPT0K",
+        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.27.24/MakeCode.Calliope.mini_x64.app.tar.gz"
+      }
+    }
+  }
