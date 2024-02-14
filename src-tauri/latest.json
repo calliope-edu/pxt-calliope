@@ -1,19 +1,19 @@
 {
-    "version": "6.0.27",
+    "version": "6.0.28",
     "notes": "See the assets to download and install this version.",
-    "pub_date": "2024-02-14T12:51:23.083Z",
+    "pub_date": "2024-02-14T13:14:48.545Z",
     "platforms": {
+      "darwin-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEtYTlBPNkc5OTNnSkJiSE9waGk3R2FJSDV4M1IyNGk5VXZERHkrSTRBZm5QVVd1Q0dveGpXeHBVUzlrNXNTbXJHOVQ3R01qQjJHUWhMRCtNeTc4dGc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE2MzUzCWZpbGU6TWFrZUNvZGUgQ2FsbGlvcGUgbWluaS5hcHAudGFyLmd6CnBjVFZMcE8zMHZSaG80SlBMYkpoK011MHB3WlVvZmFuZjkvcXFRdGZOMWNPcU5rUmhaM3AvR3pEZlVLTDg5TU5YZWt1YVBITGZVRE0relRZTDV4OEFBPT0K",
+        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.28.1/MakeCode.Calliope.mini_x64.app.tar.gz"
+      },
       "linux-x86_64": {
-        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEkrcjV1V3I0MURVVHJ6N3g1TUpuMzBGMll5VEh5eXNQMmZHclBCU1llS1pVWWRJQkowbVBZZjBrL3pjaG52NXpsazlPMStwWEQycnlabzZjelg4c2dFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE0OTA3CWZpbGU6bWFrZS1jb2RlLWNhbGxpb3BlLW1pbmlfNi4wLjI3X2FtZDY0LkFwcEltYWdlLnRhci5negpXNjA3anh6eGF4dlNsQit0MHc4WDdKM0c2M3h6TmN5eDFQSkVNY1Z2K2x3RVJTbnhyZ0V4Z09uR2tRYnh0emRoWXREWUE1T1N5WDB5Q05TUlQ5bW5CQT09Cg==",
-        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.27.24/make-code-calliope-mini_6.0.27_amd64.AppImage.tar.gz"
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEJPMnpDNTI3N3ZIdWk1Yy8rcVRtU21mUXVCZ2JnSFZQVW5kd2Y2M2N6OFpnOG5tSEtISkJlUWtoaHY0NzZBdkV3NXMyaFVkdjhzdGxTbkJpL3pqZkFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE2NDAwCWZpbGU6bWFrZS1jb2RlLWNhbGxpb3BlLW1pbmlfNi4wLjI4X2FtZDY0LkFwcEltYWdlLnRhci5negpwaFZSZTFYdWtsQkdXQkpyMEdZWlh6U2ExUDViUmg0clRIVXhYMVZ0VXJsSHpHS3p1czJPVmp5QkhXTllKQUNGR2VMK2ZYN1pMcXhKZElsYzFjVGZCQT09Cg==",
+        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.28.1/make-code-calliope-mini_6.0.28_amd64.AppImage.tar.gz"
       },
       "windows-x86_64": {
-        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEV3dDY5aG52RWZ6azdocDV5MmxPL1ppc01ZL1hWOTkrSVQ5aXNRdklFcnpVN09hcVhWUG1kUllVM2d3d2h6NjBOa05WbEsrckd5WnpKZjhrOUw3dEFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE1MDU5CWZpbGU6TWFrZUNvZGUgQ2FsbGlvcGUgbWluaV82LjAuMjdfeDY0X2VuLVVTLm1zaS56aXAKdDRUdVIxbjVtSmtneW0zRUxKd0pXWTBtWVE2bWNHd283SEFFcitXL1dLRGdnSDFQWUZmWjNsTjcyWUdjZ2hGV0xWdGZyREs1QjBCbnJPbER4SXg0RFE9PQo=",
-        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.27.24/MakeCode.Calliope.mini_6.0.27_x64_en-US.msi.zip"
-      },
-      "darwin-x86_64": {
-        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEpKazYrYzFoejZFTUxWeU9TV3NVRUxKUVIzQTdKUFRjWUFQRnRGRitWK2F2MGxnR0dRWmR2Y2hIT1RJZWFYNVg0SW1ZSjF0K0M2WTMvRzlQVFNLRUFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE1MDczCWZpbGU6TWFrZUNvZGUgQ2FsbGlvcGUgbWluaS5hcHAudGFyLmd6CmhucGV5UEx6YjFxc2VOYmI3bWJCeURIb3hQbG1XRk1PTnVNV3FkK1IxWUhWYjdVR2NSSFpOWk15cHM2R1pJcjNRR1BiNFJ0dnp0aHRndVZaRmI2dUNBPT0K",
-        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.27.24/MakeCode.Calliope.mini_x64.app.tar.gz"
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSMjhzejVHMXc5bEtJUEpoY0RMVm03NFVyc1RUZ1RzWis2VHV3QVMwTXI0RUh4MUp1WklRcVlGT3Y5aXV4QVlXaE94K0phNnN5UjJOQUlGWjNxRlBPTTVHdTJCWXRCSFFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzA3OTE2NDY5CWZpbGU6TWFrZUNvZGUgQ2FsbGlvcGUgbWluaV82LjAuMjhfeDY0X2VuLVVTLm1zaS56aXAKMjAwam92eVZGWlNlSEM5cGpJZEJUaTFGMWlFVjJHK3BvNnNkU09NNnNTR3lSWmJVZk0vYVhDUGN0MC9sVEgzR3BBaSsrem4xMU5YS2h0Smx3M241Qmc9PQo=",
+        "url": "https://github.com/calliope-edu/pxt-calliope/releases/download/v6.0.28.1/MakeCode.Calliope.mini_6.0.28_x64_en-US.msi.zip"
       }
     }
   }
