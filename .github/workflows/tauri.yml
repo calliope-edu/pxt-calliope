@@ -31,7 +31,6 @@ jobs:
 
       - name: Copy static files
         run: |
-          ls -l
           mkdir -p ./built/packaged/static/
           cp -r ./built/packaged/docs/static/. ./built/packaged/static/
 
@@ -114,6 +113,8 @@ jobs:
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         with:
           tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
           releaseName: 'MakeCode Calliope mini v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
