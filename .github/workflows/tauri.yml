@@ -31,8 +31,9 @@ jobs:
 
       - name: Copy static files
         run: |
-          mkdir -p ./built/packaged/static/
-          cp -r ./built/packaged/docs/static/. /built/packaged/static/
+          ls -l
+          mkdir -p /built/packaged/static/
+          cp -r /built/packaged/docs/static/. /built/packaged/static/
 
       - name: Update Tauri version in tauri.conf.json
         run: |
