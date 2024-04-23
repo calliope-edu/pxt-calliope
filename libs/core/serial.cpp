@@ -8,14 +8,33 @@ enum SerialPin {
     P0 = MICROBIT_ID_IO_P0,
     P1 = MICROBIT_ID_IO_P1,
     P2 = MICROBIT_ID_IO_P2,
-    P8 = MICROBIT_ID_IO_P8,
-    P12 = MICROBIT_ID_IO_P12,
-    P13 = MICROBIT_ID_IO_P13,
-    P14 = MICROBIT_ID_IO_P14,
-    P15 = MICROBIT_ID_IO_P15,
-    P16 = MICROBIT_ID_IO_P16,
+    P3 = MICROBIT_ID_IO_P3,
+
+    C8 = MICROBIT_ID_IO_P8,
+    C12 = MICROBIT_ID_IO_P12,
+    C13 = MICROBIT_ID_IO_P13,
+    C14 = MICROBIT_ID_IO_P14,
+    C15 = MICROBIT_ID_IO_P15,
+    C16 = MICROBIT_ID_IO_A1_RX,
+    C17 = MICROBIT_ID_IO_A1_TX,
+    
     USB_TX = 1001,
-    USB_RX = 1002
+    USB_RX = 1002,
+
+    //% blockHidden=true
+    P8 = MICROBIT_ID_IO_P8,
+    //% blockHidden=true
+    P12 = MICROBIT_ID_IO_P12,
+    //% blockHidden=true
+    P13 = MICROBIT_ID_IO_P13,
+    //% blockHidden=true
+    P14 = MICROBIT_ID_IO_P14,
+    //% blockHidden=true
+    P15 = MICROBIT_ID_IO_P15,
+    //% blockHidden=true
+    P16 = MICROBIT_ID_IO_A1_RX,
+    //% blockHidden=true
+    P17 = MICROBIT_ID_IO_A1_TX
 };
 
 enum BaudRate {

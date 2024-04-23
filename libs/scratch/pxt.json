@@ -1,0 +1,60 @@
+{
+    "name": "scratch",
+    "version": "0.2.5",
+    "description": "",
+    "dependencies": {
+        "core": "file:../core",
+        "microphone": "file:../microphone",
+        "bluetooth": "file:../bluetooth"
+    },
+    "files": [
+        "README.md",
+        "main.blocks",
+        "main.ts",
+        "shims.d.ts",
+        "enums.d.ts",
+        "MbitMore.cpp",
+        "MbitMore.ts",
+        "MbitMoreCommon.h",
+        "MbitMoreDevice.cpp",
+        "MbitMoreDevice.h",
+        "MbitMoreSerial.cpp",
+        "MbitMoreSerial.h",
+        "MbitMoreService.cpp",
+        "MbitMoreService.h",
+        "MbitMoreServiceDAL.cpp",
+        "MbitMoreServiceDAL.h",
+        "_locales/en/pxt-mbit-more-v2-strings.json",
+        "_locales/ja/pxt-mbit-more-v2-strings.json"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "blocksprj",
+    "yotta": {
+        "dependencies": {
+            "microbit": "yokobond/microbit#mbit-more"
+        },
+        "config": {
+            "microbit-dal": {
+                "bluetooth": {
+                    "enabled": 1,
+                    "pairing_mode": 0,
+                    "private_addressing": 0,
+                    "open": 1,
+                    "whitelist": 0,
+                    "advertising_timeout": 0,
+                    "tx_power": 0,
+                    "dfu_service": 0,
+                    "event_service": 0,
+                    "device_info_service": 0,
+                    "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM"
+                },
+                "gatt_table_size": "0x360"
+            }
+        }
+    }
+}

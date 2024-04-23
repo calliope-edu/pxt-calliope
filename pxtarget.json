@@ -16,6 +16,7 @@
         "libs/settings",
         "libs/flashlog",
         "libs/datalogger",
+        "libs/scratch",
         "libs/color"
     ],
     "cloud": {
@@ -137,12 +138,12 @@
         "useNewFunctions": true
     },
     "compileService": {
-        "yottaTarget": "bbc-microbit-classic-gcc@https://github.com/lancaster-university/yotta-target-bbc-microbit-classic-gcc",
+        "yottaTarget": "calliope-mini-classic-gcc@https://github.com/calliope-mini/target-calliope-mini-classic-gcc#v1.2.4",
         "yottaCorePackage": "microbit",
-        "githubCorePackage": "lancaster-university/microbit",
-        "gittag": "v2.2.0-rc6",
-        "serviceId": "microbit",
-        "dockerImage": "pext/yotta:latest"
+        "githubCorePackage": "calliope-mini/microbit",
+        "gittag": "v2.2.0-rc6-calliope.rc5",
+        "serviceId": "calliope",
+        "dockerImage": "pext/yotta:gcc5"
     },
     "multiVariants": [
         "mbdal",
@@ -164,8 +165,8 @@
                 "buildEngine": "codal",
                 "codalTarget": {
                     "name": "codal-microbit-v2",
-                    "url": "https://github.com/lancaster-university/codal-microbit-v2",
-                    "branch": "v0.2.40",
+                    "url": "https://github.com/calliope-edu/codal-microbit-v2",
+                    "branch": "v0.2.40-calliope-rc1",
                     "type": "git"
                 },
                 "codalBinary": "MICROBIT",
