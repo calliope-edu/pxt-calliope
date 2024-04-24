@@ -286,6 +286,7 @@
   "TouchTarget.P0|block": "P0",
   "TouchTarget.P1|block": "P1",
   "TouchTarget.P2|block": "P2",
+  "TouchTarget.P3|block": "P3",
   "TouchTargetMode.Capacitive|block": "capacitive",
   "TouchTargetMode.Resistive|block": "resistive",
   "WaveShape.Noise|block": "noise",

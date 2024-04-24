@@ -47,10 +47,10 @@ enum MbitMoreButtonStateIndex
   P0 = 24,
   P1 = 25,
   P2 = 26,
-  A = 27,
-  B = 28,
-  LOGO = 29,
-  P3 = 30
+  P3 = 27,
+  A = 28,
+  B = 29,
+  LOGO = 30  
 };
 
 /**
@@ -146,7 +146,7 @@ public:
    * @brief Index of controllabel GPIO pins.
    * 
    */
-  int gpioPin[9] = {0, 1, 2, 8, 12, 13, 14, 15, 16};
+  int gpioPin[10] = {0, 1, 2, 3, 8, 12, 13, 14, 15, 16};
 
   /**
    * @brief Pins which is pull-up at connected.
@@ -154,7 +154,7 @@ public:
    */
   int initialPullUp[4] = {0, 1, 2, 3};
 
-  bool touchMode[3] = {false};
+  bool touchMode[4] = {false};
 
   /**
    * @brief Shadow screen to display on the LED.
@@ -300,7 +300,7 @@ public:
    * @brief Get data of analog input of the pin.
    *
    * @param data Buffer for BLE characteristics.
-   * @param pinIndex Index of the pin [0, 1, 2].
+   * @param pinIndex Index of the pin [0, 1, 2, 3].
    */
   void updateAnalogIn(uint8_t *data, size_t pinIndex);
 

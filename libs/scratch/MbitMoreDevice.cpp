@@ -314,7 +314,7 @@ void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
 #endif // MICROBIT_CODAL
     } else if (config == MbitMoreConfig::TOUCH) {
       int pinIndex = data[1];
-      if (pinIndex > 2)
+      if (pinIndex > 3)
         return;
       int componentID = pinIndex + 100;
       if (data[2] == 1) {
@@ -475,7 +475,7 @@ void MbitMoreDevice::updateMotion(uint8_t *data) {
  * @brief Get data of analog input of the pin.
  *
  * @param data Buffer for BLE characteristics.
- * @param pinIndex Index of the pin [0, 1, 2].
+ * @param pinIndex Index of the pin [0, 1, 2, 3].
  */
 void MbitMoreDevice::updateAnalogIn(uint8_t *data, size_t pinIndex) {
   if (uBit.io.pin[pinIndex].isInput()) {
