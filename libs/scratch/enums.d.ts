@@ -131,7 +131,7 @@
 
     declare const enum MbitMoreConfig
     {
-    MIC = 0x01,
+    MICPIN = 0x01,
     TOUCH = 0x02,
     }
 

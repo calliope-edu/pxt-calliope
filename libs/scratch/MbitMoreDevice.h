@@ -152,7 +152,7 @@ public:
    * @brief Pins which is pull-up at connected.
    * 
    */
-  int initialPullUp[3] = {0, 1, 2};
+  int initialPullUp[4] = {0, 1, 2, 3};
 
   bool touchMode[3] = {false};
 

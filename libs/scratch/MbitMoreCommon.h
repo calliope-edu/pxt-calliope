@@ -133,7 +133,7 @@ enum MbitMorePinEvent
  */
 enum MbitMoreConfig
 {
-  MIC = 0x01, // microphone
+  MICPIN = 0x01, // microphone
   TOUCH = 0x02
 };
 

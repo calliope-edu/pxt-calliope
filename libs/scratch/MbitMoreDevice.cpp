@@ -308,7 +308,7 @@ void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
 #endif // MICROBIT_CODAL
   } else if (command == MbitMoreCommand::CMD_CONFIG) {
     const int config = data[0] & 0b11111;
-    if (config == MbitMoreConfig::MIC) {
+    if (config == MbitMoreConfig::MICPIN) {
 #if MICROBIT_CODAL
       micInUse = ((data[1] == 1) ? true : false);
 #endif // MICROBIT_CODAL
