@@ -741,6 +741,8 @@ declare namespace serial {
     //% block="long pressed"
     LongPressed = 4,  // MICROBIT_BUTTON_EVT_LONG_CLICK
     }
+declare namespace basic {
+}
 
 
     declare const enum TouchTargetMode {
