@@ -231,7 +231,16 @@ void MbitMoreDevice::onSerialConnected() {
  */
 void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
   const int command = (data[0] >> 5);
-  if(command == MbitMoreCommand::CMD_RGB) {
+  if(command == MbitMoreCommand::CMD_MOTOR) {
+    const int motorCommand = data[0] & 0b11111;
+    // data[1] = Motor 1
+    // data[2] = Motor 2
+    if (motorCommand == MbitMoreMotorCommand::SET_M_SPEED) {
+
+    } else if (motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_SPEED) {
+
+    }
+  } else if(command == MbitMoreCommand::CMD_RGB) {
 #if MICROBIT_CODAL
         uint8_t rgbBuffer[9] = {0};
         // Neopixel awaits GRB instead of RGB, so its swtiched here.

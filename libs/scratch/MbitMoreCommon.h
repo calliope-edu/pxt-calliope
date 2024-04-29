@@ -37,6 +37,13 @@ enum MbitMoreCommand // 3 bits (0x00..0x07)
   CMD_AUDIO = 0x03,
   CMD_DATA = 0x04,
   CMD_RGB = 0x05,
+  CMD_MOTOR = 0x06,
+};
+
+enum MbitMoreMotorCommand
+{
+  SET_M_SPEED = 0x01,
+  SET_MOTIONKIT_SPEED = 0x02,
 };
 
 enum MbitMorePinCommand
