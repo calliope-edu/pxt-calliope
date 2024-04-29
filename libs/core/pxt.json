@@ -64,7 +64,6 @@
         "light.cpp",
         "logo.cpp",
         "loops.ts",
-        "rgbled.cpp",
         "touchmode.cpp",
         "soundexpressions.ts",
         "soundexpressions.cpp",

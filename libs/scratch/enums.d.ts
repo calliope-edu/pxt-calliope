@@ -21,6 +21,7 @@
     CMD_DISPLAY = 0x02,
     CMD_AUDIO = 0x03,
     CMD_DATA = 0x04,
+    CMD_RGB = 0x05,
     }
 
 

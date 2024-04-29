@@ -231,6 +231,25 @@ void MbitMoreDevice::onSerialConnected() {
  */
 void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
   const int command = (data[0] >> 5);
+  if(command == MbitMoreCommand::CMD_RGB) {
+#if MICROBIT_CODAL
+        uint8_t rgbBuffer[9] = {0};
+        memset(rgbBuffer, 0, sizeof(rgbBuffer)); // Clear the buffer
+        rgbBuffer[0] = data[1] * 20 / 100;
+        rgbBuffer[1] = data[2] * 20 / 100;
+        rgbBuffer[2] = data[3] * 20 / 100;
+        rgbBuffer[3] = data[4] * 20 / 100;
+        rgbBuffer[4] = data[5] * 20 / 100;
+        rgbBuffer[5] = data[6] * 20 / 100;
+        rgbBuffer[6] = data[7] * 20 / 100;
+        rgbBuffer[7] = data[8] * 20 / 100;
+        rgbBuffer[8] = data[9] * 20 / 100;
+        neopixel_send_buffer(uBit.io.RGB, rgbBuffer, sizeof(rgbBuffer));
+#else
+        uBit.rgb.setColour(data[1], data[2], data[3], 0);
+#endif
+  }
+  else
   if (command == MbitMoreCommand::CMD_DISPLAY) {
     const int displayCommand = data[0] & 0b11111;
     if (displayCommand == MbitMoreDisplayCommand::TEXT) {
