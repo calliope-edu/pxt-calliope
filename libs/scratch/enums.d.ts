@@ -28,8 +28,12 @@
 
     declare const enum MbitMoreMotorCommand
     {
-    SET_M_SPEED = 0x01,
-    SET_MOTIONKIT_SPEED = 0x02,
+    SET_M0 = 0x01,
+    SET_M1 = 0x02,
+    SET_M0_M1 = 0x03,
+    SET_MOTIONKIT_LEFT = 0x04,
+    SET_MOTIONKIT_RIGHT = 0x05,
+    SET_MOTIONKIT_BOTH = 0x06,
     }
 
 

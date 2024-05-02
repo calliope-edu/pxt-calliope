@@ -12,6 +12,12 @@
 #define MICROPHONE_MIN 52.0f
 #define MICROPHONE_MAX 120.0f
 
+#if MICROBIT_CODAL
+#define BUFFER_TYPE uint8_t*
+#else
+#define BUFFER_TYPE char*
+#endif
+
 namespace pxt {
   codal::LevelDetectorSPL *getMicrophoneLevel();
 } // namespace pxt
@@ -233,13 +239,46 @@ void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
   const int command = (data[0] >> 5);
   if(command == MbitMoreCommand::CMD_MOTOR) {
     const int motorCommand = data[0] & 0b11111;
-    // data[1] = Motor 1
-    // data[2] = Motor 2
-    if (motorCommand == MbitMoreMotorCommand::SET_M_SPEED) {
-
-    } else if (motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_SPEED) {
-
+    // data[1] = DIR: 0 | 1
+    // data[2] = Motor Speed: 0 - 100
+    if(motorCommand == MbitMoreMotorCommand::SET_M0 || motorCommand == MbitMoreMotorCommand::SET_M1 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){ 
+#if MICROBIT_CODAL
+        const int direction = data[1];
+        const int speed = static_cast<int>((static_cast<double>(data[2]) / 100) * 1023); //Map 0-100 to 0-1023
+        uBit.io.M_MODE.setDigitalValue(1);
+        if(motorCommand == MbitMoreMotorCommand::SET_M0 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){ 
+            uBit.io.pin.M_A_IN1.setDigitalValue(direction);
+            uBit.io.pin.M_A_IN2.setAnalogValue(speed);
+        }
+        if(motorCommand == MbitMoreMotorCommand::SET_M1 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){ 
+            uBit.io.pin.M_B_IN1.setDigitalValue(direction);
+            uBit.io.pin.M_B_IN2.setAnalogValue(speed);
+        }
+#else
+        const int speed = data[2];
+        if(motorCommand == MbitMoreMotorCommand::SET_M0 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){
+            if (speed <= 0) uBit.soundmotor.motorAOff();
+            else uBit.soundmotor.motorAOn(speed);
+        }
+        if(motorCommand == MbitMoreMotorCommand::SET_M1 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){
+            if (speed <= 0) uBit.soundmotor.motorBOff();
+            else uBit.soundmotor.motorBOn(speed);
+        }
+#endif
+    } else {
+      // MOTIONKIT
+      const int direction = data[1];
+      const int speed = static_cast<int>((static_cast<double>(data[2]) / 100) * 255); //Map 0-100 to 0-255
+      if(motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_LEFT || motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_BOTH){
+        int buf[3] = {0x00, direction, speed};
+        uBit.i2c.write(0x10 << 1, (BUFFER_TYPE)buf->data, buf->length, false);
+      }
+      if(motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_RIGHT || motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_BOTH){
+        int buf[3] = {0x02, direction, speed};
+        uBit.i2c.write(0x10 << 1, (BUFFER_TYPE)buf->data, buf->length, false);
+      }
     }
+
   } else if(command == MbitMoreCommand::CMD_RGB) {
 #if MICROBIT_CODAL
         uint8_t rgbBuffer[9] = {0};
