@@ -5,18 +5,18 @@
 #include "MicroBitConfig.h"
 
 #if MICROBIT_CODAL
+#define BUFFER_TYPE uint8_t*
+#else
+#define BUFFER_TYPE char*
+#endif
+
+#if MICROBIT_CODAL
 // microphone sound level
 #include "LevelDetector.h"
 #include "LevelDetectorSPL.h"
 
 #define MICROPHONE_MIN 52.0f
 #define MICROPHONE_MAX 120.0f
-
-#if MICROBIT_CODAL
-#define BUFFER_TYPE uint8_t*
-#else
-#define BUFFER_TYPE char*
-#endif
 
 namespace pxt {
   codal::LevelDetectorSPL *getMicrophoneLevel();
@@ -247,12 +247,12 @@ void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
         const int speed = static_cast<int>((static_cast<double>(data[2]) / 100) * 1023); //Map 0-100 to 0-1023
         uBit.io.M_MODE.setDigitalValue(1);
         if(motorCommand == MbitMoreMotorCommand::SET_M0 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){ 
-            uBit.io.pin.M_A_IN1.setDigitalValue(direction);
-            uBit.io.pin.M_A_IN2.setAnalogValue(speed);
+            uBit.io.M_A_IN1.setDigitalValue(direction);
+            uBit.io.M_A_IN2.setAnalogValue(speed);
         }
         if(motorCommand == MbitMoreMotorCommand::SET_M1 || motorCommand == MbitMoreMotorCommand::SET_M0_M1){ 
-            uBit.io.pin.M_B_IN1.setDigitalValue(direction);
-            uBit.io.pin.M_B_IN2.setAnalogValue(speed);
+            uBit.io.M_B_IN1.setDigitalValue(direction);
+            uBit.io.M_B_IN2.setAnalogValue(speed);
         }
 #else
         const int speed = data[2];
@@ -269,15 +269,19 @@ void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
       // MOTIONKIT
       const int direction = data[1];
       const int speed = static_cast<int>((static_cast<double>(data[2]) / 100) * 255); //Map 0-100 to 0-255
-      if(motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_LEFT || motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_BOTH){
-        int buf[3] = {0x00, direction, speed};
-        uBit.i2c.write(0x10 << 1, (BUFFER_TYPE)buf->data, buf->length, false);
+      int buf[3];  // Define the buffer array
+      buf[1] = direction;
+      buf[2] = speed;
+      if (motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_LEFT || motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_BOTH) {
+          buf[0] = 0x00;
+          uBit.i2c.write(0x10 << 1, reinterpret_cast<BUFFER_TYPE>(buf), sizeof(buf), false); // Send the data
       }
-      if(motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_RIGHT || motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_BOTH){
-        int buf[3] = {0x02, direction, speed};
-        uBit.i2c.write(0x10 << 1, (BUFFER_TYPE)buf->data, buf->length, false);
+      if (motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_RIGHT || motorCommand == MbitMoreMotorCommand::SET_MOTIONKIT_BOTH) {
+          buf[0] = 0x02;
+          uBit.i2c.write(0x10 << 1, reinterpret_cast<BUFFER_TYPE>(buf), sizeof(buf), false); // Send the data
       }
     }
+
 
   } else if(command == MbitMoreCommand::CMD_RGB) {
 #if MICROBIT_CODAL
