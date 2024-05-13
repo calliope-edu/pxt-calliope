@@ -99,15 +99,11 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
   // Reset compass
 
   if (!uBit.compass.isCalibrated()) {
-#if MICROBIT_CODAL
     CompassCalibration dummyCalibration;
     dummyCalibration.centre = Sample3D(0, 0, 0);  // Assuming the centre is at (0, 0, 0)
     dummyCalibration.scale = Sample3D(1, 1, 1);    // Assuming no scaling
     dummyCalibration.radius = 100;                 // Assuming a radius of 100
     uBit.compass.setCalibration(dummyCalibration);
-#else // NOT MICROBIT_CODAL
-    uBit.compass.assumeCalibration();
-#endif // NOT MICROBIT_CODAL
   }
   
   if (uBit.buttonA.isPressed()) {
