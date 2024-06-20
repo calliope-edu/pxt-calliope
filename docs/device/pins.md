@@ -58,5 +58,47 @@ Unlike the three large pins that are dedicated to being used for external connec
 
 ## Connecting to the small pins
 
-It is recommended that an edge connector be acquired to connect to the small pins. More information on compatible edge connectors will be available later.
+| Pin | Description |
+| - | - |
+| **3**  | GPIO shared with LED Col 1 of the LED screen; can be used for ADC and digital I/O when the LED screen is turned off. |
+| **4** | GPIO shared with LED Col 2 of the LED screen; can be used for ADC and digital I/O when the LED screen is turned off. |
+| **5** | GPIO shared with Button A. This lets you trigger or detect a button "A" click externally. This pin has a pull-up resistor, which means that by default it is at voltage of 3V. To replace button A on the micro:bit with an external button, connect one end of the external button to pin 5 and the other end to GND. When the button is pressed, the voltage on pin 5 is pulled down to 0, which generates a button click event. |
+| **6** | GPIO shared with LED Col 9 of the LED screen;  can be used for digital I/O when the LED screen is turned off. |
+| **7** | GPIO shared with LED Col 8 of the LED screen; can be used for digital I/O when the LED screen is turned off. |
+| **8** | Dedicated GPIO, for sending and sensing digital signals.
+| **9** | GPIO shared with LED Col 7 of the LED screen;  can be used for digital I/O when the LED screen is turned off. |
+| **10** | GPIO shared with LED Col 3 of the LED screen;  can be used for ADC and digital I/O when the LED screen is turned off.|
+| **11** | GPIO shared with Button B. This lets you trigger or detect a button "B" click externally. |
+| **12** | This GPIO pin has been reserved to provide support for accessibility. |
+| **13** | GPIO that is conventionally used for the serial clock (SCK) signal of the 3-wire Serial Peripheral Interface (SPI) bus. |
+| **14** | GPIO that is conventionally used for the Master In Slave Out (MISO) signal of the SPI bus. |
+| **15** | GPIO that is conventionally used for the Master Out Slave In (MOSI) signal of the SPI bus. |
+| **16** | Dedicated GPIO (conventionally also used for SPI 'Chip Select' function). |
+| **17, 18** | These pins are wired to the 3V supply, like the large '3V' pad. |
+| **19, 20** | Implement the clock signal (SCL) and data line (SDA) of the I2C bus communication protocol. With I2C, several devices can be connected on the same bus and send/read messages to and from the CPU. Internally, the accelerometer and the compass are connected to i2c. |
+| **21, 22** | These pins are wired to the GND pin and serve no other function. |
 
+### V2 pin map
+
+| Pin  | Description |
+| - | - |
+| **3** | GPIO shared with LED Col 3 of the LED screen; can be used for ADC and digital I/O when the LED screen is turned off. |
+| **4** | GPIO shared with LED Col 1 of the LED screen; can be used for ADC and digital I/O when the LED screen is turned off. |
+| **5** | GPIO shared with Button A. This lets you trigger or detect a button "A" click externally. This pin has a pull-up resistor, which means that by default it is at voltage of 3V. To replace button A on the micro:bit with an external button, connect one end of the external button to pin 5 and the other end to GND. When the button is pressed, the voltage on pin 5 is pulled down to 0, which generates a button click event. |
+| **6** | GPIO shared with LED Col 2 of the LED screen; can be used for digital I/O when the LED screen is turned off. |
+| **7** | GPIO shared with LED Col 4 of the LED screen; can be used for digital I/O when the LED screen is turned off. |
+| **8, 9** | Dedicated GPIO, for sending and sensing digital signals; can also be configured for NFC. |
+| **10** | GPIO shared with LED Col 5 of the LED screen;  can be used for ADC and digital I/O when the LED screen is turned off.|
+| **11** | GPIO shared with Button B. This lets you trigger or detect a button "B" click externally. |
+| **12** | This GPIO pin has been reserved to provide support for accessibility. |
+| **13** | GPIO that is conventionally used for the serial clock (SCK) signal of the 3-wire Serial Peripheral Interface (SPI) bus. |
+| **14** | GPIO that is conventionally used for the Master In Slave Out (MISO) signal of the SPI bus. |
+| **15** | GPIO that is conventionally used for the Master Out Slave In (MOSI) signal of the SPI bus. |
+| **16** | Dedicated GPIO (conventionally also used for SPI 'Chip Select' function). |
+| **17, 18** | These pins are wired to the 3V supply, like the large '3V' pad. |
+| **19, 20** | Implement the clock signal (SCL) and data line (SDA) of the I2C bus communication protocol. With I2C, several devices can be connected on the same bus and send/read messages to and from the CPU. Internally, the accelerometer and the compass are connected to i2c. |
+| **21, 22** | These pins are wired to the GND pin and serve no other function. |
+
+## Connecting to the small pins
+
+It is recommended that an edge connector designed for the micro:bit be used for connections to the small pins. For available edge connectors, put "edge connectors for the micro:bit" into your internet search engine to find an accessory supplier.
