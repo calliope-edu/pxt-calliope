@@ -22,7 +22,7 @@ game.createSprite(0,0).set(LedSpriteProperty.X, 0);
 Make an LED sprite move to random locations on the screen. Use button **A** to freeze and unfreeze the sprite while it's moving. When the sprite is frozen, it will blink and dim to half brightness.
 
 ```blocks
-input.onButtonEvent(Button.A, input.buttonEventClick(), function () {
+input.onButtonPressed(Button.A, function () {
     if (freeze) {
         sprite.set(LedSpriteProperty.Brightness, 255)
         sprite.set(LedSpriteProperty.Blink, 0)

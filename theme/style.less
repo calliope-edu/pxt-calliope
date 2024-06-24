@@ -14,22 +14,19 @@
 *******************************/
 
 /* Roboto font */
-@RobotoMonoFont: data-uri("../docs/static/fonts/roboto-mono-v7-latin-regular.woff");
+@RobotoFont: data-uri("../docs/static/fonts/Roboto_400_normal.woff");
 
-/* roboto-mono-regular - latin */
-@font-face {
-    font-family: 'Roboto Mono';
-    font-style: normal;
-    font-weight: 400;
-    src: @RobotoMonoFont format('woff');
-  }
+@font-face  {
+    font-family: 'Roboto';
+    src: @RobotoFont format("woff");
+}
+
 .ui.button.download-button {
     &:extend(.ui.purple.button all);
 }
 
-.ui.button.download-button:hover {
-    background-color: #30a7a7;
-    color: white;
+.ui.button.hw-button {
+    background-color: darken(@purple, 10%);
 }
 
 .docs.inlinebutton.ui.button.download-button:hover {
@@ -49,43 +46,53 @@
 }
 
 .ui.button.exit-tutorial-btn {
-    &:extend(.ui.blue.button all);
+    &:extend(.ui.inverted.button all);
 }
 
-#filelist, #editortools, .fullscreensim #boardview {
+#filelist, #editortools {
     background: #fff data-uri("../docs/static/logo_texture.png") 0 0 repeat !important;
-}
-.fullscreensim #mainmenu {
-    background: #1b1c1d !important;
 }
 
 #downloadArea {
     background: transparent !important;
 }
 
-.ui.home {
-    .getting-started-segment {
-        background-position: 50% 25%;
+#homescreen .ui.home {
+    .detailview .actions .card-action {
+        .button.approve {
+            background-color: @mainMenuTutorialBackground;
+        }
+    }
+    .tutorial-progress.orange {
+        background-color: @mainMenuTutorialBackground !important;
+        border-color: @mainMenuTutorialBackground !important;
     }
 }
 
-.ui.searchdialog .ui.card .ui.cardimage.upload {
-    margin: auto;
-    padding: 25% 0;
-}
-
-// Safari Only for iPad and iPhone
-@media not all and (min-resolution:.001dpcm) { 
-    @supports (-webkit-appearance:none) {
-        #mainmenu .right.menu {
-            margin-right: 4rem;
+#tutorialcard {
+    .ui.button.orange.right.attached {
+        background-color: @mainMenuTutorialBackground;
+        &:focus, &:hover {
+            background-color: darken(@mainMenuTutorialBackground, 20%);
         }
     }
 }
-// Safari Only for iPad and iPhone second rule
-@supports (-webkit-touch-callout: none) {
-    #mainmenu .right.menu {
-        margin-right: 4rem;
+
+#root:not(.hc) .tutorial-menu {
+    .ui.circular.label.selected {
+        background-color: @purple !important;
+        color: #e8e8e8 !important;
+        border: 1px solid #e8e8e8 !important;
+
+        &:focus, &:hover {
+            background-color: darken(@purple, 20%) !important;
+        }
+    }
+}
+
+.menubar {
+    .ui.menu .brand .ui.logo {
+        height: 1.1rem;
     }
 }
 

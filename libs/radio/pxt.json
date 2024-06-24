@@ -1,22 +1,7 @@
 {
-    "name": "radio",
-    "description": "The radio services",
-    "dependencies": {
-        "core": "file:../core"
-    },
-    "searchOnly": true,
-    "public": true,
     "additionalFilePath": "../../node_modules/pxt-common-packages/libs/radio",
-    "icon": "./static/packages/radio/icon.png",
     "yotta": {
         "config": {
-            "microbit-dal": {
-                "bluetooth": {
-                    "enabled": 0
-                }
-            }
-        },
-        "optionalConfig": {
             "microbit-dal": {
                 "bluetooth": {
                     "enabled": 0

@@ -1,7 +1,7 @@
 /**
  * Control of the LED screen.
  */
-//% color=#8169E6 weight=97
+//% color=#5C2D91 weight=101 icon="\uf205"
 namespace led {
     /**
      * Get the on/off state of the specified LED using x, y coordinates. (0,0) is upper left.

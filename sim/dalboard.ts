@@ -22,10 +22,6 @@ namespace pxsim {
         microphoneState: MicrophoneState;
         recordingState: RecordingState;
         lightState: pxt.Map<CommonNeoPixelState>;
-        rgbLedState: number;
-        rgbLedLeftState: number;
-        rgbLedRightState: number;
-        speakerState: SpeakerState;
         fileSystem: FileSystemState;
         logoTouch: Button;
         speakerEnabled: boolean = true;
@@ -59,7 +55,6 @@ namespace pxsim {
                     DAL.MICROBIT_ID_IO_P1,
                     DAL.MICROBIT_ID_IO_P2,
                     DAL.MICROBIT_ID_IO_P3,
-                    DAL.MICROBIT_ID_LOGO,
                     DAL.MICROBIT_ID_IO_P4,
                     DAL.MICROBIT_ID_IO_P5,
                     DAL.MICROBIT_ID_IO_P6,
@@ -69,35 +64,47 @@ namespace pxsim {
                     DAL.MICROBIT_ID_IO_P10,
                     DAL.MICROBIT_ID_IO_P11,
                     DAL.MICROBIT_ID_IO_P12,
-                    DAL.MICROBIT_ID_IO_P13, 
+                    DAL.MICROBIT_ID_IO_P13,
                     DAL.MICROBIT_ID_IO_P14,
                     DAL.MICROBIT_ID_IO_P15,
-                    DAL.MICROBIT_ID_IO_A1_RX,
+                    DAL.MICROBIT_ID_IO_P16,
                     0,
                     0,
-                    DAL.MICROBIT_ID_IO_A0_SCL,
-                    DAL.MICROBIT_ID_IO_A0_SDA
-                    
+                    DAL.MICROBIT_ID_IO_P19,
+                    DAL.MICROBIT_ID_IO_P20
                 ],
                 servos: {
                     "P0": DAL.MICROBIT_ID_IO_P0,
                     "P1": DAL.MICROBIT_ID_IO_P1,
                     "P2": DAL.MICROBIT_ID_IO_P2,
-                    "P3": DAL.MICROBIT_ID_IO_P3
+                    "P3": DAL.MICROBIT_ID_IO_P3,
+                    "P4": DAL.MICROBIT_ID_IO_P4,
+                    "P5": DAL.MICROBIT_ID_IO_P5,
+                    "P6": DAL.MICROBIT_ID_IO_P6,
+                    "P7": DAL.MICROBIT_ID_IO_P7,
+                    "P8": DAL.MICROBIT_ID_IO_P8,
+                    "P9": DAL.MICROBIT_ID_IO_P9,
+                    "P10": DAL.MICROBIT_ID_IO_P10,
+                    "P11": DAL.MICROBIT_ID_IO_P11,
+                    "P12": DAL.MICROBIT_ID_IO_P12,
+                    "P13": DAL.MICROBIT_ID_IO_P13,
+                    "P14": DAL.MICROBIT_ID_IO_P14,
+                    "P15": DAL.MICROBIT_ID_IO_P15,
+                    "P16": DAL.MICROBIT_ID_IO_P16,
+                    "P19": DAL.MICROBIT_ID_IO_P19
                 }
             });
             this.builtinParts["radio"] = this.radioState = new RadioState(runtime, this, {
                 ID_RADIO: DAL.MICROBIT_ID_RADIO,
                 RADIO_EVT_DATAGRAM: DAL.MICROBIT_RADIO_EVT_DATAGRAM
             });
-            this.builtinParts["microphone"] = this.microphoneState = new MicrophoneState(DAL.DEVICE_ID_MICROPHONE, 0, 255, 75, 180);
+            this.builtinParts["microphone"] = this.microphoneState = new MicrophoneState(DAL.DEVICE_ID_MICROPHONE, 0, 255, 86, 165);
             this.builtinParts["recording"] = this.recordingState = new RecordingState();
             this.builtinParts["accelerometer"] = this.accelerometerState = new AccelerometerState(runtime);
             this.builtinParts["serial"] = this.serialState = new SerialState(runtime, this);
             this.builtinParts["thermometer"] = this.thermometerState = new ThermometerState();
             this.builtinParts["lightsensor"] = this.lightSensorState = new LightSensorState();
             this.builtinParts["compass"] = this.compassState = new CompassState();
-            this.builtinParts["speaker"] = this.speakerState = new SpeakerState();
             this.builtinParts["microservo"] = this.edgeConnectorState;
             this.builtinParts["logotouch"] = this.logoTouch = new Button(DAL.MICROBIT_ID_LOGO);
 
@@ -124,35 +131,27 @@ namespace pxsim {
 
         initAsync(msg: SimulatorRunMessage): Promise<void> {
             super.initAsync(msg);
-            // console.log('SIM MESSAGE',msg)
-            if( msg.dependencies == undefined // exten list is undefined, only simulator without editor like https://makecode.calliope.cc/---run?id=_8i5WTJ5ciMdE
-                || msg.dependencies.v3 != undefined // v3 extension is available
-            ) {
-                console.log('V3 SIMULATOR')
-                this.hardwareVersion = 3
-            } else {
-                console.log('V1 SIMULATOR')
-                this.hardwareVersion = 1
-            }
+
             const boardDef = msg.boardDefinition;
             const cmpsList = msg.parts;
             const cmpDefs = msg.partDefinitions || {};
             const fnArgs = msg.fnArgs;
 
-            // const v2Parts: pxt.Map<boolean> = {
-            //     "microphone": true,
-            //     "logotouch": true,
-            //     "builtinspeaker": true,
-            //     "v2": true
-            // };
-            // if (msg.builtinParts) {
-            //     const v2PartsUsed = msg.builtinParts.filter(k => v2Parts[k])
-            //     if (v2PartsUsed.length) {
-            //         console.log(`detected v2 feature`, v2PartsUsed);
-            //         cmpsList.push(...v2PartsUsed);
-            //         this.hardwareVersion = 2;
-            //     }
-            // }
+            const v2Parts: pxt.Map<boolean> = {
+                "microphone": true,
+                "logotouch": true,
+                "builtinspeaker": true,
+                "flashlog": true,
+                "v2": true
+            };
+            if (msg.builtinParts) {
+                const v2PartsUsed = msg.builtinParts.filter(k => v2Parts[k])
+                if (v2PartsUsed.length) {
+                    console.log(`detected v2 feature`, v2PartsUsed);
+                    cmpsList.push(...v2PartsUsed);
+                    this.hardwareVersion = 2;
+                }
+            }
 
             const opts: visuals.BoardHostOpts = {
                 state: this,
@@ -180,9 +179,9 @@ namespace pxsim {
                 setParentMuteState("disabled");
             }
 
-            // if (msg.theme === "mbcodal") {
-            //     this.ensureHardwareVersion(2);
-            // }
+            if (msg.theme === "mbcodal") {
+                this.ensureHardwareVersion(2);
+            }
             return Promise.resolve();
         }
 

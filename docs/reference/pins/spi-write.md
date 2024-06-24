@@ -10,9 +10,7 @@ Data values are written to a SPI slave device connected to the @boardname@ by th
 
 ### ~ hint
 
-#### Simulator
-
-This function needs real hardware to work with. It's not supported in the simulator.
+**Simulator**: This function needs real hardware to work with. It's not supported in the simulator.
 
 ### ~
 
@@ -30,7 +28,7 @@ Send the command to read the value of the _WHOAMI_ register from the device conn
 
 ```blocks
 pins.digitalWritePin(DigitalPin.P0, 1);
-pins.spiPins(DigitalPin.C15, DigitalPin.C14, DigitalPin.C13);
+pins.spiPins(DigitalPin.P15, DigitalPin.P14, DigitalPin.P13);
 pins.spiFormat(8, 3);
 pins.spiFrequency(1000000);
 pins.digitalWritePin(DigitalPin.P0, 0);

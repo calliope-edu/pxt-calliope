@@ -10,9 +10,7 @@ A device connected to the I2C pins on the @boardname@ at the address is selected
 
 ### ~ hint
 
-#### Simulator
-
-This function needs real hardware to work with. It's not supported in the simulator.
+**Simulator**: This function needs real hardware to work with. It's not supported in the simulator.
 
 ### ~
 

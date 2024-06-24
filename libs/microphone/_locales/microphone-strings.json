@@ -1,0 +1,12 @@
+{
+  "DetectedSound.Loud|block": "loud",
+  "DetectedSound.Quiet|block": "quiet",
+  "SoundThreshold.Loud|block": "loud",
+  "SoundThreshold.Quiet|block": "quiet",
+  "input.onSound|block": "on %sound sound",
+  "input.setSoundThreshold|block": "set %sound sound threshold to %value",
+  "input.soundLevel|block": "sound level",
+  "input|block": "input",
+  "{id:category}Input": "Input",
+  "{id:group}micro:bit (V2)": "micro:bit (V2)"
+}

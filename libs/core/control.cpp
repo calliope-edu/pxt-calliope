@@ -68,12 +68,12 @@ enum EventBusSource {
     MICROBIT_ID_IO_P14_ = MICROBIT_ID_IO_P14,
     //% blockIdentity="control.eventSourceId"
     MICROBIT_ID_IO_P15_ = MICROBIT_ID_IO_P15,
-    // //% blockIdentity="control.eventSourceId"
-    // MICROBIT_ID_IO_P16_ = MICROBIT_ID_IO_P16,
-    // //% blockIdentity="control.eventSourceId"
-    // MICROBIT_ID_IO_P19_ = MICROBIT_ID_IO_P19,
-    // //% blockIdentity="control.eventSourceId"
-    // MICROBIT_ID_IO_P20_ = MICROBIT_ID_IO_P20,
+    //% blockIdentity="control.eventSourceId"
+    MICROBIT_ID_IO_P16_ = MICROBIT_ID_IO_P16,
+    //% blockIdentity="control.eventSourceId"
+    MICROBIT_ID_IO_P19_ = MICROBIT_ID_IO_P19,
+    //% blockIdentity="control.eventSourceId"
+    MICROBIT_ID_IO_P20_ = MICROBIT_ID_IO_P20,
     //% blockIdentity="control.eventSourceId"
     MES_DEVICE_INFO_ID_ = MES_DEVICE_INFO_ID,
     //% blockIdentity="control.eventSourceId"
@@ -263,7 +263,7 @@ namespace control {
     }
 
     /**
-     * Resets the Calliope mini.
+     * Resets the BBC micro:bit.
      */
     //% weight=30 async help=control/reset blockGap=8
     //% blockId="control_reset" block="reset"

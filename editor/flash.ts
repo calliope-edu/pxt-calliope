@@ -246,8 +246,7 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
     get devVariant() {
         if (this.usesCODAL === undefined)
             console.warn('try to access codal information before it is computed')
-        // return this.usesCODAL ? "minicodal-" : "minidal-";
-        return this.usesCODAL ? "" : "";
+        return this.usesCODAL ? "mbcodal" : "mbdal";
     }
 
     unsupportedParts() {

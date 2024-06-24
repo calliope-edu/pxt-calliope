@@ -1,14 +1,6 @@
 {
-    "name": "microphone",
-    "description": "Additional microphone blocks. Calliope mini 3 only.",
     "additionalFilePath": "../../node_modules/pxt-common-packages/libs/microphone",
     "dependencies": {
         "core": "file:../core"
-    },
-    "disablesVariants": [
-        "minidal",
-        "minidalusb"
-    ],
-    "weight": 98,
-    "icon": "./static/packages/microphone/icon.png"
+    }
 }

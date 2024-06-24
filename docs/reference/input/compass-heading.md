@@ -23,14 +23,14 @@ This program finds the compass heading and stores it in the
 let degrees = input.compassHeading()
 ```
 
-## ~hint 
+### ~hint 
 
 #### Compass simulation
 
 When you run a program that in the simulator, click and drag
 the compass needle on the screen to change the compass heading.
 
-## ~
+### ~
 
 ## Example: compass
 
@@ -43,15 +43,15 @@ let degrees = 0
 basic.forever(() => {
     degrees = input.compassHeading()
     if (degrees < 45) {
-        basic.showIcon(IconNames.ArrowNorth)
+        basic.showArrow(ArrowNames.North)
     } else if (degrees < 135) {
-        basic.showIcon(IconNames.ArrowEast)
+        basic.showArrow(ArrowNames.East)
     } else if (degrees < 225) {
-        basic.showIcon(IconNames.ArrowSouth)
+        basic.showArrow(ArrowNames.South)
     } else if (degrees < 315) {
-        basic.showIcon(IconNames.ArrowWest)
+        basic.showArrow(ArrowNames.West)
     } else {
-        basic.showIcon(IconNames.ArrowNorth)
+        basic.showArrow(ArrowNames.North)
     }
 })
 ```
@@ -67,17 +67,19 @@ will ask you to draw a fill pattern on the screen by tilting the @boardname@.
 If you are calibrating or using the compass near metal, it might
 confuse the @boardname@.
 
-## ~ hint
+### ~ hint
+
+#### Make a calibration tool
 
 Keep the calibration handy by running it when the user pressed **A+B**.
 
 ```block
-input.onButtonEvent(Button.AB, input.buttonEventClick(), () => {
+input.onButtonPressed(Button.AB, () => {
     input.calibrateCompass();
 })
 ```
 
-## ~
+### ~
 
 ## See also
 

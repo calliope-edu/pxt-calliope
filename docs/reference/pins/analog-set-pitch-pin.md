@@ -12,8 +12,6 @@ pins.analogSetPitchPin(AnalogPin.P0)
 
 ## Example
 
-Set the pitch pin to `P0` and send a 440 Hz tone for 1 second.
-
 ```blocks
 pins.analogSetPitchPin(AnalogPin.P0)
 let frequency = 440
@@ -28,8 +26,5 @@ pins.analogPitch(frequency, duration)
 
 ## See also
 
-[@boardname@ pins](/device/pins),
-[analog set period](/reference/pins/analog-set-period),
-[analog pitch](/reference/pins/analog-pitch),
-[set audio pin](/reference/pins/set-audio-pin)
+[@boardname@ pins](/device/pins), [analog set period](/reference/pins/analog-set-period), [analog pitch](/reference/pins/analog-pitch)
 

@@ -1,10 +1,11 @@
 {
     "name": "{0} bit",
-    "description": "",
     "dependencies": {
         "core": "file:../core",
-        "radio": "file:../radio"
+        "radio": "file:../radio",
+        "microphone": "file:../microphone"
     },
+    "description": "",
     "files": [
         "main.ts",
         "README.md"

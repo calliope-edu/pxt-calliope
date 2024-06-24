@@ -6,17 +6,9 @@ Play no sound (rest) on the speaker or at a sound pin for the amount of time you
 music.rest(400)
 ```
 
-### ~ hint
+The duration of the rest is set as a number milliseconds. Instead, it's typical to use a number of beats or a beat fraction for a rest. The ``||music:beat||`` block is used to convert beats to milliseconds. You can also make a custom rest by setting the rest duration to certain amount of milliseconds.
 
-**Simulator**: This function only works on the @boardname@ and in some browsers.
-
-## ~
-
-## Parameters
-
-* ``ms`` is a [number](/types/number) saying how many
-  milliseconds the @boardname@ should rest. One second is 1000
-  milliseconds.
+### ~hint
 
 #### Simulator
 
@@ -41,7 +33,7 @@ basic.forever(function () {
 })
 ```
 
-## See also
+### Custom rest time
 
 Continuously play a `Middle C` note followed by a random rest time.
 

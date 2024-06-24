@@ -1,37 +1,37 @@
-![](/static/mb/device/calliope_website.jpg)
+![](/static/mb/device/pano.jpg)
 
 # About
 
-## @description A Blocks / Javascript code editor for the Calliope mini, a pocket-size computer with 5x5 display, sensors and Bluetooth.
+## @description A Blocks / Javascript / Python code editor for the micro:bit, a pocket-size computer with 5x5 display, sensors and Bluetooth.
 
-The [Calliope mini](https://calliope.cc) is a [pocket-size computer]([/device](https://calliope.cc/en/calliope-mini/tech-facts)) with a 5x5 display of 25 LEDs, Bluetooth and sensors that can be programmed by anyone.
+The [BBC micro:bit](https://microbit.org) is a [pocket-size computer](/device) with a 5x5 display of 25 LEDs, Bluetooth and sensors that can be programmed by anyone. The BBC micro:bit was made possible by many [partners](https://www.microbit.co.uk/partners).
 
-The Calliope mini provides an easy and fun introduction to programming and making ??? switch on, program it to do something fun ??? wear it, customize it.
-Just like Arduino, the Calliope mini can additionally be connected to and interact with sensors, displays, and other devices. 
+The micro:bit provides an easy and fun introduction to programming and making – switch on, program it to do something fun – wear it, customize it.
+Just like Arduino, the micro:bit can be connected to and interact with sensors, displays, and other devices. 
 
 * [Read the docs](/docs)
 
 ## [Hardware: The Device](/device)
 
-The Calliope mini is packaged with sensors, radio and other goodies. Learn about the [hardware components]([/device](https://calliope.cc/en/calliope-mini/tech-facts)) of the Calliope mini to make the most of it!
+The BBC micro:bit is packaged with sensors, radio, microphone, speaker and other goodies. Learn about the [hardware components](/device) of the micro:bit to make the most of it!
 
 ## ~ hint
 
-**Looking to buy a Calliope mini?** See the [list of resellers](https://calliope.cc/en/shops).
+**Looking to buy a micro:bit?** See the [list of resellers](https://microbit.org/resellers).
 
 ## ~
 
 ## Programming: [Blocks](/blocks) or [JavaScript](/javascript)
 
-You can program the Calliope mini using [Blocks](/blocks) or [JavaScript](/javascript) in your web browser via the [Calliope mini APIs](/reference):
+You can program the micro:bit using [Blocks](/blocks) or [JavaScript](/javascript) in your web browser via the [micro:bit APIs](/reference):
 
 ```block
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+input.onButtonPressed(Button.A, () => {
     basic.showString("Hi!");
 })
 ```
 ```typescript
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+input.onButtonPressed(Button.A, () => {
     basic.showString("Hi!");
 })
 ```
@@ -40,21 +40,21 @@ The editor work in [most modern browsers](/browsers), work [offline](/offline) o
 
 ## [Compile and Flash: Your Program!](/device/usb)
 
-When you have your code ready, you connect your Calliope mini to a computer via a USB cable, so it appears as a mounted drive (named MINI). If you are using the Calliope mini REV2 you also see another drive (FLASH).
+When you have your code ready, you connect your micro:bit to a computer via a USB cable, so it appears as a mounted drive (named MICROBIT). 
 
 Compilation to ARM thumb machine code from [Blocks](/blocks) or [JavaScript](/javascript) happens in the browser. You save the ARM binary 
-program to a file, which you then copy to the Calliope mini drive, which flashes the Calliope mini device with the new program.
+program to a file, which you then copy to the micro:bit drive, which flashes the micro:bit device with the new program.
 
 ## Simulator: Test Your Code
 
-You can run your code using the Calliope mini simulator, all within the confines of a web browser. 
+You can run your code using the micro:bit simulator, all within the confines of a web browser. 
 The simulator has support for the LED screen, buttons, as well as compass, accelerometer, and digital I/O pins.
 
 ```sim
 basic.forever(() => {
   basic.showString("Hi!");
 })
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+input.onButtonPressed(Button.A, () => {
     led.stopAnimation();
     basic.showLeds(`
 . . . . .
@@ -63,7 +63,7 @@ input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
 # . . . #
 . # # # .`);
 });
-input.onButtonEvent(Button.B, input.buttonEventValue(ButtonEvent.Down), () => {
+input.onButtonPressed(Button.B, () => {
     led.stopAnimation();
     basic.showLeds(`
 . # . # .
@@ -80,11 +80,11 @@ We have tons of [projects](/projects), [examples](/examples) and [courses](/cour
 
 ## C++ Runtime
 
-The [C++ Calliope mini runtime](http://lancaster-university.github.io/microbit-docs/), created at [Lancaster University](http://www.lancaster.ac.uk/), provides access to the hardware functions of the Calliope mini, 
+The [C++ micro:bit runtime](http://lancaster-university.github.io/microbit-docs/), created at [Lancaster University](http://www.lancaster.ac.uk/), provides access to the hardware functions of the micro:bit, 
 as well as a set of helper functions (such as displaying a number/image/string on the LED screen). 
 
-The [Calliope mini library](/reference) mirrors the functions of the C++ library. 
-When code is compiled to ARM machine code, the calls to JavaScript Calliope mini functions are replaced with calls to the corresponding C++ functions.
+The [micro:bit library](/reference) mirrors the functions of the C++ library. 
+When code is compiled to ARM machine code, the calls to JavaScript micro:bit functions are replaced with calls to the corresponding C++ functions.
 
 ## [Command Line Tools](/cli)
 
@@ -96,7 +96,7 @@ Create, edit and distribute your own blocks and JavaScript using [extensions](/e
 
 ## [Open Source](/open-source)
 
-The code for the Calliope mini is [open source](/open-source) on GitHub. Contributors are welcome!
+The code for the micro:bit is [open source](/open-source) on GitHub. Contributors are welcome!
 
 ```package
 radio

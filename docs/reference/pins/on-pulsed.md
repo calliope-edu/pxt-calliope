@@ -8,9 +8,7 @@ pins.onPulsed(DigitalPin.P0, PulseValue.High, () => { });
 
 ### ~ hint
 
-#### Simulator
-
-This function needs real hardware to work with. It's not supported in the simulator.
+**Simulator**: This function needs real hardware to work with. It's not supported in the simulator.
 
 ### ~
 

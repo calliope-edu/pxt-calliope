@@ -10,10 +10,17 @@ The @boardname@ measures magnetic force in **microteslas**.
 
 ### ~hint
 
-You are asked to [calibrate](https://support.microbit.org/support/solutions/articles/19000008874-calibrating-the-micro-bit-compass) the compass the first time run a program
-that uses the compass.
+#### Compass calibration
 
-## ~
+The magnetometer doesn't automatically calibrate to the Earth's magnetic field when reading magnetic force. This is so you can detect localized magnetic attractions in your tests and experiments. If you want to calibrate for magnetic polar alignment before measuring magnetic force, you need to first calibrate using:
+
+```block
+input.calibrateCompass()
+```
+
+When you run this block you will be asked to [calibrate](https://support.microbit.org/support/solutions/articles/19000008874-calibrating-the-micro-bit-compass) for the compass.
+
+### ~
 
 ## Parameters
 
@@ -24,7 +31,7 @@ that uses the compass.
 
 ## Returns
 
-* a [number](/types/number) of microteslas that means the strength of the magnet
+* a [number](/types/number) of microteslas that is the strength of the magnetic force.
 
 ## Example
 

@@ -2,9 +2,9 @@
 
 ## {Introduction @unplugged}
 
-Let's create some digital 🎲 dice 🎲 with our @boardname@!
+Let's create some digital 🎲 dice 🎲 with our micro:bit!
 
-![A mini dice](/static/calliope/tutorials/04_dice_animation.gif)
+![A microbit dice](/static/mb/projects/dice.png)
 
 ## {Step 1}
 

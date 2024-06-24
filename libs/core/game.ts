@@ -21,7 +21,7 @@ enum LedSpriteProperty {
 /**
  * A single-LED sprite game engine
  */
-//% color=#008272 weight=32 icon="\uf11b"
+//% color=#007A4B weight=32 icon="\uf11b"
 //% advanced=true
 namespace game {
     let _score: number = 0;
@@ -323,9 +323,9 @@ namespace game {
     }
 
     function unplugEvents(): void {
-        input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), () => { });
-        input.onButtonEvent(Button.B, input.buttonEventValue(ButtonEvent.Click), () => { });
-        input.onButtonEvent(Button.AB, input.buttonEventValue(ButtonEvent.Click), () => {
+        input.onButtonPressed(Button.A, () => { });
+        input.onButtonPressed(Button.B, () => { });
+        input.onButtonPressed(Button.AB, () => {
             control.reset();
         });
     }

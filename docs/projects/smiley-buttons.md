@@ -1,84 +1,62 @@
 # Smiley Buttons
 
-## Introduction @unplugged
+## Code a micro:bit emoji! @unplugged
 
-Code the buttons on the @boardname@ to show that it's happy or sad.
-(Want to learn how the buttons works? [Watch this video](https://youtu.be/t_Qujjd_38o)).
+Program the buttons on the @boardname@ to show a happy 😀 or sad face 🙁
 
-![Pressing the A and B buttons](/static/calliope/tutorials/03_smiley_button_animation.gif)
+![Pressing the A and B buttons](/static/mb/projects/smiley-buttons/sim.gif)
 
-## Step 1 @fullscreen
+## {Step 1}
 
-Use the ``||input:on button pressed||`` block to run code when button **A** is pressed.
-
-```blocks
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), () => { 
-});
-```
-
-## Step 2 @fullscreen
-
-Place a ``||basic:show leds||`` block inside ``||input:on button pressed||`` to display a smiley on the screen. Press the **A** button in the simulator to see the smiley.
+Let's show a happy face when we press button **A**.  
+Click on the ``||basic:Basic||`` category in the Toolbox. Drag a ``||basic:show icon||`` block into the ``||input:on button A pressed||`` block.  
+In the ``||basic:show icon||`` block, click on the Heart icon to open the menu. Select a Happy Face icon.
 
 ```blocks
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), () => { 
-    basic.showLeds(`
-        # # . # #
-        # # . # #
-        . . . . .
-        # . . . #
-        . # # # .`
-        )
+input.onButtonPressed(Button.A, function() { 
+    basic.showIcon(IconNames.Happy)
 })
 ```
 
-## Step 3 @fullscreen
+## {Step 2}
 
-Add ``||input:on button pressed||`` and ``||basic:show leds||`` blocks to display a frowny when button **B** is pressed.
+In the @boardname@ simulator on the screen, press the **A** button. Do you see a happy face? ⭐ Great job! ⭐
+
+## {Step 3}
+
+Now let's show a sad face when we press button **B**.  
+Click on the ``||input:Input||`` category in the Toolbox. 
+Drag another ``||input:on button A pressed||`` block onto the coding workspace (you can place this anywhere). 
+Click on the **A** button drop-down menu, and select **B**.
 
 ```blocks
-input.onButtonEvent(Button.B, input.buttonEventValue(ButtonEvent.Click), () => { 
-    basic.showLeds(`
-        # # . # #
-        # # . # #
-        . . . . .
-        . # # # .
-        # . . . #`
-        );
-});
+input.onButtonPressed(Button.B, function() {})
 ```
 
-## Step 4 @fullscreen
+## {Step 4}
 
-Add a secret mode that happens when **A** and **B** are pressed together. For this case, add multiple ``||basic:show leds||`` blocks to create an animation.
+From the ``||basic:Basic||`` category, drag another ``||basic:show icon||`` block into the ``||input:on button B pressed||`` block. 
+In this ``||basic:show icon||`` block, click on the Heart icon to open the menu. 
+Select a Sad Face icon.
 
 ```blocks
-input.onButtonEvent(Button.AB, input.buttonEventValue(ButtonEvent.Click), () => {
-    basic.showLeds(`
-        . . . . .
-        # . # . .
-        . . . . .
-        # . . . #
-        . # # # .
-        `)
-    basic.showLeds(`
-        . . . . .
-        . . # . #
-        . . . . .
-        # . . . #
-        . # # # .
-        `)    
+input.onButtonPressed(Button.B, function() {
+    basic.showIcon(IconNames.Sad)
 })
 ```
+## {Step 5}
 
-## Step 5
+In the @boardname@ simulator on the screen, press the **B** button. Do you see a sad face? ⭐ Great job! ⭐
 
-If you have a @boardname@, connect it to USB and click ``|Download|`` to transfer your code. Press button **A** on your @boardname@. Try button **B** and then **A** and **B** together.
+## {Step 6}
 
-## Step 6
+If you have a @boardname@ device, connect it to your computer and click the ``|Download|`` button. Follow the instructions to transfer your code onto the @boardname@. Try pressing the **A** and **B** buttons on the micro:bit to see your happy 😀 and sad 🙁 emojis!
 
-Nice! Now go and show it off to your friends!
+## {Step 7}
+
+Go further - try adding a secret emoji that appears when **A** and **B** buttons are pressed together! 
+Learn more about how the @boardname@ buttons work by watching [this video](https://youtu.be/t_Qujjd_38o).
 
 ```template
-//
+input.onButtonPressed(Button.A, function() {})
 ```

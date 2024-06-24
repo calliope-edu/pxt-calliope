@@ -1,15 +1,11 @@
 namespace pxsim.input {
-    export function onButtonEvent(button: number, buttonEvent: number, handler: RefAction): void {
+    export function onButtonPressed(button: number, handler: RefAction): void {
         let b = board().buttonPairState;
         if (button == b.props.ID_BUTTON_AB && !b.usesButtonAB) {
             b.usesButtonAB = true;
             runtime.queueDisplayUpdate();
         }
-        pxtcore.registerWithDal(button, buttonEvent, handler);
-    }
-
-    export function onButtonPressed(button: number, handler: RefAction): void {
-        onButtonEvent(button, DAL.MICROBIT_BUTTON_EVT_CLICK, handler)
+        pxtcore.registerWithDal(button, DAL.MICROBIT_BUTTON_EVT_CLICK, handler);
     }
 
     export function buttonIsPressed(button: number): boolean {
@@ -22,5 +18,4 @@ namespace pxsim.input {
         if (button == b.bBtn.id) return b.bBtn.pressed;
         return b.abBtn.pressed || (b.aBtn.pressed && b.bBtn.pressed);
     }
-
 }

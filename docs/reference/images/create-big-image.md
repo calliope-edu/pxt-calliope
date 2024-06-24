@@ -36,10 +36,10 @@ let arrows = images.createBigImage(`
     . . # . .   . # # # .
     . . # . .   . . # . .
     `);
-input.onButtonEvent(Button.A, input.buttonEventClick(), () => {
+input.onButtonPressed(Button.A, () => {
     arrows.showImage(0);
 });
-input.onButtonEvent(Button.B, input.buttonEventClick(), () => {
+input.onButtonPressed(Button.B, () => {
     arrows.showImage(5);
 });
 ```

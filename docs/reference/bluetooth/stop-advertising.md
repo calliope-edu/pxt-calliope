@@ -24,7 +24,7 @@ bluetooth.stopAdvertising();
 ## Example: stop advertising on button pressed
 
 ```blocks
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+input.onButtonPressed(Button.A, () => {
     bluetooth.stopAdvertising();
 })
 ```

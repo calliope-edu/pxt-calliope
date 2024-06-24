@@ -10,9 +10,7 @@ To configure the @boardname@ to write to an external device using a SPI connecti
 
 ### ~ hint
 
-#### Simulator
-
-This function needs real hardware to work with. It's not supported in the simulator.
+**Simulator**: This function needs real hardware to work with. It's not supported in the simulator.
 
 ### ~
 
@@ -33,7 +31,7 @@ If you don't set the pins for the SPI connection, the default pin assignments ar
 Set the pin assignments for a SPI connection to the default pins.
 
 ```blocks
-pins.spiPins(DigitalPin.C15, DigitalPin.C14, DigitalPin.C13);
+pins.spiPins(DigitalPin.P15, DigitalPin.P14, DigitalPin.P13);
 ```
 
 ## See also

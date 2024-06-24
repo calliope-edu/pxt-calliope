@@ -12,13 +12,13 @@ basic.showLeds(`
 . . . . .
 . . . . .
 `);
-basic.showString("hi!");
+basic.showString("Hello!");
 basic.clearScreen();
 basic.forever(() => {
     
 });
 basic.pause(100);
-basic.showIcon(IconNames.ArrowNorth);
+basic.showArrow(ArrowNames.North);
 ```
 
 ## See also
@@ -27,4 +27,4 @@ basic.showIcon(IconNames.ArrowNorth);
 [showIcon](/reference/basic/show-icon),
 [showLeds](/reference/basic/show-leds), [showString](/reference/basic/show-string), 
 [clearScreen](/reference/basic/clear-screen), [forever](/reference/basic/forever), [pause](/reference/basic/pause), 
-[showAnimation](/reference/basic/show-animation)
+[showArrow](/reference/basic/show-arrow)

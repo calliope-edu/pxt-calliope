@@ -34,19 +34,19 @@ let direction = ""
 basic.forever(function() {
     degrees = input.compassHeading()
     if (degrees < 45) {
-        basic.showIcon(IconNames.ArrowNorth)
+        basic.showArrow(ArrowNames.North)
         direction = "North"
     } else if (degrees < 135) {
-        basic.showIcon(IconNames.ArrowEast)
+        basic.showArrow(ArrowNames.East)
         direction = "East"
     } else if (degrees < 225) {
-        basic.showIcon(IconNames.ArrowSouth)
+        basic.showArrow(ArrowNames.South)
         direction = "South"
     } else if (degrees < 315) {
-        basic.showIcon(IconNames.ArrowWest)
+        basic.showArrow(ArrowNames.West)
         direction = "West"
     } else {
-        basic.showIcon(IconNames.ArrowNorth)
+        basic.showArrow(ArrowNames.North)
         direction = "North"
     }
     serial.writeLine(direction + " @ " + degrees + " degrees")

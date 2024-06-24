@@ -16,7 +16,7 @@ Press button ``A`` as much as possible.
 At the end of 10 seconds, the program will show your score.
 
 ```blocks
-input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+input.onButtonPressed(Button.A, () => {
     game.addScore(1)
 })
 game.startCountdown(10000)

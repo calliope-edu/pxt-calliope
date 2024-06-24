@@ -1,54 +1,90 @@
 # WebUSB
 
-[WebUSB](https://wicg.github.io/webusb/) is an emerging web standard that allows to access @boardname@ from web pages. 
-It allows for a **one-click download** without installing any additional app or software! It also allows to receive data from the @boardname@.
+[WebUSB](https://wicg.github.io/webusb/) is a recent and developing web feature that allows you to access a @boardname@ directly from a web page. With MakeCode it allows for **one-click** downloads to your @boardname@ without installing an additional app or other software! It also lets you directly receive data into the MakeCode editor from the @boardname@.
 
-## Support
+https://youtu.be/PxfPs1zwKl0
 
-* Chrome 79+ browser for Android, Chrome OS, Linux, macOS and Windows 10.
-* Microsoft Edge 79+ browser for Android, Chrome OS, Linux, macOS and Windows 10.
+### ~ reminder
 
-## Prepare your @boardname@
+#### WebUSB support for your @boardname@
 
-Make sure that your @boardname@ is running version **0249** or above of the firmware. Upgrading is as easy as dragging a file and it takes a few seconds to get it done.
+If you're not using a current version of the Chrome or Microsoft Edge browsers, make sure they are this version or newer:
 
-* [Check out the instructions to check and upgrade your @boardname@.](/device/usb/webusb/troubleshoot)
+* Chrome (version 79 and newer) browser for Android, Chrome OS, Linux, macOS and Windows 10.
+* Microsoft Edge (version 79  and newer) browser for Android, Chrome OS, Linux, macOS and Windows 10.
+
+Also, if you have a [@boardname@ V1 board](https://support.microbit.org/support/solutions/articles/19000119162-how-to-identify-the-version-number-of-your-micro-bit), make sure that it is running version **0249** or above of the firmware. Upgrading is as easy as dragging a file to a folder and it takes a few seconds to get it done.
+
+* Check out the [instructions](/device/usb/webusb/troubleshoot) to check and upgrade your @boardname@.
+
+### ~
 
 ## Pair your @boardname@
 
-Here are the steps on the supported browsers:
+The first time you pair your @boardname@ with your computer you'll need to go through a few easy steps to get setup. Here's how to get paired with WebUSB:
 
-* connect your @boardname@ to your computer with the microUSB cable
-* open a project
-* click the triple dot icon on the **Download** button and click **Pair device**
-* click on the **Pair device** button and select **Calliope mini** or **DAPLink CMSIS-DAP** from the list.
+### Download your project
 
-If you don't see any devices in the list and @boardname@ has the right firmware (**0249** or above), you can create a [support ticket](https://support.microbit.org/support/tickets/new) to notify the Calliope mini Foundation of the problem. Skip the rest of these steps.
+Once you've created or opened a project, and you're ready to download it to the @boardname@, click the **Download** button at the bottom of the editor window.
 
-![Device list for WebUSB pairing](/static/mb/device/usb/no-pair.jpg)
+![Download button and menu](/static/mb/device/usb/download-button-menu.png)
 
-* When your @boardname@ is connected, you'll see the **Connected to Calliope mini** message window. Click on **Done** and you're ready to go!
+### Connect the USB cable
 
-![Connected message window](/static/mb/device/usb/connected.jpg)
+If you haven't connected it already, connect your @boardname@ to your computer with a [micro-USB](https://support.microbit.org/support/solutions/articles/19000037633-what-type-of-usb-lead-do-i-need-for-the-micro-bit-) cable. Then, click **Next** in the message window.
 
-* If the connection to your @boardname@ was unsuccessful, you'll see the **Connect failed** message. You can press **Try Again** to attempt the connection again or cancel the window and [troubleshoot](/device/usb/webusb/troubleshoot) your connection.
+![Connect device dialog](/static/mb/device/usb/connect-usb.png)
 
-![Connect failed message window](/static/mb/device/usb/connect-fail.jpg)
+### Pair the @boardname@ with your computer
 
-## Unpair your @boardname@ #unpair
+Another message window will display telling you to pair with the @boardname@ device. Click **Pair** to see to the device list.
 
-You will need to unpair your device from the editor to disable WebUSB.
+![Device name dialog](/static/mb/device/usb/pair-device.png)
 
-* Click on the **lock** icon in the address bar
-* Uncheck each **Calliope mini** or **DAPLink CMSIS-DAP** device
-* Reload the page
+The @boardname@ will appear as either **BBC micro:bit CMSIS-DAP** or **DAPLink CMSIS-DAP** in the list. Select the device and click **Connect**.
 
-![](/static/webusb/unpair.gif)
+![Device list for WebUSB pairing](/static/mb/device/usb/select-device-pair.png)
 
-## One-click Download
+### ~ alert
 
-Once your @boardname@ is paired, MakeCode will use WebUSB to transfer the code without having to drag and drop. Happy coding!
+#### Don't see your micro:bit device?
+
+If you don't see any devices in the list and the @boardname@ is either a **V2** board or has the correct firmware version (**0249** or above), you can create a [support ticket](https://support.microbit.org/support/tickets/new) to notify the Micro:bit Foundation of the problem. You can skip the remaining steps.
+
+![Device list for WebUSB pairing](/static/mb/device/usb/no-pair-device.png)
+
+### ~
+
+### You're connected!
+
+When your @boardname@ is connected, you'll see the **Connected to micro:bit** message window. Click on **Download** and you're project will transfer directly to the @boardname@!
+
+![Connected message window](/static/mb/device/usb/usb-connected.png)
+
+### ~ alert
+
+#### Connection failed?
+
+If the connection to your @boardname@ was unsuccessful, you'll see the **Failed to connect** message. You can press **Try Again** to attempt the connection again, download the project as a file instead, or cancel the window and [troubleshoot](/device/usb/webusb/troubleshoot) your connection.
+
+![Connect failed message window](/static/mb/device/usb/usb-connect-fail.png)
+
+### ~
+
+## One-click downloads
+
+Once your @boardname@ is paired, MakeCode will use WebUSB to transfer the code directly and you won't have to drag and drop .hex files from a folder. Just click the **Download** button in the editor and your project code will just transfer to the @boardname@.
 
 ## Console output
 
-MakeCode will be able to "listen" to your @boardname@ and display the console output.
+Another feature of having a WebUSB connection is that MakeCode will be able to detect console output from your @boardname@ and display the console output in the editor.
+
+## Unpair your @boardname@ #unpair
+
+If you don't want to use WebUSB any longer, you will need to unpair your device from the editor to disable the WebUSB connection.
+
+1. Click on the **lock** icon in the address bar of the browser.
+2. Uncheck each **BBC micro:bit CMSIS-DAP** or **DAPLink CMSIS-DAP** device displayed in the device list.
+3. Reload the MakeCode editor page.
+
+![Unpairing from the browser](/static/download/browser-unpair-image.gif)

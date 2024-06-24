@@ -1,35 +1,33 @@
-# Uploading from Microsoft Edge on Windows
+# Transferring from Microsoft Edge on Windows
 
-How to compile, transfer, and run a program on your Calliope mini on **Microsoft Edge**.
+How to compile, transfer, and run a program on your micro:bit with **Microsoft Edge**.
 
 While you're writing and testing your programs, you'll mostly be [running them
 in the simulator](/device/simulator), but once you've finished your program you
-can **compile** it and run it on your Calliope mini.
+can **compile** it and run it on your micro:bit.
 
 ## Transfer using a WebUSB connection
 
-1. Connect your @boardname@ to your computer via USB
+With Microsoft Edge (version 79 and newer), you can transfer your program to the @boardname@ with a single click. If your browser supports WebUSB, you can use the **one-click download** feature to send your programs to the @boardname@. See the [WebUSB](/device/usb/webusb) page to learn how to pair your @boardname@ with a computer and transfer your programs with a single click.
+
+## Downloading your program as file
+
+The basic steps are:
+
+1. Connect your @boardname@ to your computer with a USB cable (use an A-Male to Micro USB cable)
 2. Click **Download** to download the `.hex` file
-3. Click the **Save As** button in the bottom bar and save the `.hex` file into the MINI drive
+3. Click the **Save As** button in the bottom bar and save the `.hex` file into the MICROBIT drive
 
-## Requirements
+### Step 1: Connect your micro:bit to your computer
 
-You need the following things to transfer and run a script on your Calliope mini:
+First, connect the micro:bit:
 
-* A-Male to Micro USB cable to connect your computer to your Calliope mini. This is
-    the same cable that is commonly used to connect a smart phone to a computer.
-* A PC running Windows 7 or later, or a Mac running OS X 10.6 or later
-
-## Step 1: Connect your Calliope mini to your computer
-
-First, connect the Calliope mini:
-
-1. Connect the small end of the USB cable to the micro USB port on your Calliope mini.
+1. Connect the small end of the USB cable to the micro USB port on your micro:bit.
 
 2. Connect the other end of the USB cable to a USB port on your computer.
 
-Your computer should recognise your Calliope mini as a new drive. On computers
-running Windows, `MINI` appears as a drive under Devices and drives. On a Mac
+Your computer should recognise your micro:bit as a new drive. On computers
+running Windows, `MICROBIT` appears as a drive under Devices and drives. On a Mac
 it appears as a new drive under Devices.
 
 ![](/static/mb/device/usb-windows-device.jpg)
@@ -49,24 +47,26 @@ with the file.
 
 ![Save download file dialog](/static/mb/device/usb/save-as-edge.gif)
 
-5. Save the ``.hex`` file into the **MINI** drive
+5. Save the ``.hex`` file into the **MICROBIT** drive
 
-![Save hex file to MINI drive](/static/mb/device/usb/save-as-windows.png)
+![Save hex file to MICROBIT drive](/static/mb/device/usb/save-as-windows.png)
 
-## Step 3: Transfer the file to your Calliope mini
+## Step 3: Transfer the file to your micro:bit
 
-* The LED on the back of your Calliope mini flashes during the transfer (which 
+* The LED on the back of your micro:bit flashes during the transfer (which 
     should only take a few seconds).
 * Once transferred, the code will run automatically on your @boardname@. To rerun
    your program, press the reset button on the back of your @boardname@. The reset 
-   button automatically runs the newest file on the Calliope mini.
+   button automatically runs the newest file on the micro:bit.
 
-By copying the script onto the `MINI` drive, you have programmed it into the
-flash memory on the Calliope mini, which means even after you unplug the Calliope mini,
-your program will still run if the Calliope mini is powered by battery.
+By copying the script onto the `MICROBIT` drive, you have programmed it into the
+flash memory on the micro:bit, which means even after you unplug the micro:bit,
+your program will still run if the micro:bit is powered by battery.
 
-## ~hint
+### ~hint
+
+#### Transfer problems?
 
 Transfer not working? See some [troubleshooting tips](/device/usb/troubleshoot).
 
-## ~
+### ~

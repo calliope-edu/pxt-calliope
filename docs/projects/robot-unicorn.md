@@ -23,7 +23,7 @@ Here's what you'll need. The links telling where to get parts are just examples 
 - Some wire strippers and some electrical tape.
 - Some double sided sticky tape, some sellotape and/or some decent glue. Those double sided sticky pads work really well for fixing the servos to the cardboard chassis.
 
-![Calliope mini and Unicorn Horn](/static/mb/projects/robot-unicorn/microbitsunicorn.jpg)
+![micro:bits and Unicorn Horn](/static/mb/projects/robot-unicorn/microbitsunicorn.jpg)
 
 ### Instructions
 
@@ -123,7 +123,7 @@ basic.forever(function () {
 **MakeCode blocks for the Robot Unicorn controller**
 
 ```blocks
-input.onButtonEvent(Button.AB, input.buttonEventValue(ButtonEvent.Down), function () {
+input.onButtonPressed(Button.AB, function () {
     radio.sendNumber(4)
     basic.showLeds(`
         # . . . #
