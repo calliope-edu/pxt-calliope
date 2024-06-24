@@ -1,4 +1,7 @@
 {
+    "name": "servo",
+    "description": "A micro-servo library",
+    "icon": "./static/packages/servo/icon.png",
     "additionalFilePath": "../../node_modules/pxt-common-packages/libs/servo",
     "files": [
         "README.md",

@@ -5,25 +5,17 @@ Here are some cool activities to get you started with your @boardname@!
 ## Intro Content
 
 ### ~ codecard
-* name: Intro to micro:bit
-* description: Introduction to the BBC micro:bit
-* imageUrl: /static/herogallery/intro-to-microbit.png
-* url: https://microbit.org/get-started/first-steps/introduction/
+* name: CalliopEO
+* description: CALLIOPEO – The Calliope mini on the ISS.
+* imageUrl: /static/calliope/hero/02_Hero_CalliopEO.png
+* url: https://calliope.cc/calliopeo
+* buttonLabel: Explore!
 * cardType: link
 ---
-* name: Behind the MakeCode Hardware
-* description: Behind the MakeCode Hardware
-* imageUrl: /static/herogallery/behind-makecode-hardware.png
-* youTubePlaylistId: PLMMBk9hE-SeqDYtw9pGNPsQ10V_EGMyGe
----
-* name: Fun with Radio
-* description: Send messages with your micro:bit
-* imageUrl: /static/herogallery/send-messages-radio.png
-* url: /projects/micro-chat
-* cardType: tutorial
----
-* name: Soil Moisture Project
-* description: Track the soil moisture of your plants!
-* imageUrl: /static/herogallery/soil-moisture.png
-* url: /projects/soil-moisture
+* name: The 5x5 LED matrix
+* description: Code Your School – der Schulwettbewerb
+* imageUrl: /static/calliope/hero/hero_codeyourschool.jpg
+* url: https://calliope.cc/schulen/aktionen/code-your-school
+* buttonLabel: Explore!
+* cardType: link
 ### ~

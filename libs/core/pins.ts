@@ -1,9 +1,10 @@
 /**
  * Control currents in Pins for analog/digital signals, servos, i2c, ...
  */
-//% color=#B22222 weight=30 icon="\uf140"
+//% color=#A80000 weight=30 icon="\uf140"
 //% advanced=true
-//% groups='["Pins", "Pulse", "I2C", "SPI", "micro:bit (V2)"]'
+//% groups=['Analog', 'Digital', 'Servos', 'Pulse', 'Pitch', 'i2c', 'spi']
+
 namespace pins {
     /**
      * Map a number from one range to another. That is, a value of ``from low`` would get mapped to ``to low``, a value of ``from high`` to ``to high``, values in-between to values in-between, etc.
@@ -15,6 +16,7 @@ namespace pins {
      */
     //% help=pins/map weight=23
     //% blockId=pin_map block="map %value|from low %fromLow|from high %fromHigh|to low %toLow|to high %toHigh"
+    //% deprecated=true
     export function map(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
         return ((value - fromLow) * (toHigh - toLow)) / (fromHigh - fromLow) + toLow;
     }
@@ -24,8 +26,7 @@ namespace pins {
      */
     //% help=pins/i2c-read-number blockGap=8 advanced=true
     //% blockId=pins_i2c_readnumber block="i2c read number|at address %address|of format %format|repeated %repeat" weight=7
-    //% group="I2C"
-    //% weight=45
+    //% group="i2c"
     export function i2cReadNumber(address: number, format: NumberFormat, repeated?: boolean): number {
         let buf = pins.i2cReadBuffer(address, pins.sizeOf(format), repeated)
         return buf.getNumber(format, 0)
@@ -36,8 +37,7 @@ namespace pins {
      */
     //% help=pins/i2c-write-number blockGap=8 advanced=true
     //% blockId=i2c_writenumber block="i2c write number|at address %address|with value %value|of format %format|repeated %repeat" weight=6
-    //% group="I2C"
-    //% weight=44
+    //% group="i2c"
     export function i2cWriteNumber(address: number, value: number, format: NumberFormat, repeated?: boolean): void {
         let buf = createBuffer(pins.sizeOf(format))
         buf.setNumber(format, 0, value)

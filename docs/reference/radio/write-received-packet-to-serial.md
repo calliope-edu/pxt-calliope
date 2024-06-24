@@ -41,7 +41,7 @@ serial port.
 
 ```blocks
 radio.setGroup(44)
-input.onButtonPressed(Button.A, function () {
+input.onButtonEvent(Button.A, input.buttonEventClick(), function () {
     radio.sendNumber(input.temperature())
     radio.sendValue("temp", input.temperature())
     radio.sendString("It's warm now")

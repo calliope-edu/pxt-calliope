@@ -1,0 +1,35 @@
+{
+    "name": "core-mini-codal",
+    "description": "The mini codal core library",
+    "dependencies": {
+        "core": "file:../core",
+        "microphone": "file:../microphone",
+        "one-time-pairing": "file:../one-time-pairing"
+    },
+    "disablesVariants": [
+        "minidal"
+    ],
+    "hidden": true,
+    "files": [
+        "shims.d.ts",
+        "enums.d.ts",
+        "README.md",
+        "music.cpp",
+        "music.ts",
+        "motors.ts",
+        "soundexpressions.ts",
+        "playable.ts",
+        "rgbled.ts",
+        "logo.cpp",
+        "touchmode.cpp"
+    ],
+    "yotta": {
+        "userConfigs": [
+            {
+                "description": "Project compatible with Calliope mini 3",
+                "config": {
+                }
+            }
+        ]
+    }
+}

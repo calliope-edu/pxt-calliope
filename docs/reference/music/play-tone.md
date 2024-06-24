@@ -2,14 +2,21 @@
 
 Play a musical tone on the speaker or at a sound pin of the @boardname@ for as long as you say.
 
+## ~ hint
+
+This function only works on the @boardname@ and in some browsers.
+
+## ~
+
 ```sig
 music.playTone(440, 120)
 ```
 The frequency of the tone is set as a number of cycle per second, or Hertz. The [note frequency](/reference/music/note-frequency) block will allow you to use a musical note for the tone instead of a number of Hertz.
 
-The duration of the tone is set as a number of milliseconds. It's typical though to use a number of beats or a beat fraction for the tone duration instead. The ``||music:beat||`` block is used to convert beats to milliseconds. You can also make a custom duration by just setting the tone duration to certain amount of milliseconds.
+## Parameters
 
-### ~hint
+* ``frequency`` is the [number](/types/number) of Hertz (how high or low the tone is).
+* ``ms`` is the [number](/types/number) of milliseconds that the tone lasts
 
 #### Simulator
 
@@ -33,20 +40,13 @@ Play a `Middle C` for `1 beat`.
 music.playTone(music.noteFrequency(Note.C), music.beat(BeatFraction.Whole))
 ```
 
-### Custom tone frequency and duration
-
-Play a `250` Hertz tone for `1000` milliseconds.
-
-```blocks
-music.playTone(250, 1000)
-```
 
 ## Using other pins
 
-Use [analogSetPitchPin](/reference/pins/analog-set-pitch-pin) to change the pin used to generate music.
+Use [analogSetPitchPin](/reference/pins/analog-set-pitch-pin) to change that pin used to generate music.
 
 ```blocks
-pins.analogSetPitchPin(AnalogPin.P1)
+pins.analogSetPitchPin(AnalogPin.P1);
 ```
 
 ## See also

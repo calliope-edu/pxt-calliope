@@ -11,7 +11,7 @@ basic.pause(400)
 
 * **ms**: the number of milliseconds (duration) of your pause time. To convert from seconds: 100 milliseconds = 1/10 second and 1000 milliseconds = 1 second.
 
-## Example
+## Example: diagonal line
 
 Randomly turn on and off the LED pixels on the screen.
 
@@ -25,7 +25,7 @@ basic.forever(function () {
 
 ## Advanced
 
-If **ms** is an invalid number (`NaN`, not a number), the pause will default to `20` ms.
+If `ms` is `NaN` (not a number), it will default to `20` ms.
 
 ## See also
 

@@ -6,18 +6,16 @@ Play a musical tone on the speaker or at a sound pin of the @boardname@ with the
 music.ringTone(440)
 ```
 
-### ~hint
+## ~ hint
 
-#### Simulator
+**Simulator**: This function only works on the @boardname@ and in some browsers.
 
-The ``||music:ring tone||`` block works on the @boardname@ board. It might not work in the simulator on every browser.
-
-### ~
+## ~
 
 ## Parameters
 
 * ``frequency`` is a [number](/types/number) that says
-how high-pitched or low-pitched the tone is. This
+how high-pitched or low-pitched the tone is.  This
 number is in **Hz** (**Hertz**), which is a measurement of frequency
 or pitch.
 

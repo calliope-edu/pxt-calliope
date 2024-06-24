@@ -1,18 +1,10 @@
 namespace pxsim.input {
-    export function onPinPressed(pinId: number, handler: RefAction) {
+    export function onPinTouchEvent(pinId: number, pinEvent: number, handler: RefAction) {
         let pin = getPin(pinId);
         if (!pin) return;
         pin.isTouched();
-        runtime.queueDisplayUpdate();
-        pxtcore.registerWithDal(pin.id, DAL.MICROBIT_BUTTON_EVT_CLICK, handler);
-    }
-
-    export function onPinReleased(pinId: number, handler: RefAction) {
-        let pin = getPin(pinId);
-        if (!pin) return;
-        pin.isTouched();
-        runtime.queueDisplayUpdate();
-        pxtcore.registerWithDal(pin.id, DAL.MICROBIT_BUTTON_EVT_UP, handler);
+        runtime.queueDisplayUpdate(); 
+        pxtcore.registerWithDal(pin.id, pinEvent, handler);
     }
 
     export function pinIsPressed(pinId: number): boolean {
@@ -35,7 +27,8 @@ namespace pxsim.pins {
         let pin = getPin(pinId);
         if (!pin) return -1;
         pin.mode = PinFlags.Digital | PinFlags.Input;
-        return pin.value > 100 ? 1 : 0;
+        console.log(pin.value)
+        return pin.value >= 1 ? 1 : 0;
     }
 
     export function digitalWritePin(pinId: number, value: number) {
@@ -128,6 +121,7 @@ namespace pxsim.pins {
         // update analog output
         const b = board();
         if (!b || isNaN(frequency) || isNaN(ms)) return;
+        if (!b) return;
         const ec = b.edgeConnectorState;
         const pins = ec.pins;
         const pin = ec.pitchEnabled && (pins.filter(pin => !!pin && pin.pitch)[0] || pins[0]);

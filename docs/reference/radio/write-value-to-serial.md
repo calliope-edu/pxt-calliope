@@ -30,7 +30,7 @@ serial.
 
 ```blocks
 radio.setGroup(1)
-input.onButtonPressed(Button.A, () => {
+input.onButtonEvent(Button.A, input.buttonEventClick(), () => {
     radio.sendNumber(input.temperature());
 });
 radio.onDataReceived(() => {

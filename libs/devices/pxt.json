@@ -15,5 +15,6 @@
         "core": "file:../core",
         "bluetooth": "file:../bluetooth"
     },
+    "icon": "./static/packages/devices/icon.png",
     "installedVersion": "ljipgq"
 }

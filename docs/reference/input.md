@@ -3,10 +3,9 @@
 Events and data from sensors
 
 ```cards
-input.onButtonPressed(Button.A, function () {})
+input.onButtonEvent(Button.A, input.buttonEventClick(), function () {})
 input.onGesture(Gesture.Shake, function () {})
-input.onPinPressed(TouchPin.P0, function() {})
-input.onPinReleased(TouchPin.P0, function() {})
+input.onPinEvent(TouchPin.P0, input.buttonEventDown(), function() {})
 input.buttonIsPressed(Button.A)
 input.pinIsPressed(TouchPin.P0)
 input.isGesture(Gesture.Shake)
@@ -23,8 +22,8 @@ input.setAccelerometerRange(AcceleratorRange.OneG)
 
 ## See also
 
-[onButtonPressed](/reference/input/on-button-pressed), [onGesture](/reference/input/on-gesture),
-[onPinPressed](/reference/input/on-pin-pressed), [onPinReleased](/reference/input/on-pin-released),
+[On Button Event](/reference/input/on-button-event), [onGesture](/reference/input/on-gesture),
+[On Pin Event](/reference/input/on-pin-event),
 [buttonIsPressed](/reference/input/button-is-pressed), [pinIsPressed](/reference/input/pin-is-pressed),
 [is gesture](/reference/input/is-gesture),
 [compassHeading](/reference/input/compass-heading), [temperature](/reference/input/temperature),

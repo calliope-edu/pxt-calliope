@@ -39,6 +39,15 @@ declare namespace basic {
     }
 
 
+    declare const enum ButtonEvents {
+    Down = 1,  // MICROBIT_BUTTON_EVT_DOWN
+    Up = 2,  // MICROBIT_BUTTON_EVT_UP
+    Click = 3,  // MICROBIT_BUTTON_EVT_CLICK
+    LongClick = 4,  // MICROBIT_BUTTON_EVT_LONG_CLICK
+    Hold = 5,  // MICROBIT_BUTTON_EVT_HOLD
+    }
+
+
     declare const enum Dimension {
     //% block=x
     X = 0,
@@ -63,6 +72,7 @@ declare namespace basic {
     P0 = 100,  // MICROBIT_ID_IO_P0
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
+    P3 = 103,  // MICROBIT_ID_IO_P3
     }
 
 
@@ -259,12 +269,12 @@ declare namespace input {
     MICROBIT_ID_IO_P14 = 114,  // MICROBIT_ID_IO_P14
     //% blockIdentity="control.eventSourceId"
     MICROBIT_ID_IO_P15 = 115,  // MICROBIT_ID_IO_P15
-    //% blockIdentity="control.eventSourceId"
-    MICROBIT_ID_IO_P16 = 116,  // MICROBIT_ID_IO_P16
-    //% blockIdentity="control.eventSourceId"
-    MICROBIT_ID_IO_P19 = 119,  // MICROBIT_ID_IO_P19
-    //% blockIdentity="control.eventSourceId"
-    MICROBIT_ID_IO_P20 = 120,  // MICROBIT_ID_IO_P20
+    // //% blockIdentity="control.eventSourceId"
+    // MICROBIT_ID_IO_P16_ = MICROBIT_ID_IO_P16,
+    // //% blockIdentity="control.eventSourceId"
+    // MICROBIT_ID_IO_P19_ = MICROBIT_ID_IO_P19,
+    // //% blockIdentity="control.eventSourceId"
+    // MICROBIT_ID_IO_P20_ = MICROBIT_ID_IO_P20,
     //% blockIdentity="control.eventSourceId"
     MES_DEVICE_INFO_ID = 1103,  // MES_DEVICE_INFO_ID
     //% blockIdentity="control.eventSourceId"
@@ -425,6 +435,8 @@ declare namespace control {
     }
 declare namespace led {
 }
+declare namespace input {
+}
 
 
     declare const enum DigitalPin {
@@ -432,23 +444,95 @@ declare namespace led {
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
     P3 = 103,  // MICROBIT_ID_IO_P3
+
+    C4 = 104,  // MICROBIT_ID_IO_P4
+    //% blockHidden=true
     P4 = 104,  // MICROBIT_ID_IO_P4
+
+    C5 = 105,  // MICROBIT_ID_IO_P5
+    //% blockHidden=true
     P5 = 105,  // MICROBIT_ID_IO_P5
+
+    C6 = 106,  // MICROBIT_ID_IO_P6
+    //% blockHidden=true
     P6 = 106,  // MICROBIT_ID_IO_P6
+
+    C7 = 107,  // MICROBIT_ID_IO_P7
+    //% blockHidden=true
     P7 = 107,  // MICROBIT_ID_IO_P7
+
+    C8 = 108,  // MICROBIT_ID_IO_P8
+    //% blockHidden=true
     P8 = 108,  // MICROBIT_ID_IO_P8
+
+    C9 = 109,  // MICROBIT_ID_IO_P9
+    //% blockHidden=true
     P9 = 109,  // MICROBIT_ID_IO_P9
+
+    C10 = 110,  // MICROBIT_ID_IO_P10
+    //% blockHidden=true
     P10 = 110,  // MICROBIT_ID_IO_P10
+
+    C11 = 111,  // MICROBIT_ID_IO_P11
+    //% blockHidden=true
     P11 = 111,  // MICROBIT_ID_IO_P11
+
+    C12 = 112,  // MICROBIT_ID_IO_P12
+    //% blockHidden=true
     P12 = 112,  // MICROBIT_ID_IO_P12
+
+    C13 = 113,  // MICROBIT_ID_IO_P13
+    //% blockHidden=true
     P13 = 113,  // MICROBIT_ID_IO_P13
+
+    C14 = 114,  // MICROBIT_ID_IO_P14
+    //% blockHidden=true
     P14 = 114,  // MICROBIT_ID_IO_P14
+
+    C15 = 115,  // MICROBIT_ID_IO_P15
+    //% blockHidden=true
     P15 = 115,  // MICROBIT_ID_IO_P15
-    P16 = 116,  // MICROBIT_ID_IO_P16
-    //% blockHidden=1
-    P19 = 119,  // MICROBIT_ID_IO_P19
-    //% blockHidden=1
-    P20 = 120,  // MICROBIT_ID_IO_P20
+
+    //% block="C16 (A1 RX)"
+    C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% blockHidden=true
+    P16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% block="A1 RX" blockHidden=true
+    A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
+
+    //% block="C17 (A1 TX)"
+    C17 = 117,  // MICROBIT_ID_IO_A1_TX
+    //% blockHidden=true
+    P17 = 117,  // MICROBIT_ID_IO_A1_TX
+    //% block="A1 TX" blockHidden=true
+    A1_TX = 117,  // MICROBIT_ID_IO_A1_TX
+
+    C18 = 118,  // MICROBIT_ID_IO_P18
+    //% blockHidden=true
+    P18 = 118,  // MICROBIT_ID_IO_P18
+
+    //% block="C19 (A0 SCL)" blockHidden=true
+    A0_SCL = 119,  // MICROBIT_ID_IO_A0_SCL
+    //% block="C20 (A0 SDA)" blockHidden=true
+    A0_SDA = 120,  // MICROBIT_ID_IO_A0_SDA
+
+    //% blockHidden=true
+    M_MODE = 156,  // MICROBIT_ID_IO_M_MODE
+
+    //% blockHidden=true
+    M0_DIR = 152,  // MICROBIT_ID_IO_M_A_IN1
+
+    //% blockHidden=true
+    M1_DIR = 154,  // MICROBIT_ID_IO_M_B_IN1
+
+    //% blockHidden=true
+    M0_SPEED = 153,  // MICROBIT_ID_IO_M_A_IN2
+
+    //% blockHidden=true
+    M1_SPEED = 155,  // MICROBIT_ID_IO_M_B_IN2
+
+    RGB = 151,  // MICROBIT_ID_IO_RGB
+
     }
 
 
@@ -456,37 +540,110 @@ declare namespace led {
     P0 = 100,  // MICROBIT_ID_IO_P0
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
+    //% block="P3 (write only)"
     P3 = 103,  // MICROBIT_ID_IO_P3
+
+    C4 = 104,  // MICROBIT_ID_IO_P4
+    //% blockHidden=true
     P4 = 104,  // MICROBIT_ID_IO_P4
-    P10 = 110,  // MICROBIT_ID_IO_P10
-    //% block="P5 (write only)"
+
+    //% block="C5 (write only)"
+    C5 = 105,  // MICROBIT_ID_IO_P5
+    //% blockHidden=true
     P5 = 105,  // MICROBIT_ID_IO_P5
-    //% block="P6 (write only)"
+
+    //% block="C6 (write only)"
+    C6 = 106,  // MICROBIT_ID_IO_P6
+    //% blockHidden=true
     P6 = 106,  // MICROBIT_ID_IO_P6
-    //% block="P7 (write only)"
+
+    //% block="C7 (write only)"
+    C7 = 107,  // MICROBIT_ID_IO_P7
+    //% blockHidden=true
     P7 = 107,  // MICROBIT_ID_IO_P7
-    //% block="P8 (write only)"
+
+    //% block="C8 (write only)"
+    C8 = 108,  // MICROBIT_ID_IO_P8
+    //% blockHidden=true
     P8 = 108,  // MICROBIT_ID_IO_P8
-    //% block="P9 (write only)"
+
+    //% block="C9 (write only)"
+    C9 = 109,  // MICROBIT_ID_IO_P9
+    //% blockHidden=true
     P9 = 109,  // MICROBIT_ID_IO_P9
-    //% block="P11 (write only)"
+
+    C10 = 110,  // MICROBIT_ID_IO_P10
+    //% blockHidden=true
+    P10 = 110,  // MICROBIT_ID_IO_P10
+
+    //% block="C11 (write only)"
+    C11 = 111,  // MICROBIT_ID_IO_P11
+    //% blockHidden=true
     P11 = 111,  // MICROBIT_ID_IO_P11
-    //% block="P12 (write only)"
+
+    //% block="C12 (write only)"
+    C12 = 112,  // MICROBIT_ID_IO_P12
+    //% blockHidden=true
     P12 = 112,  // MICROBIT_ID_IO_P12
-    //% block="P13 (write only)"
+
+    //% block="C13 (write only)"
+    C13 = 113,  // MICROBIT_ID_IO_P13
+    //% blockHidden=true
     P13 = 113,  // MICROBIT_ID_IO_P13
-    //% block="P14 (write only)"
+
+    //% block="C14 (write only)"
+    C14 = 114,  // MICROBIT_ID_IO_P14
+    //% blockHidden=true
     P14 = 114,  // MICROBIT_ID_IO_P14
-    //% block="P15 (write only)"
+
+    //% block="C15 (write only)"
+    C15 = 115,  // MICROBIT_ID_IO_P15
+    //% blockHidden=true
     P15 = 115,  // MICROBIT_ID_IO_P15
-    //% block="P16 (write only)"
-    P16 = 116,  // MICROBIT_ID_IO_P16
-    //% block="P19 (write only)"
-    //% blockHidden=1
-    P19 = 119,  // MICROBIT_ID_IO_P19
-    //% block="P20 (write only)"
-    //% blockHidden=1
-    P20 = 120,  // MICROBIT_ID_IO_P20
+
+    //% block="C16 (A1 RX)"
+    C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% blockHidden=true
+    P16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% block="A1 RX" blockHidden=true
+    A1_RX = 116,  // MICROBIT_ID_IO_A1_RX
+
+    //% block="C17 (A1 TX, write only)"
+    C17 = 117,  // MICROBIT_ID_IO_A1_TX
+    //% blockHidden=true
+    P17 = 117,  // MICROBIT_ID_IO_A1_TX
+    //% block="A1 TX" blockHidden=true
+    A1_TX = 117,  // MICROBIT_ID_IO_A1_TX
+
+    C18 = 118,  // MICROBIT_ID_IO_P18
+    //% blockHidden=true
+    P18 = 118,  // MICROBIT_ID_IO_P18
+
+    //% block="C19 (A0 SCL)" blockHidden=true
+    A0_SCL = 119,  // MICROBIT_ID_IO_A0_SCL
+    //% block="C20 (A0 SDA)" blockHidden=true
+    A0_SDA = 120,  // MICROBIT_ID_IO_A0_SDA
+
+    //% //% block="Motor Mode (write only)" blockHidden=true
+    M_MODE = 156,  // MICROBIT_ID_IO_M_MODE
+
+    //% //% block="M0 Direction (write only)"blockHidden=true
+    M0_DIR = 152,  // MICROBIT_ID_IO_M_A_IN1
+
+    //% //% block="M1 Direction (write only)" blockHidden=true
+    M1_DIR = 154,  // MICROBIT_ID_IO_M_B_IN1
+
+    //% //% block="M0 Speed (write only)" blockHidden=true
+    M0_SPEED = 153,  // MICROBIT_ID_IO_M_A_IN2
+
+    //% //% block="M1 Speed (write only)" blockHidden=true
+    M1_SPEED = 155,  // MICROBIT_ID_IO_M_B_IN2
+
+    //% //% block="RGB (write only)" blockHidden=true
+    RGB = 151,  // MICROBIT_ID_IO_RGB
+
+    //% blockHidden=true
+    MIC = 121,  // MICROBIT_ID_LOGO
     }
 
 
@@ -524,14 +681,33 @@ declare namespace led {
     P0 = 100,  // MICROBIT_ID_IO_P0
     P1 = 101,  // MICROBIT_ID_IO_P1
     P2 = 102,  // MICROBIT_ID_IO_P2
-    P8 = 108,  // MICROBIT_ID_IO_P8
-    P12 = 112,  // MICROBIT_ID_IO_P12
-    P13 = 113,  // MICROBIT_ID_IO_P13
-    P14 = 114,  // MICROBIT_ID_IO_P14
-    P15 = 115,  // MICROBIT_ID_IO_P15
-    P16 = 116,  // MICROBIT_ID_IO_P16
+    P3 = 103,  // MICROBIT_ID_IO_P3
+
+    C8 = 108,  // MICROBIT_ID_IO_P8
+    C12 = 112,  // MICROBIT_ID_IO_P12
+    C13 = 113,  // MICROBIT_ID_IO_P13
+    C14 = 114,  // MICROBIT_ID_IO_P14
+    C15 = 115,  // MICROBIT_ID_IO_P15
+    C16 = 116,  // MICROBIT_ID_IO_A1_RX
+    C17 = 117,  // MICROBIT_ID_IO_A1_TX
+
     USB_TX = 1001,
     USB_RX = 1002,
+
+    //% blockHidden=true
+    P8 = 108,  // MICROBIT_ID_IO_P8
+    //% blockHidden=true
+    P12 = 112,  // MICROBIT_ID_IO_P12
+    //% blockHidden=true
+    P13 = 113,  // MICROBIT_ID_IO_P13
+    //% blockHidden=true
+    P14 = 114,  // MICROBIT_ID_IO_P14
+    //% blockHidden=true
+    P15 = 115,  // MICROBIT_ID_IO_P15
+    //% blockHidden=true
+    P16 = 116,  // MICROBIT_ID_IO_A1_RX
+    //% blockHidden=true
+    P17 = 117,  // MICROBIT_ID_IO_A1_TX
     }
 
 
@@ -563,39 +739,27 @@ declare namespace serial {
 }
 
 
-    /**
-     * An action on a touch button
-     */
-
-    declare const enum TouchButtonEvent {
-    //% block=pressed
-    Pressed = 3,  // MICROBIT_BUTTON_EVT_CLICK
-    //% block=touched
-    Touched = 1,  // MICROBIT_BUTTON_EVT_DOWN
-    //% block=released
-    Released = 2,  // MICROBIT_BUTTON_EVT_UP
-    //% block="long pressed"
-    LongPressed = 4,  // MICROBIT_BUTTON_EVT_LONG_CLICK
+    declare const enum MotorCommand {
+    //% block=coast
+    Coast = 0,
+    //% block=break
+    Break = 1,
+    //% block=sleep
+    Sleep = 2,
     }
 
 
-    declare const enum TouchTargetMode {
-    //% block="capacitive"
-    Capacitive = 1,
-    //% block="resistive"
-    Resistive = 0,
+    declare const enum Motor {
+    //% block="M0"
+    M0 = 0,
+    //% block="M1"
+    M1 = 1,
+    //% block="M0 & M1"
+    M0_M1 = 2,
     }
-
-
-    declare const enum TouchTarget {
-    //% block="P0"
-    P0 = 100,  // MICROBIT_ID_IO_P0
-    //% block="P1"
-    P1 = 101,  // MICROBIT_ID_IO_P1
-    //% block="P2"
-    P2 = 102,  // MICROBIT_ID_IO_P2
-    //% block="logo"
-    LOGO = 121,  // MICROBIT_ID_LOGO
-    }
+declare namespace motors {
+}
+declare namespace basic {
+}
 
 // Auto-generated. Do not edit. Really.

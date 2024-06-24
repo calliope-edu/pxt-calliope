@@ -12,7 +12,9 @@ Click on the ``||basic:Basic||`` category in the Toolbox.
 Drag the ``||basic:show leds||`` block into the ``||basic:forever||`` block. 
 Then in the ``||basic:show leds||`` block, click on the squares to draw a heart design.
 
-![An animation that shows how to drag a block and paint a heart](/static/mb/projects/flashing-heart/showleds.gif)
+Place the ``||basic:show leds||`` block in the ``||basic:forever||`` block and draw a heart.
+
+![An animation that shows how to drag a block and paint a heart](/static/calliope/tutorials/add_show_led.gif)
 
 ## {Step 2}
 
@@ -38,6 +40,8 @@ basic.forever(function() {
 ## {Step 3}
 
 Look at the @boardname@ on the screen. Do you see a flashing heart animation? ⭐ Great job! ⭐ 
+
+![Heart shape in the LEDs](/static/calliope/tutorials/01_flashing_heart_animation.gif)
 
 ## {Step 4}
 

@@ -127,9 +127,9 @@ declare interface Image {
 
 
     /**
-     * Provides access to basic micro:bit functionality.
+     * Provides access to basic Calliope mini functionality.
      */
-    //% color=#1E90FF weight=116 icon="\uf00a"
+
 declare namespace basic {
 
     /**
@@ -138,33 +138,39 @@ declare namespace basic {
      * @param interval time in milliseconds to pause after drawing.
      */
     //% help=basic/show-leds
-    //% weight=95 blockGap=8
+    //% weight=85 blockGap=8
     //% imageLiteral=1 async
     //% blockId=device_show_leds
     //% block="show leds" icon="\uf00a"
-    //% parts="ledmatrix" interval.defl=400 shim=basic::showLeds
+    //% parts="ledmatrix"
+    //% group="LED matrix" interval.defl=400 shim=basic::showLeds
     function showLeds(leds: string, interval?: int32): void;
 
     /**
      * Display text on the display, one character at a time. If the string fits on the screen (i.e. is one letter), does not scroll.
-     * @param text the text to scroll on the screen, eg: "Hello!"
-     * @param interval how fast to shift characters; eg: 150, 100, 200, -100
+     * @param text the text to scroll on the screen, eg: "hi!"
+     * @param interval how fast to shift characters; eg: 50, 100, 150, 200
      */
     //% help=basic/show-string
-    //% weight=87 blockGap=16
-    //% block="show|string %text"
+    //% weight=100 blockGap=16
+    //% block="show|string %text || in an interval of %interval ms"
     //% async
     //% blockId=device_print_message
     //% parts="ledmatrix"
-    //% text.shadowOptions.toString=true interval.defl=150 shim=basic::showString
+    //% text.shadowOptions.toString=true
+    //% expandableArgumentMode="toggle"
+    //%
+    //% group="LED matrix" interval.defl=150 shim=basic::showString
     function showString(text: string, interval?: int32): void;
 
     /**
      * Turn off all LEDs
      */
-    //% help=basic/clear-screen weight=79
+    //% help=basic/clear-screen weight=75
     //% blockId=device_clear_display block="clear screen"
-    //% parts="ledmatrix" shim=basic::clearScreen
+    //% parts="ledmatrix"
+    //% group="LED matrix"
+    //% advanced=true shim=basic::clearScreen
     function clearScreen(): void;
 
     /**
@@ -172,8 +178,9 @@ declare namespace basic {
      * @param leds pattern of LEDs to turn on/off
      * @param interval time in milliseconds between each redraw.
      */
-    //% help=basic/show-animation imageLiteral=1 async
-    //% parts="ledmatrix" interval.defl=400 shim=basic::showAnimation
+    //% help=basic/show-animation weight=83 imageLiteral=1 async
+    //% parts="ledmatrix"
+    //% group="LED matrix" interval.defl=400 shim=basic::showAnimation
     function showAnimation(leds: string, interval?: int32): void;
 
     /**
@@ -181,7 +188,8 @@ declare namespace basic {
      * @param leds pattern of LEDs to turn on/off
      */
     //% help=basic/plot-leds weight=80
-    //% parts="ledmatrix" imageLiteral=1 shim=basic::plotLeds
+    //% parts="ledmatrix"
+    //% group="LED matrix" imageLiteral=1 shim=basic::plotLeds
     function plotLeds(leds: string): void;
 
     /**
@@ -189,24 +197,85 @@ declare namespace basic {
      * @param body code to execute
      */
     //% help=basic/forever weight=55 blockGap=16 blockAllowMultiple=1 afterOnStart=true
-    //% blockId=device_forever block="forever" icon="\uf01e" shim=basic::forever
+    //% blockId=device_forever block="forever" icon="\uf01e"
+    //% group="Control" shim=basic::forever
     function forever(a: () => void): void;
 
     /**
      * Pause for the specified time in milliseconds
      * @param ms how long to pause for, eg: 100, 200, 500, 1000, 2000
      */
-    //% help=basic/pause weight=54
+    //% help=basic/pause weight=50
     //% async block="pause (ms) %pause" blockGap=16
     //% blockId=device_pause icon="\uf110"
-    //% pause.shadow=timePicker shim=basic::pause
+    //% pause.shadow=timePicker
+    //% group="Control" shim=basic::pause
     function pause(ms: int32): void;
 }
 
 
 
-    //% color=#D400D4 weight=111 icon="\uf192"
+    //% color=#c90072 weight=99 icon="\uf192"
 declare namespace input {
+
+    /**
+     * Do something when a button (A, B or both A+B) receives an event.
+     * @param button the button
+     * @param body code to run when event is raised
+     * @param eventType event Type
+     */
+    //% help=input/on-button-event weight=100 blockGap=16
+    //% blockId=device_button_selected_event block="on button %NAME| %eventType"
+    //% eventType.shadow="control_button_event_click"
+    //% parts="buttonpair"
+    //% group="Events" shim=input::onButtonEvent
+    function onButtonEvent(button: Button, eventType: int32, body: () => void): void;
+
+    /**
+     * Do something when when a gesture is done (like shaking the Calliope mini).
+     * @param gesture the type of gesture to track, eg: Gesture.Shake
+     * @param body code to run when gesture is raised
+     */
+    //% help=input/on-gesture weight=98 blockGap=16
+    //% blockId=device_gesture_event block="on |%NAME"
+    //% parts="accelerometer"
+    //% NAME.fieldEditor="gestures" NAME.fieldOptions.columns=4
+    //% group="Events" shim=input::onGesture
+    function onGesture(gesture: Gesture, body: () => void): void;
+
+    /**
+     * Tests if a gesture is currently detected.
+     * @param gesture the type of gesture to detect, eg: Gesture.Shake
+     */
+    //% help=input/is-gesture weight=86 blockGap=8
+    //% blockId=deviceisgesture block="is %gesture gesture"
+    //% parts="accelerometer"
+    //% gesture.fieldEditor="gestures" gesture.fieldOptions.columns=4
+    //% group="States" shim=input::isGesture
+    function isGesture(gesture: Gesture): boolean;
+
+    /**
+     * Do something when a pin receives an touch event (while also touching the GND pin).
+     * @param name the pin, eg: TouchPin.P0
+     * @param body the code to run when event is fired on pin
+     */
+    //% help=input/on-pin-event weight=99 blockGap=16
+    //% blockId=device_pin_custom_event block="on pin %name| %eventType"
+    //% eventType.shadow="control_button_event_down"
+    //% group="Events" shim=input::onPinTouchEvent
+    function onPinTouchEvent(name: TouchPin, eventType: int32, body: () => void): void;
+
+    /**
+     * Get the button state (pressed or not) for ``A`` and ``B``.
+     * @param button the button to query the request, eg: Button.A
+     */
+    //% help=input/button-is-pressed weight=89
+    //% block="button|%NAME|is pressed"
+    //% blockId=device_get_button2
+    //% icon="\uf192" blockGap=8
+    //% parts="buttonpair"
+    //% group="States" shim=input::buttonIsPressed
+    function buttonIsPressed(button: Button): boolean;
 
     /**
      * Do something when a button (A, B or both A+B) is pushed down and released again.
@@ -215,37 +284,20 @@ declare namespace input {
      */
     //% help=input/on-button-pressed weight=85 blockGap=16
     //% blockId=device_button_event block="on button|%NAME|pressed"
-    //% parts="buttonpair" shim=input::onButtonPressed
+    //% parts="buttonpair"
+    //% deprecated=true
+    //% group="Events" shim=input::onButtonPressed
     function onButtonPressed(button: Button, body: () => void): void;
-
-    /**
-     * Do something when when a gesture is done (like shaking the micro:bit).
-     * @param gesture the type of gesture to track, eg: Gesture.Shake
-     * @param body code to run when gesture is raised
-     */
-    //% help=input/on-gesture weight=84 blockGap=16
-    //% blockId=device_gesture_event block="on |%NAME"
-    //% parts="accelerometer"
-    //% NAME.fieldEditor="gestures" NAME.fieldOptions.columns=4 shim=input::onGesture
-    function onGesture(gesture: Gesture, body: () => void): void;
-
-    /**
-     * Tests if a gesture is currently detected.
-     * @param gesture the type of gesture to detect, eg: Gesture.Shake
-     */
-    //% help=input/is-gesture weight=10 blockGap=8
-    //% blockId=deviceisgesture block="is %gesture gesture"
-    //% parts="accelerometer"
-    //% gesture.fieldEditor="gestures" gesture.fieldOptions.columns=4 shim=input::isGesture
-    function isGesture(gesture: Gesture): boolean;
 
     /**
      * Do something when a pin is touched and released again (while also touching the GND pin).
      * @param name the pin that needs to be pressed, eg: TouchPin.P0
      * @param body the code to run when the pin is pressed
      */
-    //% help=input/on-pin-pressed weight=83 blockGap=32
-    //% blockId=device_pin_event block="on pin %name|pressed" shim=input::onPinPressed
+    //% help=input/on-pin-pressed weight=83 blockGap=16
+    //% blockId=device_pin_event block="on pin %name|pressed"
+    //% group="Events"
+    //% deprecated=true shim=input::onPinPressed
     function onPinPressed(name: TouchPin, body: () => void): void;
 
     /**
@@ -255,27 +307,19 @@ declare namespace input {
      */
     //% help=input/on-pin-released weight=6 blockGap=16
     //% blockId=device_pin_released block="on pin %NAME|released"
-    //% advanced=true shim=input::onPinReleased
+    //% advanced=true
+    //% group="Events"
+    //% deprecated=true shim=input::onPinReleased
     function onPinReleased(name: TouchPin, body: () => void): void;
-
-    /**
-     * Get the button state (pressed or not) for ``A`` and ``B``.
-     * @param button the button to query the request, eg: Button.A
-     */
-    //% help=input/button-is-pressed weight=60
-    //% block="button|%NAME|is pressed"
-    //% blockId=device_get_button2
-    //% icon="\uf192" blockGap=8
-    //% parts="buttonpair" shim=input::buttonIsPressed
-    function buttonIsPressed(button: Button): boolean;
 
     /**
      * Get the pin state (pressed or not). Requires to hold the ground to close the circuit.
      * @param name pin used to detect the touch, eg: TouchPin.P0
      */
-    //% help=input/pin-is-pressed weight=58
+    //% help=input/pin-is-pressed weight=87
     //% blockId="device_pin_is_pressed" block="pin %NAME|is pressed"
-    //% blockGap=8 shim=input::pinIsPressed
+    //% blockGap=8
+    //% group="States" shim=input::pinIsPressed
     function pinIsPressed(name: TouchPin): boolean;
 
     /**
@@ -284,15 +328,17 @@ declare namespace input {
      */
     //% help=input/acceleration weight=58
     //% blockId=device_acceleration block="acceleration (mg)|%NAME" blockGap=8
-    //% parts="accelerometer" shim=input::acceleration
+    //% parts="accelerometer"
+    //% group="Sensors" shim=input::acceleration
     function acceleration(dimension: Dimension): int32;
 
     /**
      * Reads the light level applied to the LED screen in a range from ``0`` (dark) to ``255`` bright.
      */
-    //% help=input/light-level weight=57
+    //% help=input/light-level weight=59
     //% blockId=device_get_light_level block="light level" blockGap=8
-    //% parts="ledmatrix" shim=input::lightLevel
+    //% parts="ledmatrix"
+    //% group="Sensors" shim=input::lightLevel
     function lightLevel(): int32;
 
     /**
@@ -301,16 +347,18 @@ declare namespace input {
     //% help=input/compass-heading
     //% weight=56
     //% blockId=device_heading block="compass heading (°)" blockGap=8
-    //% parts="compass" shim=input::compassHeading
+    //% parts="compass"
+    //% group="Sensors" shim=input::compassHeading
     function compassHeading(): int32;
 
     /**
      * Gets the temperature in Celsius degrees (°C).
      */
-    //% weight=55
+    //% weight=57
     //% help=input/temperature
     //% blockId=device_temperature block="temperature (°C)" blockGap=8
-    //% parts="thermometer" shim=input::temperature
+    //% parts="thermometer"
+    //% group="Sensors" shim=input::temperature
     function temperature(): int32;
 
     /**
@@ -319,17 +367,19 @@ declare namespace input {
      */
     //% help=input/rotation weight=52
     //% blockId=device_get_rotation block="rotation (°)|%NAME" blockGap=8
-    //% parts="accelerometer" advanced=true shim=input::rotation
+    //% parts="accelerometer" advanced=true
+    //% group="Sensors" shim=input::rotation
     function rotation(kind: Rotation): int32;
 
     /**
      * Get the magnetic force value in ``micro-Teslas`` (``µT``). This function is not supported in the simulator.
      * @param dimension the x, y, or z dimension, eg: Dimension.X
      */
-    //% help=input/magnetic-force weight=54
+    //% help=input/magnetic-force weight=49
     //% blockId=device_get_magnetic_force block="magnetic force (µT)|%NAME" blockGap=8
     //% parts="compass"
-    //% advanced=true shim=input::magneticForce
+    //% advanced=true
+    //% group="Sensors" shim=input::magneticForce
     function magneticForce(dimension: Dimension): number;
 
     /**
@@ -337,7 +387,8 @@ declare namespace input {
      */
     //% help=input/calibrate-compass advanced=true
     //% blockId="input_compass_calibrate" block="calibrate compass"
-    //% weight=55 shim=input::calibrateCompass
+    //% weight=20 gap=8
+    //% group="Configuration" shim=input::calibrateCompass
     function calibrateCompass(): void;
 
     /**
@@ -346,10 +397,21 @@ declare namespace input {
      */
     //% help=input/set-accelerometer-range
     //% blockId=device_set_accelerometer_range block="set accelerometer|range %range"
-    //% weight=5
+    //% weight=22 gap=8
     //% parts="accelerometer"
-    //% advanced=true shim=input::setAccelerometerRange
+    //% advanced=true
+    //% group="Configuration" shim=input::setAccelerometerRange
     function setAccelerometerRange(range: AcceleratorRange): void;
+
+    /**
+     * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
+     */
+    //% help=input/calibrate-compass advanced=true
+    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
+    //% weight=19
+    //% group="System"
+    //% deprecated=true shim=input::isCalibratedCompass
+    function isCalibratedCompass(): boolean;
 }
 
 
@@ -386,7 +448,7 @@ declare namespace control {
     function waitForEvent(src: int32, value: int32): void;
 
     /**
-     * Resets the BBC micro:bit.
+     * Resets the Calliope mini.
      */
     //% weight=30 async help=control/reset blockGap=8
     //% blockId="control_reset" block="reset" shim=control::reset
@@ -527,7 +589,7 @@ declare namespace control {
 
 
 
-    //% color=#7600A8 weight=101 icon="\uf205"
+    //% color=#8169E6 weight=35 icon="\uf205"
 declare namespace led {
 
     /**
@@ -639,63 +701,32 @@ declare namespace led {
     //% parts="ledmatrix" shim=led::screenshot
     function screenshot(): Image;
 }
+
+
+
+    //% color=#B4009E weight=99 icon="\uf192"
+declare namespace input {
+
+    /**
+     * Reads the loudness through the microphone from 0 (silent) to 255 (loud)
+     */
+    //% help=input/sound-level
+    //% blockId=soundLevel block="sound level"
+    //% parts="microphone"
+    //% weight=34 blockGap=8
+    //% group="Sound" shim=input::soundLevel
+    function soundLevel(): int32;
+}
 declare namespace music {
 
     /**
-     * Set the default output volume of the sound synthesizer.
-     * @param volume the volume 0...255
+     * Plays a tone through ``speaker`` for the given duration.
+     * @param frequency pitch of the tone to play in Hertz (Hz)
+     * @param ms tone duration in milliseconds (ms)
      */
-    //% blockId=synth_set_volume block="set volume %volume"
-    //% volume.min=0 volume.max=255
     //%
-    //% help=music/set-volume
-    //% weight=70
-    //% group="Volume"
-    //% blockGap=8 volume.defl=127 shim=music::setVolume
-    function setVolume(volume?: int32): void;
-
-    /**
-     * Returns the current output volume of the sound synthesizer.
-     */
-    //% blockId=synth_get_volume block="volume"
-    //% help=music/volume
-    //% weight=69
-    //% group="Volume"
-    //% blockGap=8 shim=music::volume
-    function volume(): int32;
-
-    /**
-     * Turn the built-in speaker on or off.
-     * Disabling the speaker resets the sound pin to the default of P0.
-     * @param enabled whether the built-in speaker is enabled in addition to the sound pin
-     */
-    //% blockId=music_set_built_in_speaker_enable block="set built-in speaker $enabled"
-    //% group="micro:bit (V2)"
-    //% parts=builtinspeaker
-    //% help=music/set-built-in-speaker-enabled
-    //% enabled.shadow=toggleOnOff
-    //% weight=0 shim=music::setBuiltInSpeakerEnabled
-    function setBuiltInSpeakerEnabled(enabled: boolean): void;
-
-    /**
-     * Check whether any sound is being played, no matter the source
-     */
-    //% blockId=music_sound_is_playing block="sound is playing"
-    //% group="micro:bit (V2)"
-    //% help=music/volume
-    //% weight=0 shim=music::isSoundPlaying
-    function isSoundPlaying(): boolean;
-
-    /**
-     * Defines an optional sample level to generate during periods of silence.
-     **/
-    //% group="micro:bit (V2)"
-    //% help=music/set-silence-level
-    //% level.min=0
-    //% level.max=1024
-    //%
-    //% weight=1 level.defl=0 shim=music::setSilenceLevel
-    function setSilenceLevel(level?: int32): void;
+    //% parts="speaker" async useEnumVal=1 shim=music::speakerPlayTone
+    function speakerPlayTone(frequency: int32, ms: int32): void;
 }
 declare namespace pins {
 
@@ -706,7 +737,8 @@ declare namespace pins {
     //% help=pins/digital-read-pin weight=30
     //% blockId=device_get_digital_pin block="digital read|pin %name" blockGap=8
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250" shim=pins::digitalReadPin
+    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
+    //% group="Digital" shim=pins::digitalReadPin
     function digitalReadPin(name: DigitalPin): int32;
 
     /**
@@ -718,7 +750,8 @@ declare namespace pins {
     //% blockId=device_set_digital_pin block="digital write|pin %name|to %value"
     //% value.min=0 value.max=1
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250" shim=pins::digitalWritePin
+    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
+    //% group="Digital" shim=pins::digitalWritePin
     function digitalWritePin(name: DigitalPin, value: int32): void;
 
     /**
@@ -728,7 +761,8 @@ declare namespace pins {
     //% help=pins/analog-read-pin weight=25
     //% blockId=device_get_analog_pin block="analog read|pin %name" blockGap="8"
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250" shim=pins::analogReadPin
+    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
+    //% group="Analog" shim=pins::analogReadPin
     function analogReadPin(name: AnalogPin): int32;
 
     /**
@@ -740,7 +774,8 @@ declare namespace pins {
     //% blockId=device_set_analog_pin block="analog write|pin %name|to %value" blockGap=8
     //% value.min=0 value.max=1023
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250" shim=pins::analogWritePin
+    //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
+    //% group="Analog" shim=pins::analogWritePin
     function analogWritePin(name: AnalogPin, value: int32): void;
 
     /**
@@ -752,7 +787,8 @@ declare namespace pins {
     //% help=pins/analog-set-period weight=23 blockGap=8
     //% blockId=device_set_analog_period block="analog set period|pin %pin|to (µs)%micros"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
-    //% pin.fieldOptions.tooltips="false" shim=pins::analogSetPeriod
+    //% pin.fieldOptions.tooltips="false"
+    //% group="Analog" shim=pins::analogSetPeriod
     function analogSetPeriod(name: AnalogPin, micros: int32): void;
 
     /**
@@ -760,13 +796,11 @@ declare namespace pins {
      * @param name digital pin to register to, eg: DigitalPin.P0
      * @param pulse the value of the pulse, eg: PulseValue.High
      */
-    //% help=pins/on-pulsed advanced=true
+    //% help=pins/on-pulsed weight=22 blockGap=16 advanced=true
     //% blockId=pins_on_pulsed block="on|pin %pin|pulsed %pulse"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Pulse"
-    //% weight=25
-    //% blockGap=8 shim=pins::onPulsed
+    //% group="Pulse" shim=pins::onPulsed
     function onPulsed(name: DigitalPin, pulse: PulseValue, body: () => void): void;
 
     /**
@@ -774,9 +808,8 @@ declare namespace pins {
      */
     //% help=pins/pulse-duration advanced=true
     //% blockId=pins_pulse_duration block="pulse duration (µs)"
-    //% group="Pulse"
-    //% weight=24
-    //% blockGap=8 shim=pins::pulseDuration
+    //% weight=21 blockGap=8
+    //% group="Pulse" shim=pins::pulseDuration
     function pulseDuration(): int32;
 
     /**
@@ -786,13 +819,11 @@ declare namespace pins {
      * @param maximum duration in microseconds
      */
     //% blockId="pins_pulse_in" block="pulse in (µs)|pin %name|pulsed %value"
-    //% advanced=true
+    //% weight=20 advanced=true
     //% help=pins/pulse-in
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
-    //% group="Pulse"
-    //% weight=23
-    //% blockGap=8 maxDuration.defl=2000000 shim=pins::pulseIn
+    //% group="Pulse" maxDuration.defl=2000000 shim=pins::pulseIn
     function pulseIn(name: DigitalPin, value: PulseValue, maxDuration?: int32): int32;
 
     /**
@@ -812,13 +843,14 @@ declare namespace pins {
     /**
      * Specifies that a continuous servo is connected.
      */
-    //% shim=pins::servoSetContinuous
+    //%
+    //% group="Servo" shim=pins::servoSetContinuous
     function servoSetContinuous(name: AnalogPin, value: boolean): void;
 
     /**
      * Configure the IO pin as an analog/pwm output and set a pulse width. The period is 20 ms period and the pulse width is set based on the value given in **microseconds** or `1/1000` milliseconds.
      * @param name pin name
-     * @param micros pulse duration in micro seconds, eg:1500
+     * @param micros pulse duration in microseconds, eg:1500
      */
     //% help=pins/servo-set-pulse weight=19
     //% blockId=device_set_servo_pulse block="servo set pulse|pin %value|to (µs) %micros"
@@ -832,12 +864,11 @@ declare namespace pins {
      * @param name pin to modulate pitch from
      */
     //% blockId=device_analog_set_pitch_pin block="analog set pitch pin %name"
-    //% help=pins/analog-set-pitch-pin advanced=true
+    //% help=pins/analog-set-pitch-pin weight=3 advanced=true
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
-    //% group="Pins"
-    //% weight=12
-    //% blockGap=8 shim=pins::analogSetPitchPin
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogSetPitchPin
     function analogSetPitchPin(name: AnalogPin): void;
 
     /**
@@ -847,7 +878,8 @@ declare namespace pins {
     //% blockId=device_analog_set_pitch_volume block="analog set pitch volume $volume"
     //% help=pins/analog-set-pitch-volume weight=3 advanced=true
     //% volume.min=0 volume.max=255
-    //% deprecated shim=pins::analogSetPitchVolume
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogSetPitchVolume
     function analogSetPitchVolume(volume: int32): void;
 
     /**
@@ -855,7 +887,8 @@ declare namespace pins {
      */
     //% blockId=device_analog_pitch_volume block="analog pitch volume"
     //% help=pins/analog-pitch-volume weight=3 advanced=true
-    //% deprecated shim=pins::analogPitchVolume
+    //% blockHidden=true
+    //% group="Pitch" shim=pins::analogPitchVolume
     function analogPitchVolume(): int32;
 
     /**
@@ -865,23 +898,22 @@ declare namespace pins {
      */
     //% blockId=device_analog_pitch block="analog pitch %frequency|for (ms) %ms"
     //% help=pins/analog-pitch async advanced=true
-    //% group="Pins"
+    //% group="Pitch"
+    //% blockHidden=true
     //% weight=14
     //% blockGap=8 shim=pins::analogPitch
     function analogPitch(frequency: int32, ms: int32): void;
 
     /**
-     * Configure the pull direction of of a pin.
+     * Configure the pull directiion of of a pin.
      * @param name pin to set the pull mode on, eg: DigitalPin.P0
      * @param pull one of the mbed pull configurations, eg: PinPullMode.PullUp
      */
-    //% help=pins/set-pull advanced=true
+    //% help=pins/set-pull weight=3 advanced=true
     //% blockId=device_set_pull block="set pull|pin %pin|to %pull"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Pins"
-    //% weight=15
-    //% blockGap=8 shim=pins::setPull
+    //% group="Digital" shim=pins::setPull
     function setPull(name: DigitalPin, pull: PinPullMode): void;
 
     /**
@@ -890,13 +922,11 @@ declare namespace pins {
      * @param name pin to set the event mode on, eg: DigitalPin.P0
      * @param type the type of events for this pin to emit, eg: PinEventType.Edge
      */
-    //% help=pins/set-events advanced=true
+    //% help=pins/set-events weight=4 advanced=true
     //% blockId=device_set_pin_events block="set pin %pin|to emit %type|events"
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
-    //% group="Pins"
-    //% weight=13
-    //% blockGap=8 shim=pins::setEvents
+    //% group="Digital" shim=pins::setEvents
     function setEvents(name: DigitalPin, type: PinEventType): void;
 
     /**
@@ -909,40 +939,38 @@ declare namespace pins {
     /**
      * Set the matrix width for Neopixel strip (already assigned to a pin).
      * Should be used in conjunction with `set matrix width` from Neopixel package.
-     * @param name pin of Neopixel strip, eg: DigitalPin.P1
+     * @param name pin of Neopixel strip, eg: DigitalPin.P0
      * @param value width of matrix (at least ``2``)
      */
-    //% help=pins/neopixel-matrix-width advanced=true
-    //% blockId=pin_neopixel_matrix_width block="neopixel matrix width|pin %pin %width"
+    //% help=pins/neopixel-matrix-width weight=3 advanced=true
+    //% blockId=pin_neopixel_matrix_width block="neopixel matrix width|pin %pin %width" blockGap=8
     //% pin.fieldEditor="gridpicker" pin.fieldOptions.columns=4
     //% pin.fieldOptions.tooltips="false" pin.fieldOptions.width="250"
     //% width.min=2
-    //% group="Pins"
-    //% weight=11
-    //% blockGap=8 width.defl=5 shim=pins::setMatrixWidth
+    //% blockHidden=true width.defl=5 shim=pins::setMatrixWidth
     function setMatrixWidth(pin: DigitalPin, width?: int32): void;
 
     /**
      * Read `size` bytes from a 7-bit I2C `address`.
      */
-    //% repeat.defl=0 shim=pins::i2cReadBuffer
+    //%
+    //% group="i2c" repeat.defl=0 shim=pins::i2cReadBuffer
     function i2cReadBuffer(address: int32, size: int32, repeat?: boolean): Buffer;
 
     /**
      * Write bytes to a 7-bit I2C `address`.
      */
-    //% repeat.defl=0 shim=pins::i2cWriteBuffer
+    //%
+    //% group="i2c" repeat.defl=0 shim=pins::i2cWriteBuffer
     function i2cWriteBuffer(address: int32, buf: Buffer, repeat?: boolean): int32;
 
     /**
      * Write to the SPI slave and return the response
      * @param value Data to be sent to the SPI slave
      */
-    //% help=pins/spi-write advanced=true
+    //% help=pins/spi-write weight=5 advanced=true
     //% blockId=spi_write block="spi write %value"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=53 shim=pins::spiWrite
+    //% group="spi" shim=pins::spiWrite
     function spiWrite(value: int32): int32;
 
     /**
@@ -950,18 +978,17 @@ declare namespace pins {
      * @param command Data to be sent to the SPI slave (can be null)
      * @param response Data received from the SPI slave (can be null)
      */
-    //% help=pins/spi-transfer argsNullable shim=pins::spiTransfer
+    //% help=pins/spi-transfer argsNullable
+    //% group="spi" shim=pins::spiTransfer
     function spiTransfer(command: Buffer, response: Buffer): void;
 
     /**
      * Set the SPI frequency
      * @param frequency the clock frequency, eg: 1000000
      */
-    //% help=pins/spi-frequency advanced=true
+    //% help=pins/spi-frequency weight=4 advanced=true
     //% blockId=spi_frequency block="spi frequency %frequency"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=55 shim=pins::spiFrequency
+    //% group="spi" shim=pins::spiFrequency
     function spiFrequency(frequency: int32): void;
 
     /**
@@ -969,18 +996,16 @@ declare namespace pins {
      * @param bits the number of bits, eg: 8
      * @param mode the mode, eg: 3
      */
-    //% help=pins/spi-format advanced=true
+    //% help=pins/spi-format weight=3 advanced=true
     //% blockId=spi_format block="spi format|bits %bits|mode %mode"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=54 shim=pins::spiFormat
+    //% group="spi" shim=pins::spiFormat
     function spiFormat(bits: int32, mode: int32): void;
 
     /**
      * Set the MOSI, MISO, SCK pins used by the SPI connection
      *
      */
-    //% help=pins/spi-pins advanced=true
+    //% help=pins/spi-pins weight=2 advanced=true
     //% blockId=spi_pins block="spi set pins|MOSI %mosi|MISO %miso|SCK %sck"
     //% mosi.fieldEditor="gridpicker" mosi.fieldOptions.columns=4
     //% mosi.fieldOptions.tooltips="false" mosi.fieldOptions.width="250"
@@ -988,15 +1013,14 @@ declare namespace pins {
     //% miso.fieldOptions.tooltips="false" miso.fieldOptions.width="250"
     //% sck.fieldEditor="gridpicker" sck.fieldOptions.columns=4
     //% sck.fieldOptions.tooltips="false" sck.fieldOptions.width="250"
-    //% group="SPI"
-    //% blockGap=8
-    //% weight=51 shim=pins::spiPins
+    //% group="spi" shim=pins::spiPins
     function spiPins(mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin): void;
 
     /**
      * Mounts a push button on the given pin
      */
-    //% help=pins/push-button advanced=true shim=pins::pushButton
+    //% help=pins/push-button advanced=true
+    //% group="Digital" shim=pins::pushButton
     function pushButton(pin: DigitalPin): void;
 
     /**
@@ -1004,11 +1028,11 @@ declare namespace pins {
      * @param name pin to modulate pitch from
      */
     //% blockId=pin_set_audio_pin block="set audio pin $name"
-    //% help=pins/set-audio-pin
+    //% help=pins/set-audio-pin weight=3
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     //% name.fieldOptions.tooltips="false" name.fieldOptions.width="250"
     //% weight=1
-    //% blockGap=8 shim=pins::setAudioPin
+    //% group="Pitch" shim=pins::setAudioPin
     function setAudioPin(name: AnalogPin): void;
 
     /**
@@ -1265,45 +1289,85 @@ declare namespace light {
     //% shim=light::setMode
     function setMode(pin: int32, mode: int32): void;
 }
-declare namespace input {
+
+
+
+    //% color=#008272 weight=30 icon="\uf1b9"
+declare namespace motors {
 
     /**
-     * Do something when the logo is touched and released again.
-     * @param body the code to run when the logo is pressed
+     * Turns on the motor at a certain percent of power. Switches to single motor mode!
+     * @param power %percent of power sent to the motor. Negative power goes backward. eg: 50
      */
-    //% weight=83 blockGap=32
-    //% blockId=input_logo_event block="on logo $action"
-    //% group="micro:bit (V2)"
-    //% parts="logotouch"
-    //% help="input/on-logo-event" shim=input::onLogoEvent
-    function onLogoEvent(action: TouchButtonEvent, body: () => void): void;
+    //% blockId=motor_power_dal shim=motors::motorPowerDal
+    function motorPowerDal(power: int32): void;
 
     /**
-     * Get the logo state (pressed or not).
+     * Send break, coast or sleep commands to the motor. Has no effect in dual-motor mode.
      */
-    //% weight=58
-    //% blockId="input_logo_is_pressed" block="logo is pressed"
-    //% blockGap=8
-    //% group="micro:bit (V2)"
-    //% parts="logotouch"
-    //% help="input/logo-is-pressed" shim=input::logoIsPressed
-    function logoIsPressed(): boolean;
+    //% blockId=motor_command_dal
+    //% hidden=1 shim=motors::motorCommandDal
+    function motorCommandDal(command: MotorCommand): void;
+
+    /**
+     * Controls two motors attached to the board. Switches to dual-motor mode!
+     */
+    //% blockId=dual_motor_power_dal
+    //% hidden=1 shim=motors::dualMotorPowerDal
+    function dualMotorPowerDal(motor: Motor, duty_percent: int32): void;
 }
-declare namespace pins {
+
 
     /**
-     * Configure the touch detection for the pins and logo.
-     * P0, P1, P2 use resistive touch by default.
-     * The logo uses capacitative touch by default.
-     * @param name target to change the touch mode for
-     * @param mode the touch mode to use
+     * Provides access to basic calliope mini functionality.
      */
-    //% weight=60
-    //% blockId=device_touch_set_type block="set %name to touch mode %mode"
-    //% advanced=true
-    //% group="micro:bit (V2)"
-    //% help=pins/touch-set-mode shim=pins::touchSetMode
-    function touchSetMode(name: TouchTarget, mode: TouchTargetMode): void;
+
+declare namespace basic {
+
+    /**
+     * Sets the color on the built-in RGB LED. Set to 0 to turn off.
+     */
+    //% blockId=device_turn_rgb_led_off block="turn built-in LED off"
+    //% help=basic/turn-rgb-led-off
+    //% weight=10
+    //% group="RGB LED"
+    //% advanced=true shim=basic::turnRgbLedOff
+    function turnRgbLedOff(): void;
+
+    /**
+     * Sets the color on the built-in RGB LED. Set to 0 to turn off.
+     * @param color1 The color of the first LED in RGB format (e.g., 0xFF0000 for red).
+     */
+    //% blockId=device_set_led_colors-dal
+    //% hidden=1 shim=basic::setLedColorDal
+    function setLedColorDal(color: int32): void;
+
+    /**
+     * Sets the color on the built-in RGB LED. Set to 0 to turn off.
+     * @param color1 The color of the first LED in RGB format (e.g., 0xFF0000 for red).
+     * @param color2 The second LED color.
+     * @param color3 The third LED color.
+     * @param brightness The LED brightness in percent.
+     */
+    //% blockId=device_set_led_colors-codal
+    //% hidden=1 brightness.defl=20 shim=basic::setLedColorsCodal
+    function setLedColorsCodal(color1: int32, color2: int32, color3: int32, brightness?: int32): void;
+
+    /**
+     * Sets the color on the built-in RGB LED. Set to 0 to turn off.
+     * @param color The color of the LED in RGB format (e.g., 0xFF0000 for red).
+     */
+    //% help=basic/set-led-color
+    //% blockId=device_set_led_color
+    //% block="set LED to %color=colorNumberPicker"
+    //% expandableArgumentMode="toggle"
+    //%
+    //%
+    //%
+    //%
+    //% weight=10
+    //% group="RGB LED" color.defl=0xff0000 shim=basic::setLedColor
+    function setLedColor(color?: int32): void;
 }
 declare namespace music {
 

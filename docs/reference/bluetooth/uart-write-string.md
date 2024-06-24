@@ -27,7 +27,7 @@ bluetooth.onBluetoothDisconnected(() => {
     basic.showString("D");
     connected = 0;
 });
-input.onButtonPressed(Button.A, () => {
+input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
     if (connected == 1) {
         bluetooth.uartWriteString("HELLO");
     }
@@ -44,7 +44,7 @@ For more advanced information on the @boardname@ Bluetooth UART service includin
 
 ## See also
 
-[About Bluetooth](/reference/bluetooth/about-bluetooth), [@boardname@ Bluetooth profile overview ](http://lancaster-university.github.io/microbit-docs/ble/profile/), [@boardname@ Bluetooth profile reference](http://lancaster-university.github.io/microbit-docs/resources/bluetooth/microbit-profile-V1.9-Level-2.pdf),  [Bluetooth on @boardname@ resources](http://bluetooth-mdw.blogspot.co.uk/p/bbc-microbit.html), [Bluetooth SIG](https://www.bluetooth.com)
+[About Bluetooth](/reference/bluetooth/about-bluetooth), [@boardname@ Bluetooth profile overview ](http://lancaster-university.github.io/microbit-docs/ble/profile/), [@boardname@ Bluetooth profile reference](http://lancaster-university.github.io/microbit-docs/resources/bluetooth/microbit-profile-V1.9-Level-2.pdf),  [Bluetooth on @boardname@ resources](http://bluetooth-mdw.blogspot.co.uk/p/-microbit.html), [Bluetooth SIG](https://www.bluetooth.com)
 
 ```package
 bluetooth

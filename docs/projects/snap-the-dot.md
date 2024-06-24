@@ -2,6 +2,8 @@
 
 ## Introduction @unplugged
 
+![Animation of the snap the dot game](/static/calliope/tutorials/09_snap_the_dot_animation.gif)
+
 Snap the dot is a game of skill where the player has to press **A** exactly when the dot reaches the center of the screen.
 
 This tutorial shows how to use the game engine.
@@ -57,7 +59,7 @@ Use a ``||input:on button pressed||`` block to handle the **A** button. Put in a
 
 ```blocks
 let sprite = game.createSprite(2, 2)
-input.onButtonPressed(Button.A, function () {
+input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), function () {
     if (sprite.get(LedSpriteProperty.X) == 2) {
     } else {
     }
@@ -75,7 +77,7 @@ Finally, pull out an ``||game:add score||`` and a ``||game:game over||`` block t
 
 ```blocks
 let sprite = game.createSprite(2, 2)
-input.onButtonPressed(Button.A, function () {
+input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Click), function () {
     if (sprite.get(LedSpriteProperty.X) == 2) {
         game.addScore(1)
     } else {

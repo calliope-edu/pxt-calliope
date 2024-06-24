@@ -1,6 +1,9 @@
 {
     "name": "bluetooth",
-    "description": "Bluetooth services",
+    "description": "Adds blocks for Bluetooth",
+    "dependencies": {
+        "core": "file:../core"
+    },
     "files": [
         "README.md",
         "enums.d.ts",
@@ -14,9 +17,9 @@
     "searchOnly": true,
     "icon": "./static/packages/bluetooth/icon.png",
     "public": true,
-    "dependencies": {
-        "core": "file:../core"
-    },
+    "weight": 10,
+    "searchOnly": true,
+    "icon": "./static/packages/bluetooth/icon.png",
     "yotta": {
         "config": {
             "microbit-dal": {
@@ -24,24 +27,6 @@
                     "enabled": 1
                 }
             }
-        },
-        "optionalConfig": {
-            "microbit-dal": {
-                "stack_size": 1280,
-                "gatt_table_size": "0x700"
-            }
-        },
-        "userConfigs": [
-            {
-                "description": "Disable Bluetooth Event Service",
-                "config": {
-                    "microbit-dal": {
-                        "bluetooth": {
-                            "event_service": 0
-                        }
-                    }
-                }
-            }
-        ]
+        }
     }
 }

@@ -2,6 +2,7 @@
     "name": "core",
     "description": "The microbit core library",
     "additionalFilePath": "../../node_modules/pxt-common-packages/libs/base",
+    "hidden": true,
     "files": [
         "README.md",
         "platform.h",
@@ -41,6 +42,7 @@
         "game.ts",
         "led.cpp",
         "led.ts",
+        "microphone.cpp",
         "music.cpp",
         "music.ts",
         "melodies.ts",
@@ -62,20 +64,22 @@
         "sendbuffernrf52.s",
         "sendbufferbrightness.s",
         "light.cpp",
-        "logo.cpp",
         "loops.ts",
-        "touchmode.cpp",
-        "soundexpressions.ts",
+        "compass.ts",
+        "motors.cpp",
+        "rgbled.cpp",
+        "rgbled.ts",
+        "_locales/de/core-jsdoc-strings.json",
+        "_locales/de/core-strings.json",
         "soundexpressions.cpp",
         "parts/speaker.svg",
-        "parts/headphone.svg",
-        "playable.ts"
+        "parts/headphone.svg"
     ],
     "testFiles": [],
     "public": true,
     "dependencies": {},
     "dalDTS": {
-        "compileServiceVariant": "mbcodal",
+        "compileServiceVariant": "minicodal",
         "includeDirs": [
             "libraries/codal-core/inc",
             "libraries/codal-microbit-v2/inc",
@@ -109,55 +113,30 @@
         "optionalConfig": {
             "microbit-dal": {
                 "bluetooth": {
+                    "enabled": 1,
+                    "pairing_mode": 1,
+                    "partial_flashing": 1,
+                    "dfu_service": 1,
+                    "event_service": 0,
+                    "device_info_service": 1,
                     "private_addressing": 0,
                     "advertising_timeout": 0,
-                    "tx_power": 6,
-                    "dfu_service": 1,
-                    "event_service": 1,
-                    "device_info_service": 1,
-                    "eddystone_url": 1,
-                    "eddystone_uid": 1,
-                    "open": 0,
-                    "pairing_mode": 1,
-                    "whitelist": 1,
-                    "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM",
-                    "partial_flashing": 1
-                }
+                    "tx_power": 6
+                },
+                "stack_size": 1280,
+                "gatt_table_size": "0x600",
+                "panic_on_heap_full": 0,
+                "debug": 0,
+                "heap_debug": 0
             }
         },
         "userConfigs": [
             {
-                "description": "No Pairing Required: Anyone can connect via Bluetooth.",
+                "description": "Paring mode always required to transfer programs via Bluetooth",
                 "config": {
                     "microbit-dal": {
                         "bluetooth": {
-                            "open": 1,
-                            "whitelist": 0,
-                            "security_level": null
-                        }
-                    }
-                }
-            },
-            {
-                "description": "JustWorks pairing (default): Pairing is automatic once the pairing is initiated.",
-                "config": {
-                    "microbit-dal": {
-                        "bluetooth": {
-                            "open": 0,
-                            "whitelist": 1,
-                            "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM"
-                        }
-                    }
-                }
-            },
-            {
-                "description": "Passkey pairing: Pairing requires 6 digit key to pair.",
-                "config": {
-                    "microbit-dal": {
-                        "bluetooth": {
-                            "open": 0,
-                            "whitelist": 1,
-                            "security_level": "SECURITY_MODE_ENCRYPTION_WITH_MITM"
+                            "enabled": 0
                         }
                     }
                 }

@@ -4,14 +4,14 @@
 
 How much love 😍 are you emitting today? Create a 💓 LOVE METER 💓 machine with your micro:bit!
 
-![Love meter banner message](/static/mb/projects/love-meter/love-meter.gif)
+![Love meter banner message](/static/calliope/tutorials/05_love_meter_animation.gif)
 
 ## {Step 1}
 
 We'll use this ``||input:on pin pressed||`` block to run code when pin **0** on the micro:bit is pressed. From the ``||basic:Basic||`` Toolbox category, drag a ``||basic:show number||`` block and drop into the ``||input:on pin pressed||`` block.
 
 ```blocks
-input.onPinPressed(TouchPin.P0, function() {
+input.onPinTouchEvent(TouchPin.P0, input.buttonEventValue(ButtonEvent.Down), () => {
     //@highlight
     basic.showNumber(0)
 })
@@ -22,7 +22,7 @@ input.onPinPressed(TouchPin.P0, function() {
 From the ``||math:Math||`` category, get a ``||Math:pick random||`` block and drop it into the ``||basic:show number||`` block replacing 0.
 
 ```blocks
-input.onPinPressed(TouchPin.P0, function() {
+input.onPinTouchEvent(TouchPin.P0, input.buttonEventValue(ButtonEvent.Down), () => {
     //@highlight
     basic.showNumber(randint(0, 100))
 })
@@ -32,12 +32,16 @@ input.onPinPressed(TouchPin.P0, function() {
 
 Now let's be sure to label our Love Machine! From the ``||basic:Basic||`` Toolbox category, drag an ``||basic:on start||`` block and drop it anywhere on the Workspace. Then get a ``||basic:show string||`` block and place it in the ``||basic:on start||`` block.  Type the words "LOVE METER" into the ``||basic:show string||`` block.
 
+## Step 4
+
+Show ``"LOVE METER"`` on the screen when the @boardname@ starts.
+
 ```blocks
 //@highlight
-basic.showString("LOVE METER")
-input.onPinPressed(TouchPin.P0, function() {
-    basic.showNumber(randint(0, 100))
-})
+basic.showString("LOVE METER");
+input.onPinTouchEvent(TouchPin.P0, input.buttonEventValue(ButtonEvent.Down), () => {
+    basic.showNumber(randint(0, 100));
+});
 ```
 
 ## {Step 4}

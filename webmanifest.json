@@ -1,5 +1,5 @@
 {
-	"name": "makecode.microbit.org",
+	"name": "makecode.calliope.cc",
 	"icons": [
 		{
 			"src": "/static/icons/android-chrome-36x36.png",
@@ -55,5 +55,9 @@
 	],
 	"theme_color": "#ffffff",
 	"related_applications": [
+		{
+			"platform": "play",
+			"id": "cc.calliope.mini"
+		}
 	]
 }

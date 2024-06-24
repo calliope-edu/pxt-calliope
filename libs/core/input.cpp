@@ -7,6 +7,14 @@ enum class Button {
     AB = MICROBIT_ID_BUTTON_AB,
 };
 
+enum class ButtonEvents {
+    Down = MICROBIT_BUTTON_EVT_DOWN,
+    Up = MICROBIT_BUTTON_EVT_UP,
+    Click = MICROBIT_BUTTON_EVT_CLICK,
+    LongClick = MICROBIT_BUTTON_EVT_LONG_CLICK,
+    Hold = MICROBIT_BUTTON_EVT_HOLD,
+};
+
 enum class Dimension {
     //% block=x
     X = 0,
@@ -26,9 +34,10 @@ enum class Rotation {
 };
 
 enum class TouchPin {
-    P0 = MICROBIT_ID_IO_P0,
-    P1 = MICROBIT_ID_IO_P1,
-    P2 = MICROBIT_ID_IO_P2,
+    P0 = MICROBIT_ID_IO_P0, //MICROBIT_ID_IO_P12,
+    P1 = MICROBIT_ID_IO_P1, //MICROBIT_ID_IO_P0,
+    P2 = MICROBIT_ID_IO_P2, //MICROBIT_ID_IO_P1,
+    P3 = MICROBIT_ID_IO_P3 //MICROBIT_ID_IO_P16
 };
 
 enum class AcceleratorRange {
@@ -158,29 +167,35 @@ enum class MesDpadButtonInfo {
     _4Up = MES_DPAD_BUTTON_4_UP,
 };
 
-//% color=#D400D4 weight=111 icon="\uf192"
+//% color=#c90072 weight=99 icon="\uf192"
 namespace input {
+
+
     /**
-     * Do something when a button (A, B or both A+B) is pushed down and released again.
-     * @param button the button that needs to be pressed
+     * Do something when a button (A, B or both A+B) receives an event.
+     * @param button the button
      * @param body code to run when event is raised
+     * @param eventType event Type
      */
-    //% help=input/on-button-pressed weight=85 blockGap=16
-    //% blockId=device_button_event block="on button|%NAME|pressed"
+    //% help=input/on-button-event weight=100 blockGap=16
+    //% blockId=device_button_selected_event block="on button %NAME| %eventType"
+    //% eventType.shadow="control_button_event_click"
     //% parts="buttonpair"
-    void onButtonPressed(Button button, Action body) {
-        registerWithDal((int)button, MICROBIT_BUTTON_EVT_CLICK, body);
+    //% group="Events"
+    void onButtonEvent(Button button, int eventType, Action body) {
+        registerWithDal((int)button, (int)eventType, body);
     }
 
     /**
-     * Do something when when a gesture is done (like shaking the micro:bit).
+     * Do something when when a gesture is done (like shaking the Calliope mini).
      * @param gesture the type of gesture to track, eg: Gesture.Shake
      * @param body code to run when gesture is raised
      */
-    //% help=input/on-gesture weight=84 blockGap=16
+    //% help=input/on-gesture weight=98 blockGap=16
     //% blockId=device_gesture_event block="on |%NAME"
     //% parts="accelerometer"
     //% NAME.fieldEditor="gestures" NAME.fieldOptions.columns=4
+    //% group="Events"
     void onGesture(Gesture gesture, Action body) {
         int gi = (int)gesture;
         if (gi == MICROBIT_ACCELEROMETER_EVT_3G && uBit.accelerometer.getRange() < 3)
@@ -194,10 +209,11 @@ namespace input {
     * Tests if a gesture is currently detected.
      * @param gesture the type of gesture to detect, eg: Gesture.Shake
     */
-    //% help=input/is-gesture weight=10 blockGap=8
+    //% help=input/is-gesture weight=86 blockGap=8
     //% blockId=deviceisgesture block="is %gesture gesture"
     //% parts="accelerometer"
     //% gesture.fieldEditor="gestures" gesture.fieldOptions.columns=4
+    //% group="States"
     bool isGesture(Gesture gesture) {
         // turn on acceleration
         uBit.accelerometer.getX();
@@ -205,48 +221,34 @@ namespace input {
         return uBit.accelerometer.getGesture() == gi;
     }
 
-     /**
-     * Do something when a pin is touched and released again (while also touching the GND pin).
-     * @param name the pin that needs to be pressed, eg: TouchPin.P0
-     * @param body the code to run when the pin is pressed
-     */
-    //% help=input/on-pin-pressed weight=83 blockGap=32
-    //% blockId=device_pin_event block="on pin %name|pressed"
-    void onPinPressed(TouchPin name, Action body) {
-        auto pin = getPin((int)name);
-        if (!pin) return;
-
-        // Forces the PIN to switch to makey-makey style detection.
-        pin->isTouched();
-        registerWithDal((int)name, MICROBIT_BUTTON_EVT_CLICK, body);
-    }
-
     /**
-     * Do something when a pin is released.
-     * @param name the pin that needs to be released, eg: TouchPin.P0
-     * @param body the code to run when the pin is released
+     * Do something when a pin receives an touch event (while also touching the GND pin).
+     * @param name the pin, eg: TouchPin.P0
+     * @param body the code to run when event is fired on pin
      */
-    //% help=input/on-pin-released weight=6 blockGap=16
-    //% blockId=device_pin_released block="on pin %NAME|released"
-    //% advanced=true
-    void onPinReleased(TouchPin name, Action body) {
+    //% help=input/on-pin-event weight=99 blockGap=16
+    //% blockId=device_pin_custom_event block="on pin %name| %eventType"
+    //% eventType.shadow="control_button_event_down"
+    //% group="Events"
+    void onPinTouchEvent(TouchPin name, int eventType, Action body) {
         auto pin = getPin((int)name);
         if (!pin) return;
 
         // Forces the PIN to switch to makey-makey style detection.
         pin->isTouched();
-        registerWithDal((int)name, MICROBIT_BUTTON_EVT_UP, body);
+        registerWithDal((int)name, (int)eventType, body);
     }
 
     /**
      * Get the button state (pressed or not) for ``A`` and ``B``.
      * @param button the button to query the request, eg: Button.A
      */
-    //% help=input/button-is-pressed weight=60
+    //% help=input/button-is-pressed weight=89
     //% block="button|%NAME|is pressed"
     //% blockId=device_get_button2
     //% icon="\uf192" blockGap=8
     //% parts="buttonpair"
+    //% group="States"
     bool buttonIsPressed(Button button) {
       if (button == Button::A)
         return uBit.buttonA.isPressed();
@@ -258,12 +260,54 @@ namespace input {
     }
 
     /**
+     * Do something when a button (A, B or both A+B) is pushed down and released again.
+     * @param button the button that needs to be pressed
+     * @param body code to run when event is raised
+     */
+    //% help=input/on-button-pressed weight=85 blockGap=16
+    //% blockId=device_button_event block="on button|%NAME|pressed"
+    //% parts="buttonpair"
+    //% deprecated=true
+    //% group="Events"
+    void onButtonPressed(Button button, Action body) {
+        onButtonEvent(button, MICROBIT_BUTTON_EVT_CLICK, body);
+    }
+
+    /**
+     * Do something when a pin is touched and released again (while also touching the GND pin).
+     * @param name the pin that needs to be pressed, eg: TouchPin.P0
+     * @param body the code to run when the pin is pressed
+     */
+    //% help=input/on-pin-pressed weight=83 blockGap=16
+    //% blockId=device_pin_event block="on pin %name|pressed"
+    //% group="Events"
+    //% deprecated=true
+    void onPinPressed(TouchPin name, Action body) {
+        onPinTouchEvent(name, MICROBIT_BUTTON_EVT_CLICK, body);
+    }
+
+    /**
+     * Do something when a pin is released.
+     * @param name the pin that needs to be released, eg: TouchPin.P0
+     * @param body the code to run when the pin is released
+     */
+    //% help=input/on-pin-released weight=6 blockGap=16
+    //% blockId=device_pin_released block="on pin %NAME|released"
+    //% advanced=true
+    //% group="Events"
+    //% deprecated=true
+    void onPinReleased(TouchPin name, Action body) {
+        onPinTouchEvent(name, MICROBIT_BUTTON_EVT_UP, body);
+    }
+
+    /**
      * Get the pin state (pressed or not). Requires to hold the ground to close the circuit.
      * @param name pin used to detect the touch, eg: TouchPin.P0
      */
-    //% help=input/pin-is-pressed weight=58
+    //% help=input/pin-is-pressed weight=87
     //% blockId="device_pin_is_pressed" block="pin %NAME|is pressed"
     //% blockGap=8
+    //% group="States"
     bool pinIsPressed(TouchPin name) {
         auto pin = getPin((int)name);
         return pin && pin->isTouched();
@@ -283,6 +327,7 @@ namespace input {
     //% help=input/acceleration weight=58
     //% blockId=device_acceleration block="acceleration (mg)|%NAME" blockGap=8
     //% parts="accelerometer"
+    //% group="Sensors"
     int acceleration(Dimension dimension) {
       switch (dimension) {
       case Dimension::X: return uBit.accelerometer.getX();
@@ -296,9 +341,10 @@ namespace input {
     /**
      * Reads the light level applied to the LED screen in a range from ``0`` (dark) to ``255`` bright.
      */
-    //% help=input/light-level weight=57
+    //% help=input/light-level weight=59
     //% blockId=device_get_light_level block="light level" blockGap=8
     //% parts="ledmatrix"
+    //% group="Sensors"
     int lightLevel() {
         return uBit.display.readLightLevel();
     }
@@ -310,6 +356,7 @@ namespace input {
     //% weight=56
     //% blockId=device_heading block="compass heading (°)" blockGap=8
     //% parts="compass"
+    //% group="Sensors"
     int compassHeading() {
         return uBit.compass.heading();
     }
@@ -318,10 +365,11 @@ namespace input {
     /**
      * Gets the temperature in Celsius degrees (°C).
      */
-    //% weight=55
+    //% weight=57
     //% help=input/temperature
     //% blockId=device_temperature block="temperature (°C)" blockGap=8
     //% parts="thermometer"
+    //% group="Sensors"
     int temperature() {
         return uBit.thermometer.getTemperature();
     }
@@ -333,6 +381,7 @@ namespace input {
     //% help=input/rotation weight=52
     //% blockId=device_get_rotation block="rotation (°)|%NAME" blockGap=8
     //% parts="accelerometer" advanced=true
+    //% group="Sensors"
     int rotation(Rotation kind) {
       switch (kind) {
       case Rotation::Pitch: return uBit.accelerometer.getPitch();
@@ -345,10 +394,11 @@ namespace input {
      * Get the magnetic force value in ``micro-Teslas`` (``µT``). This function is not supported in the simulator.
      * @param dimension the x, y, or z dimension, eg: Dimension.X
      */
-    //% help=input/magnetic-force weight=54
+    //% help=input/magnetic-force weight=49
     //% blockId=device_get_magnetic_force block="magnetic force (µT)|%NAME" blockGap=8
     //% parts="compass"
     //% advanced=true
+    //% group="Sensors"
     TNumber magneticForce(Dimension dimension) {
         /* https://github.com/microsoft/pxt-microbit/issues/4995
         if (!uBit.compass.isCalibrated())
@@ -369,7 +419,8 @@ namespace input {
      */
     //% help=input/calibrate-compass advanced=true
     //% blockId="input_compass_calibrate" block="calibrate compass"
-    //% weight=55
+    //% weight=20 gap=8
+    //% group="Configuration"
     void calibrateCompass() {
         uBit.compass.calibrate();
     }
@@ -380,10 +431,24 @@ namespace input {
      */
     //% help=input/set-accelerometer-range
     //% blockId=device_set_accelerometer_range block="set accelerometer|range %range"
-    //% weight=5
+    //% weight=22 gap=8
     //% parts="accelerometer"
     //% advanced=true
+    //% group="Configuration"
     void setAccelerometerRange(AcceleratorRange range) {
         uBit.accelerometer.setRange((int)range);
     }
+
+    /**
+    * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
+    */
+    //% help=input/calibrate-compass advanced=true
+    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
+    //% weight=19
+    //% group="System"
+    //% deprecated=true
+    bool isCalibratedCompass() {
+        return (uBit.compass.isCalibrated() == 1);
+    }
+    
 }
