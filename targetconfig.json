@@ -254,6 +254,9 @@
             "calliope-edu/pxt-ki-in-schulen",
             "microsoft/pxt-microturtle",
             "microsoft/pxt-neopixel",
+            "calliope-edu/pxt-bosonkit_mini3",
+            "calliope-edu/pxt-blehid",
+            "mkleinsb/pxt-grove-relay-jacdac",
             "calliope-edu/pxt-faces",
             "calliope-net/i2c-liste",
             "calliope-edu/pxt-storage",
@@ -350,6 +353,21 @@
                     "Display"
                 ]
             },
+            "calliope-edu/pxt-bosonkit_mini3": {
+                "tags": [
+                    "Climate",
+                    "Motor"
+                ],
+                "preferred": true
+            },
+            "calliope-edu/pxt-blehid": {
+                "preferred": true
+            },
+            "MKleinSB/pxt-grove-relay-jacdac": {
+                "tags": [
+                    "Jacdac"
+                ]
+            }, 
             "calliope-edu/warte-bis": {
                 "preferred": true
             },
