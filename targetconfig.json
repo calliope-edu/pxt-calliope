@@ -594,9 +594,7 @@
                     "Jacdac"
                 ]
             },
-            "wago-enterprise-education/pxt-hot-wire": {
-                "preferred": true
-            },
+            "wago-enterprise-education/pxt-hot-wire": {},
             "microsoft/pxt-bluetooth-max6675": {},
             "microsoft/pxt-bluetooth-midi": {
                 "tags": [
