@@ -216,7 +216,8 @@
             "MKleinSB/pxt-calliope-jacdac",
             "calliope-edu/warte-bis",
             "joernalraun/mkcd-ml-machine",
-            "wappsto/pxt-wappsto"
+            "wappsto/pxt-wappsto",
+            "wago-enterprise-education/pxt-hot-wire"
         ],
         "preferredRepos": [
             "calliope-edu/co2-sensor-scd40",
@@ -261,7 +262,8 @@
             "calliope-net/i2c-liste",
             "calliope-edu/pxt-storage",
             "calliope-edu/warte-bis",
-            "wappsto/pxt-wappsto"
+            "wappsto/pxt-wappsto",
+            "wago-enterprise-education/pxt-hot-wire"
         ],
         "approvedRepoLib": {
             "calliope-edu/co2-sensor-scd40": {
@@ -591,6 +593,9 @@
                 "tags": [
                     "Jacdac"
                 ]
+            },
+            "wago-enterprise-education/pxt-hot-wire": {
+                "preferred": true
             },
             "microsoft/pxt-bluetooth-max6675": {},
             "microsoft/pxt-bluetooth-midi": {
