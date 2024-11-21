@@ -259,6 +259,7 @@
             "calliope-edu/pxt-blehid",
             "mkleinsb/pxt-grove-relay-jacdac",
             "calliope-edu/pxt-faces",
+            "microsoft/microbit-robot",
             "calliope-net/i2c-liste",
             "calliope-edu/pxt-storage",
             "calliope-edu/warte-bis",
@@ -376,6 +377,12 @@
             "calliope-edu/pxt-faces": {
                 "tags": [
                     "Display"
+                ],
+                "preferred": true
+            },
+            "microsoft/microbit-robot":{
+                "tags":[
+                    "Motor"
                 ],
                 "preferred": true
             },
