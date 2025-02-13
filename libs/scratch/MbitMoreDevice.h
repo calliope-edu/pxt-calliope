@@ -160,7 +160,7 @@ public:
    * @brief Shadow screen to display on the LED.
    *
    */
-  uint8_t shadowPixcels[5][5] = {{0}};
+  uint8_t shadowPixels[5][5] = {{0}};
 
   /**
    * Samples of Light Level.

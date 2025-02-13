@@ -428,7 +428,7 @@ void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
  */
 void MbitMoreDevice::setPixelsShadowLine(int line, uint8_t *pattern) {
   for (size_t col = 0; col < 5; col++) {
-    shadowPixcels[line][col] = pattern[col];
+    shadowPixels[line][col] = pattern[col];
   }
 }
 
@@ -440,7 +440,7 @@ void MbitMoreDevice::displayShadowPixels() {
   uBit.display.stopAnimation();
   for (size_t y = 0; y < 5; y++) {
     for (size_t x = 0; x < 5; x++) {
-      uBit.display.image.setPixelValue(x, y, shadowPixcels[y][x]);
+      uBit.display.image.setPixelValue(x, y, shadowPixels[y][x]);
     }
   }
 }
