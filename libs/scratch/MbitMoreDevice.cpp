@@ -42,7 +42,7 @@ int getMicLevel() {
 int average(int *data, int dataSize) {
   int sum = 0;
   int i;
-  for (i = 0; i < dataSize - 1; i++) {
+  for (i = 0; i < dataSize; i++) {
     sum += data[i];
   }
   return sum / dataSize;
