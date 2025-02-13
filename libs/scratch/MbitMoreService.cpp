@@ -192,7 +192,7 @@ void MbitMoreService::onDataRead(microbit_onDataRead_t *params) {
     params->data = analogInP2ChBuffer;
     params->length = 2;
   } else if (params->handle == valueHandle(mbitmore_cIdx_ANALOG_IN_P3)) {
-    mbitMore->updateAnalogIn(analogInP3ChBuffer, 2);
+    mbitMore->updateAnalogIn(analogInP3ChBuffer, 3);
     params->data = analogInP3ChBuffer;
     params->length = 2;
   }
