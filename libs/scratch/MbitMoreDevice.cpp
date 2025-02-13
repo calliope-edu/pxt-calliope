@@ -69,7 +69,15 @@ int median(int *data, int dataSize) {
       }
     }
   }
-  return data[dataSize / 2];
+  
+  // Median calculation
+  if (dataSize % 2 == 1) {
+    // Odd number of elements: return the middle element
+    return data[dataSize / 2];
+  } else {
+    // Even number of elements: return the average of the two middle elements
+    return (data[dataSize / 2] + data[dataSize / 2 - 1]) / 2;
+  }
 }
 
 /**
