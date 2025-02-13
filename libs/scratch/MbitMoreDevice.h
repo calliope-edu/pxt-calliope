@@ -194,7 +194,7 @@ public:
   /**
    * Samples of Light Level.
    */
-  int analogInSamples[3][ANALOG_IN_SAMPLES_SIZE] = {{0}};
+  int analogInSamples[4][ANALOG_IN_SAMPLES_SIZE] = {{0}};
 
 #if MICROBIT_CODAL
   /**
