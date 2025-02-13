@@ -96,9 +96,17 @@ void copyManagedString(char *dst, ManagedString mstr, size_t maxLength) {
  * @param _uBit The instance of a MicroBit runtime.
  */
 MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
-  // Reset compass
 
+  DMESG("Initializing MbitMoreDevice...");
+  // Initialize touchMode array to false
+    for (int i = 0; i < 4; i++) {
+        DMESG("Initial touchMode[P%d] = %d", i, touchMode[i]);
+        touchMode[i] = false;
+    }
+
+  // Reset compass
   if (!uBit.compass.isCalibrated()) {
+    DMESG("Compass not calibrated A");
     CompassCalibration dummyCalibration;
     dummyCalibration.centre = Sample3D(0, 0, 0);  // Assuming the centre is at (0, 0, 0)
     dummyCalibration.scale = Sample3D(1, 1, 1);    // Assuming no scaling
@@ -107,6 +115,7 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
   }
   
   if (uBit.buttonA.isPressed()) {
+    DMESG("Button A pressed");
 #if MICROBIT_CODAL
   // On microbit-v2, re-calibration destruct compass heading.
 #else // NOT MICROBIT_CODAL
@@ -117,6 +126,7 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
 
     // Compass must be calibrated before starting bluetooth service.
   if (!uBit.compass.isCalibrated()) {
+    DMESG("Compass not calibrated B");
     uBit.compass.calibrate();
   }
 
@@ -130,12 +140,14 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
       this,
       &MbitMoreDevice::onButtonChanged,
       MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY);
-  uBit.messageBus.listen( 
+  DMESG("Listening for Button A events");
+  uBit.messageBus.listen(
       MICROBIT_ID_BUTTON_B,
       MICROBIT_EVT_ANY,
       this,
       &MbitMoreDevice::onButtonChanged,
       MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY);
+  DMESG("Listening for Button B events");
 
 #if MICROBIT_CODAL
   uBit.messageBus.listen(
@@ -144,6 +156,7 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
       this,
       &MbitMoreDevice::onButtonChanged,
       MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY);
+  DMESG("Listening for Logo events");
 #endif // MICROBIT_CODAL
 
   uBit.messageBus.listen(
@@ -152,6 +165,7 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
       this,
       &MbitMoreDevice::onGestureChanged,
       MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY);
+  DMESG("Listening for Gesture events");
 
   uBit.messageBus.listen(
       MICROBIT_ID_BLE,
@@ -159,12 +173,14 @@ MbitMoreDevice::MbitMoreDevice(MicroBit &_uBit) : uBit(_uBit) {
       this,
       &MbitMoreDevice::onBLEConnected,
       MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY);
+  DMESG("Listening for BLE connected events");
   uBit.messageBus.listen(
       MICROBIT_ID_BLE,
       MICROBIT_BLE_EVT_DISCONNECTED,
       this,
       &MbitMoreDevice::onBLEDisconnected,
       MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY);
+  DMESG("Listening for BLE disconnected events");
 #if MBIT_MORE_USE_SERIAL
   serialService = new MbitMoreSerial(*this);
 #endif // MBIT_MORE_USE_SERIAL
@@ -187,6 +203,7 @@ MbitMoreDevice::~MbitMoreDevice() {
  *
  */
 void MbitMoreDevice::initializeConfig() {
+  DMESG("Initialize Config");
   // P0,P1,P2,P3 are pull-up as standard extension.
   for (size_t i = 0; i < (sizeof(initialPullUp) / sizeof(initialPullUp[0])); i++) {
     setPullMode(initialPullUp[i], MbitMorePullMode::Up);
@@ -214,6 +231,14 @@ void MbitMoreDevice::updateVersionData() {
  * @param _e event which has connection data
  */
 void MbitMoreDevice::onBLEConnected(MicroBitEvent _e) {
+  DMESG("BLE Connected. Pin states:");
+  for (int i = 0; i < 4; i++) {
+    DMESG("P%d: State=%d, Mode=%d", 
+          i, 
+          uBit.io.pin[i].getDigitalValue(),
+          touchMode[i]);
+  }
+
 #if MICROBIT_CODAL
   fiber_sleep(100); // to change pull-mode in micro:bit v2
 #endif // MICROBIT_CODAL
@@ -228,6 +253,7 @@ void MbitMoreDevice::onBLEConnected(MicroBitEvent _e) {
  * @param _e event which has disconnection data
  */
 void MbitMoreDevice::onBLEDisconnected(MicroBitEvent _e) {
+  DMESG("BLE Disconnected");
   uBit.reset(); // reset to off microphone and its LED.
 }
 
@@ -246,6 +272,7 @@ void MbitMoreDevice::onSerialConnected() {
  * @param length
  */
 void MbitMoreDevice::onCommandReceived(uint8_t *data, size_t length) {
+  DMESG("Command received: %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n", data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15], data[16], data[17], data[18], data[19]);
   const int command = (data[0] >> 5);
   if(command == MbitMoreCommand::CMD_MOTOR) {
     const int motorCommand = data[0] & 0b11111;
@@ -839,6 +866,7 @@ void MbitMoreDevice::listenPinEventOn(int pinIndex, int eventType) {
  * Callback. Invoked when a pin event sent.
  */
 void MbitMoreDevice::onPinEvent(MicroBitEvent evt) {
+  DMESG("Pin event: Source %d, Event ID: %d", evt.source, evt.value);
   uint8_t *data = moreService->pinEventChBuffer;
 
   // pinIndex is sent as uint8_t.
@@ -867,6 +895,18 @@ void MbitMoreDevice::onPinEvent(MicroBitEvent evt) {
  * @param evt event which has button states
  */
 void MbitMoreDevice::onButtonChanged(MicroBitEvent evt) {
+  DMESG("Button event: Source %d, Event ID: %d", evt.source, evt.value);
+
+  int pinIndex = evt.source - 100; // For pins P0-P3
+    if (pinIndex >= 0 && pinIndex <= 3) {
+        DMESG("TOUCH EVENT: Pin P%d, Event ID: %d, TouchMode: %d", 
+              pinIndex, evt.value, touchMode[pinIndex]);
+    } else {
+        DMESG("BUTTON EVENT: Source %d, Event ID: %d", 
+              evt.source, evt.value);
+    }
+
+
   uint8_t *data = moreService->actionEventChBuffer;
   data[0] = MbitMoreActionEvent::BUTTON;
   // source is a component ID that generated the event as uint16_t little-endian.
@@ -895,6 +935,7 @@ void MbitMoreDevice::onButtonChanged(MicroBitEvent evt) {
  * @param evt event which has gesture states.
  */
 void MbitMoreDevice::onGestureChanged(MicroBitEvent evt) {
+  DMESG("Gesture event: Source %d, Event ID: %d", evt.source, evt.value);
   uint8_t *data = moreService->actionEventChBuffer;
   data[0] = MbitMoreActionEvent::GESTURE;
   // Event ID send as uint8_t.
