@@ -166,7 +166,7 @@
                 "codalTarget": {
                     "name": "codal-microbit-v2",
                     "url": "https://github.com/calliope-edu/codal-microbit-v2",
-                    "branch": "v0.2.40-calliope-rc1",
+                    "branch": "dmesg_debug_enabled",
                     "type": "git"
                 },
                 "codalBinary": "MICROBIT",
