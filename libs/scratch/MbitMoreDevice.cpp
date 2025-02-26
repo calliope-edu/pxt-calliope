@@ -189,7 +189,7 @@ MbitMoreDevice::~MbitMoreDevice() {
 void MbitMoreDevice::initializeConfig() {
   // P0,P1,P2,P3 are pull-up as standard extension.
   for (size_t i = 0; i < (sizeof(initialPullUp) / sizeof(initialPullUp[0])); i++) {
-    setPullMode(initialPullUp[i], MbitMorePullMode::Up);
+    setPullMode(initialPullUp[i], MbitMorePullMode::Down);
     uBit.io.pin[initialPullUp[i]].getDigitalValue(); // set the pin to input-mode
   }
 }
