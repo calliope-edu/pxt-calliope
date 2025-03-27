@@ -44,16 +44,15 @@
                 "RAM_SIZE": "\"32K\"",
                 "bluetooth": {
                     "enabled": 1,
-                    "pairing_mode": 0,
+                    "pairing_mode": 1,
                     "private_addressing": 0,
-                    "open": 1,
                     "whitelist": 0,
                     "advertising_timeout": 0,
-                    "tx_power": 0,
-                    "dfu_service": 0,
+                    "tx_power": 6,
+                    "dfu_service": 1,
                     "event_service": 0,
-                    "device_info_service": 0,
-                    "security_level": "SECURITY_MODE_ENCRYPTION_NO_MITM"
+                    "device_info_service": 1,
+                    "security_level": "SECURITY_MODE_ENCRYPTION_OPEN_LINK"
                 },
                 "gatt_table_size": "0x360"
             }
