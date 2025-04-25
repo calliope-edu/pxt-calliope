@@ -217,7 +217,8 @@
             "calliope-edu/warte-bis",
             "joernalraun/mkcd-ml-machine",
             "wappsto/pxt-wappsto",
-            "wago-enterprise-education/pxt-hot-wire"
+            "wago-enterprise-education/pxt-hot-wire",
+            "joy-it/Joy-Car"
         ],
         "preferredRepos": [
             "calliope-edu/co2-sensor-scd40",
