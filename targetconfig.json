@@ -218,7 +218,9 @@
             "joernalraun/mkcd-ml-machine",
             "wappsto/pxt-wappsto",
             "wago-enterprise-education/pxt-hot-wire",
-            "joy-it/Joy-Car"
+            "joy-it/Joy-Car",
+            "zukunftswerkstatt-buchholz/robot-control",
+            "calliope-edu/lofirobot"
         ],
         "preferredRepos": [
             "calliope-edu/co2-sensor-scd40",
@@ -332,6 +334,13 @@
                 ],
                 "preferred": true
             },
+            "calliope-edu/lofirobot": {
+                "tags": [
+                    "AI",
+                    "Motor",
+                    "IoT"
+                ]
+            },
             "tinysuperlab/touchkit": {
                 "tags": [
                     "Audio"
@@ -371,7 +380,12 @@
                 "tags": [
                     "Jacdac"
                 ]
-            }, 
+            },
+            "zukunftswerkstatt-buchholz/robot-control": {
+                "tags": [
+                    "Motor"
+                ]
+            },
             "calliope-edu/warte-bis": {
                 "preferred": true
             },
