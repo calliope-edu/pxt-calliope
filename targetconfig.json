@@ -219,8 +219,7 @@
             "wappsto/pxt-wappsto",
             "wago-enterprise-education/pxt-hot-wire",
             "joy-it/Joy-Car",
-            "zukunftswerkstatt-buchholz/robot-control",
-            "calliope-edu/lofirobot"
+            "zukunftswerkstatt-buchholz/robot-control"
         ],
         "preferredRepos": [
             "calliope-edu/co2-sensor-scd40",
@@ -333,13 +332,6 @@
                     "Motor"
                 ],
                 "preferred": true
-            },
-            "calliope-edu/lofirobot": {
-                "tags": [
-                    "AI",
-                    "Motor",
-                    "IoT"
-                ]
             },
             "tinysuperlab/touchkit": {
                 "tags": [
