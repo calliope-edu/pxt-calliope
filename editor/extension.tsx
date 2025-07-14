@@ -67,31 +67,45 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
             
             console.log(`[CALLIOPE] Dynamic board definition enabled, checking reconnection timing (${timeSinceLastReconnect}ms since last)`);
             
-            // Always reconnect when dynamicBoardDefinition is enabled, but prevent rapid reconnections
             // Wait at least 2 seconds between reconnection attempts
             if (timeSinceLastReconnect > 2000) {
                 lastReconnectTime = now;
-                console.log(`[CALLIOPE] Initiating WebUSB reconnection after project reload`);
+                console.log(`[CALLIOPE] Scheduling WebUSB connection check after project reload`);
                 
-                // Small delay to ensure project reload is complete
+                // Wait longer (3 seconds) to let natural reconnection attempts settle
                 setTimeout(async () => {
                     try {
-                        console.log(`[CALLIOPE] Starting WebUSB reconnection process`);
+                        console.log(`[CALLIOPE] Checking WebUSB connection status`);
                         const webusb = await pxt.packetio.initAsync(false);
-                        if (webusb && (webusb as any).forceResetAsync) {
-                            console.log(`[CALLIOPE] Using forceResetAsync for WebUSB reconnection`);
-                            await (webusb as any).forceResetAsync();
-                        } else if (webusb) {
-                            console.log(`[CALLIOPE] Using reconnectAsync for WebUSB reconnection`);
-                            await webusb.reconnectAsync();
+                        
+                        if (!webusb) {
+                            console.log(`[CALLIOPE] No WebUSB device found, attempting reconnection`);
+                            const reconnectedWebusb = await pxt.packetio.initAsync(true);
+                            if (reconnectedWebusb) {
+                                console.log(`[CALLIOPE] WebUSB reconnection successful`);
+                            } else {
+                                console.log(`[CALLIOPE] WebUSB reconnection failed - no device`);
+                            }
                         } else {
-                            console.log(`[CALLIOPE] No WebUSB device available for reconnection`);
+                            // Test if the connection is actually working
+                            try {
+                                if ((webusb as any).isConnected && (webusb as any).isConnected()) {
+                                    console.log(`[CALLIOPE] WebUSB already connected and working`);
+                                } else {
+                                    console.log(`[CALLIOPE] WebUSB device found but not connected, reconnecting`);
+                                    await webusb.reconnectAsync();
+                                    console.log(`[CALLIOPE] WebUSB reconnection completed`);
+                                }
+                            } catch (testError) {
+                                console.log(`[CALLIOPE] WebUSB connection test failed, attempting reconnection`);
+                                await webusb.reconnectAsync();
+                                console.log(`[CALLIOPE] WebUSB reconnection completed after test failure`);
+                            }
                         }
-                        console.log(`[CALLIOPE] WebUSB reconnection completed successfully`);
                     } catch (e) {
-                        console.log(`[CALLIOPE] WebUSB reconnection failed: ${e.message}`);
+                        console.log(`[CALLIOPE] WebUSB reconnection process failed: ${e.message}`);
                     }
-                }, 1000);
+                }, 3000); // Increased delay to 3 seconds
             } else {
                 console.log(`[CALLIOPE] Skipping WebUSB reconnection - too soon (${timeSinceLastReconnect}ms ago)`);
             }
