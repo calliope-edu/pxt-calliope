@@ -53,19 +53,25 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
     
     // WebUSB reconnection after project reload for dynamicBoardDefinition
     // This fixes the issue where WebUSB connection is lost when extensions are added/removed
-    let lastHeaderId: string;
+    let lastReconnectTime = 0; // Track when we last attempted reconnection
+    
     res.notifyProjectSaved = (header: pxt.workspace.Header) => {
         console.log(`[CALLIOPE] notifyProjectSaved called with header id: ${header.id}, name: ${header.name}`);
         console.log(`[CALLIOPE] dynamicBoardDefinition: ${pxt.appTarget.simulator?.dynamicBoardDefinition}, usb.isEnabled: ${pxt.usb.isEnabled}`);
-        console.log(`[CALLIOPE] lastHeaderId: ${lastHeaderId}, current header.id: ${header.id}`);
         
         // Only reconnect for Calliope when dynamicBoardDefinition is enabled
         if (pxt.appTarget.simulator?.dynamicBoardDefinition && pxt.usb.isEnabled) {
-            // Only reconnect if this is a different project or if we haven't seen this header before
-            // This prevents unnecessary reconnections on normal saves
-            if (!lastHeaderId || lastHeaderId !== header.id) {
-                console.log(`[CALLIOPE] Triggering WebUSB reconnection for header change`);
-                lastHeaderId = header.id;
+            const now = Date.now();
+            const timeSinceLastReconnect = now - lastReconnectTime;
+            
+            console.log(`[CALLIOPE] timeSinceLastReconnect: ${timeSinceLastReconnect}ms`);
+            
+            // Always reconnect when dynamicBoardDefinition is enabled, but prevent rapid reconnections
+            // Wait at least 2 seconds between reconnection attempts
+            if (timeSinceLastReconnect > 2000) {
+                console.log(`[CALLIOPE] Triggering WebUSB reconnection for dynamic board definition`);
+                lastReconnectTime = now;
+                
                 // Small delay to ensure project reload is complete
                 setTimeout(async () => {
                     try {
@@ -88,7 +94,7 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
                     }
                 }, 1000);
             } else {
-                console.log(`[CALLIOPE] Skipping reconnection - same header id`);
+                console.log(`[CALLIOPE] Skipping reconnection - too soon (${timeSinceLastReconnect}ms ago)`);
             }
         } else {
             console.log(`[CALLIOPE] Skipping reconnection - conditions not met`);
