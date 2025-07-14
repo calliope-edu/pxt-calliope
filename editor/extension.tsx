@@ -8,6 +8,7 @@ import * as flash from "./flash";
 import * as patch from "./patch";
 
 pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): Promise<pxt.editor.ExtensionResult> {
+    console.log('[CALLIOPE] Loading calliope mini target extensions...');
     pxt.debug('loading calliope mini target extensions...')
 
     const manyAny = Math as any;
@@ -54,28 +55,47 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
     // This fixes the issue where WebUSB connection is lost when extensions are added/removed
     let lastHeaderId: string;
     res.notifyProjectSaved = (header: pxt.workspace.Header) => {
+        console.log(`[CALLIOPE] notifyProjectSaved called with header id: ${header.id}, name: ${header.name}`);
+        console.log(`[CALLIOPE] dynamicBoardDefinition: ${pxt.appTarget.simulator?.dynamicBoardDefinition}, usb.isEnabled: ${pxt.usb.isEnabled}`);
+        console.log(`[CALLIOPE] lastHeaderId: ${lastHeaderId}, current header.id: ${header.id}`);
+        
         // Only reconnect for Calliope when dynamicBoardDefinition is enabled
         if (pxt.appTarget.simulator?.dynamicBoardDefinition && pxt.usb.isEnabled) {
             // Only reconnect if this is a different project or if we haven't seen this header before
             // This prevents unnecessary reconnections on normal saves
             if (!lastHeaderId || lastHeaderId !== header.id) {
+                console.log(`[CALLIOPE] Triggering WebUSB reconnection for header change`);
                 lastHeaderId = header.id;
                 // Small delay to ensure project reload is complete
                 setTimeout(async () => {
                     try {
+                        console.log(`[CALLIOPE] Starting WebUSB reconnection...`);
                         const webusb = await pxt.packetio.initAsync(false);
+                        console.log(`[CALLIOPE] WebUSB initialized:`, webusb);
                         if (webusb && (webusb as any).forceResetAsync) {
+                            console.log(`[CALLIOPE] Calling forceResetAsync...`);
                             await (webusb as any).forceResetAsync();
+                            console.log(`[CALLIOPE] forceResetAsync completed`);
                         } else if (webusb) {
+                            console.log(`[CALLIOPE] Calling reconnectAsync...`);
                             await webusb.reconnectAsync();
+                            console.log(`[CALLIOPE] reconnectAsync completed`);
+                        } else {
+                            console.log(`[CALLIOPE] No WebUSB device available`);
                         }
                     } catch (e) {
-                        // Silently handle reconnection failures
+                        console.log(`[CALLIOPE] WebUSB reconnection failed:`, e);
                     }
                 }, 1000);
+            } else {
+                console.log(`[CALLIOPE] Skipping reconnection - same header id`);
             }
+        } else {
+            console.log(`[CALLIOPE] Skipping reconnection - conditions not met`);
         }
     };
+    
+    console.log('[CALLIOPE] Setting up notifyProjectSaved hook for WebUSB reconnection');
     
     return Promise.resolve<pxt.editor.ExtensionResult>(res);
 }
