@@ -177,22 +177,31 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
                 let numSer = 0
                 let numEv = 0
                 while (connectionId === this.connectionId) {
-                    numSer = await this.readSerial()
-                    // we need to read jacdac in a tight loop
-                    // so we don't miss any event
-                    if (this.xchgAddr)
-                        numEv = await this.jacdacProcess()
-                    else
-                        numEv = 0
+                    try {
+                        numSer = await this.readSerial()
+                        // we need to read jacdac in a tight loop
+                        // so we don't miss any event
+                        if (this.xchgAddr)
+                            numEv = await this.jacdacProcess()
+                        else
+                            numEv = 0
 
-                    // no data on either side, wait as little as possible
-                    // the browser will eventually throttle this call
-                    // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#reasons_for_delays_longer_than_specified
-                    if (!numSer && !numEv)
-                        await pxt.U.delay(0)
+                        // no data on either side, wait as little as possible
+                        // the browser will eventually throttle this call
+                        // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#reasons_for_delays_longer_than_specified
+                        if (!numSer && !numEv)
+                            await pxt.U.delay(0)
+                    } catch (serialErr) {
+                        if (serialErr.message && serialErr.message.includes("Device state changing")) {
+                            console.log(`DAP: Read serial interrupted by device state change (connection ${connectionId})`);
+                            break; // Exit gracefully when reconnection is happening
+                        }
+                        throw serialErr; // Re-throw other errors
+                    }
                 }
                 log(`stopped serial reader ${connectionId}`)
             } catch (err) {
+                console.log(`DAP: Serial error ${connectionId}: ${err.message}`);
                 log(`serial error ${connectionId}: ${err.message}`);
                 console.error(err)
                 if (connectionId != this.connectionId) {
@@ -224,6 +233,7 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
     }
 
     private stopReadersAsync() {
+        console.log(`DAP: Stopping readers for connection ${this.connectionId}`);
         log(`cancelling connection ${this.connectionId}`)
         this.connectionId++;
         return pxt.Util.delay(200);
@@ -299,6 +309,7 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
     }
 
     async reconnectAsync(): Promise<void> {
+        console.log(`DAP: Starting reconnection sequence`);
         log(`reconnect`)
         this.initialized = false
         this.flashAborted = false;
@@ -311,10 +322,13 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
         await this.stopReadersAsync()
         const connectionId = this.connectionId
 
+        console.log(`DAP: Allocating new DAP APIs`);
         this.allocDAP(); // clean dap apis
 
+        console.log(`DAP: Calling underlying io.reconnectAsync`);
         await this.io.reconnectAsync()
 
+        console.log(`DAP: Clearing commands and halting cortex`);
         await this.clearCommandsAsync()
 
         // halt before reading from dap
@@ -349,6 +363,7 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
         this.initialized = true
         this.io.onConnectionChanged()
         // start jacdac, serial async
+        console.log(`DAP: Starting read serial with connection ID ${connectionId}`);
         this.startReadSerial(connectionId)
     }
 
