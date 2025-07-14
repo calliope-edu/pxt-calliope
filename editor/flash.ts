@@ -372,10 +372,15 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
         await this.initJacdac(connectionId)
 
         this.initialized = true
+        console.log(`DAP: Connection initialized, notifying connection change`);
         this.io.onConnectionChanged()
         // start jacdac, serial async
         console.log(`DAP: Starting read serial with connection ID ${connectionId}`);
         this.startReadSerial(connectionId)
+        
+        // Give a small delay to ensure UI state is updated
+        await pxt.Util.delay(100);
+        console.log(`DAP: Reconnection sequence fully completed`);
     }
 
     private async clearCommandsAsync() {
