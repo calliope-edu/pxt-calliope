@@ -177,7 +177,7 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
                 let numSer = 0
                 let numEv = 0
                 while (connectionId === this.connectionId) {
-                    try {
+                    try {                    try {
                         numSer = await this.readSerial()
                         // we need to read jacdac in a tight loop
                         // so we don't miss any event
@@ -191,6 +191,17 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
                         // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#reasons_for_delays_longer_than_specified
                         if (!numSer && !numEv)
                             await pxt.U.delay(0)
+                    } catch (serialErr) {
+                        if (serialErr.message && (
+                            serialErr.message.includes("Device state changing") ||
+                            serialErr.message.includes("Transfer cancelled") ||
+                            serialErr.message.includes("transfer was cancelled")
+                        )) {
+                            console.log(`DAP: Read serial interrupted by device state change (connection ${connectionId}): ${serialErr.message}`);
+                            break; // Exit gracefully when reconnection is happening
+                        }
+                        throw serialErr; // Re-throw other errors
+                    }
                     } catch (serialErr) {
                         if (serialErr.message && serialErr.message.includes("Device state changing")) {
                             console.log(`DAP: Read serial interrupted by device state change (connection ${connectionId})`);
@@ -369,16 +380,22 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
 
     private async clearCommandsAsync() {
         try {
-            await pxt.Util.promiseTimeout(CONNECTION_CHECK_TIMEOUT, (async () => {
+            await pxt.Util.promiseTimeout(5000, (async () => { // Increased timeout from 2000ms to 5000ms
+                console.log("DAP: Clearing pending commands...");
                 // before calling into dapjs, push through a few commands to make sure the responses
                 // to commands from previous sessions (if any) are flushed. Count of 5 is arbitrary.
                 for (let i = 0; i < 5; i++) {
                     try {
                         await this.getDaplinkVersionAsync();
-                    } catch (e) { }
+                        console.log(`DAP: Command clear ${i + 1}/5 successful`);
+                    } catch (e) { 
+                        console.log(`DAP: Command clear ${i + 1}/5 failed: ${e.message}`);
+                    }
                 }
+                console.log("DAP: Command clearing completed");
             })());
         } catch (e) {
+            console.log("DAP: Command clearing timed out after 5000ms");
             const errOut = new Error(e);
             (errOut as any).type = "inittimeout";
             throw errOut;
