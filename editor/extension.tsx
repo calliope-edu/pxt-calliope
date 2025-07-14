@@ -59,7 +59,9 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
     // NEW FIX: WebUSB reconnection after project reload for dynamicBoardDefinition
     // This fixes the issue where WebUSB connection is lost when extensions are added/removed
     // ========================================================================
-    let lastReconnectTime = 0; // Track when we last attempted reconnection
+    let lastReconnectTime = 0;
+    let reconnectionInProgress = false;
+    let pendingReconnectionTimeout: any = null;
     
     res.notifyProjectSaved = function (header: pxt.workspace.Header) {
         // Only reconnect for Calliope when dynamicBoardDefinition is enabled
@@ -67,34 +69,49 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
             const now = Date.now();
             const timeSinceLastReconnect = now - lastReconnectTime;
             
-            // Wait at least 2 seconds between reconnection attempts
-            if (timeSinceLastReconnect > 2000) {
-                lastReconnectTime = now;
+            // Cancel any pending reconnection attempt
+            if (pendingReconnectionTimeout) {
+                clearTimeout(pendingReconnectionTimeout);
+                pendingReconnectionTimeout = null;
+            }
+            
+            // Skip if reconnection is already in progress or too recent
+            if (reconnectionInProgress || timeSinceLastReconnect < 5000) {
+                return;
+            }
+            
+            lastReconnectTime = now;
+            
+            // Schedule reconnection with longer delay to batch multiple notifications
+            pendingReconnectionTimeout = setTimeout(async () => {
+                if (reconnectionInProgress) return;
                 
-                // Wait 3 seconds to let natural reconnection attempts settle
-                setTimeout(async () => {
-                    try {
-                        const webusb = await pxt.packetio.initAsync(false);
-                        
-                        if (!webusb) {
-                            const reconnectedWebusb = await pxt.packetio.initAsync(true);
-                        } else {
-                            // Test if the connection is actually working
-                            try {
-                                if ((webusb as any).isConnected && (webusb as any).isConnected()) {
-                                    // Already connected and working
-                                } else {
-                                    await webusb.reconnectAsync();
-                                }
-                            } catch (testError) {
+                reconnectionInProgress = true;
+                pendingReconnectionTimeout = null;
+                
+                try {
+                    const webusb = await pxt.packetio.initAsync(false);
+                    
+                    if (!webusb) {
+                        await pxt.packetio.initAsync(true);
+                    } else {
+                        // Test if the connection is actually working
+                        try {
+                            if ((webusb as any).isConnected && (webusb as any).isConnected()) {
+                                // Already connected and working
+                            } else {
                                 await webusb.reconnectAsync();
                             }
+                        } catch (testError) {
+                            await webusb.reconnectAsync();
                         }
-                    } catch (e) {
-                        // Silently handle reconnection failures
                     }
-                }, 3000);
-            }
+                } catch (e) {
+                    // Silently handle reconnection failures
+                } finally {
+                    reconnectionInProgress = false;
+                }
+            }, 5000); // Increased delay to 5 seconds to better batch notifications
         }
     };
     // ========================================================================
