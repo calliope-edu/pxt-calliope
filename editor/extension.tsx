@@ -51,37 +51,57 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
     res.blocklyPatch = patch.patchBlocks;
     // res.showProgramTooLargeErrorAsync = dialogs.showProgramTooLargeErrorAsync;
     
-    // WebUSB reconnection after project reload for dynamicBoardDefinition
+    // ========================================================================
+    // NEW FIX: WebUSB reconnection after project reload for dynamicBoardDefinition
     // This fixes the issue where WebUSB connection is lost when extensions are added/removed
+    // ========================================================================
     let lastReconnectTime = 0; // Track when we last attempted reconnection
     
     res.notifyProjectSaved = (header: pxt.workspace.Header) => {
+        console.log(`[CALLIOPE] Project saved notification for ${header.id} (${header.name})`);
+        
         // Only reconnect for Calliope when dynamicBoardDefinition is enabled
         if (pxt.appTarget.simulator?.dynamicBoardDefinition && pxt.usb.isEnabled) {
             const now = Date.now();
             const timeSinceLastReconnect = now - lastReconnectTime;
             
+            console.log(`[CALLIOPE] Dynamic board definition enabled, checking reconnection timing (${timeSinceLastReconnect}ms since last)`);
+            
             // Always reconnect when dynamicBoardDefinition is enabled, but prevent rapid reconnections
             // Wait at least 2 seconds between reconnection attempts
             if (timeSinceLastReconnect > 2000) {
                 lastReconnectTime = now;
+                console.log(`[CALLIOPE] Initiating WebUSB reconnection after project reload`);
                 
                 // Small delay to ensure project reload is complete
                 setTimeout(async () => {
                     try {
+                        console.log(`[CALLIOPE] Starting WebUSB reconnection process`);
                         const webusb = await pxt.packetio.initAsync(false);
                         if (webusb && (webusb as any).forceResetAsync) {
+                            console.log(`[CALLIOPE] Using forceResetAsync for WebUSB reconnection`);
                             await (webusb as any).forceResetAsync();
                         } else if (webusb) {
+                            console.log(`[CALLIOPE] Using reconnectAsync for WebUSB reconnection`);
                             await webusb.reconnectAsync();
+                        } else {
+                            console.log(`[CALLIOPE] No WebUSB device available for reconnection`);
                         }
+                        console.log(`[CALLIOPE] WebUSB reconnection completed successfully`);
                     } catch (e) {
-                        // Silently handle reconnection errors
+                        console.log(`[CALLIOPE] WebUSB reconnection failed: ${e.message}`);
                     }
                 }, 1000);
+            } else {
+                console.log(`[CALLIOPE] Skipping WebUSB reconnection - too soon (${timeSinceLastReconnect}ms ago)`);
             }
+        } else {
+            console.log(`[CALLIOPE] Skipping WebUSB reconnection - conditions not met (dynamicBoardDefinition: ${pxt.appTarget.simulator?.dynamicBoardDefinition}, usb.isEnabled: ${pxt.usb.isEnabled})`);
         }
     };
+    // ========================================================================
+    // END OF NEW FIX
+    // ========================================================================
 
     return Promise.resolve<pxt.editor.ExtensionResult>(res);
 }
