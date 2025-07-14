@@ -7,6 +7,10 @@
 import * as flash from "./flash";
 import * as patch from "./patch";
 
+// Access to global workspace and data modules
+declare const workspace: any;
+declare const data: any;
+
 pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): Promise<pxt.editor.ExtensionResult> {
     console.log('[CALLIOPE] Loading calliope mini target extensions...');
     pxt.debug('loading calliope mini target extensions...')
@@ -57,7 +61,31 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
     // ========================================================================
     let lastReconnectTime = 0; // Track when we last attempted reconnection
     
-    res.notifyProjectSaved = (header: pxt.workspace.Header) => {
+    // Self-contained hook - monitor workspace changes directly
+    const dataSubscriber = {
+        subscriptions: [] as string[],
+        onDataChanged: (path: string) => {
+            // Listen for header changes that indicate project saves/reloads
+            if (path.startsWith("header:")) {
+                const parts = path.split("header:");
+                if (parts.length >= 2) {
+                    const headerId = parts[1];
+                    console.log(`[CALLIOPE] Detected header change for ${headerId}`);
+                    
+                    // Get current project header - use workspace function directly
+                    const currentHeader = workspace.getHeader(headerId);
+                    if (currentHeader) {
+                        handleProjectSaved(currentHeader);
+                    }
+                }
+            }
+        }
+    };
+    
+    // Subscribe to header changes
+    data.subscribe(dataSubscriber, "header:*");
+    
+    function handleProjectSaved(header: pxt.workspace.Header) {
         console.log(`[CALLIOPE] Project saved notification for ${header.id} (${header.name})`);
         
         // Only reconnect for Calliope when dynamicBoardDefinition is enabled
@@ -112,7 +140,10 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
         } else {
             console.log(`[CALLIOPE] Skipping WebUSB reconnection - conditions not met (dynamicBoardDefinition: ${pxt.appTarget.simulator?.dynamicBoardDefinition}, usb.isEnabled: ${pxt.usb.isEnabled})`);
         }
-    };
+    }
+    
+    // Keep the original extension API hook as backup
+    res.notifyProjectSaved = handleProjectSaved;
     // ========================================================================
     // END OF NEW FIX
     // ========================================================================
