@@ -16,6 +16,7 @@
 
 #include "MbitMoreService.h"
 #include "MicroBitButton.h"
+#include "ble_advdata.h"
 
 // service ID: 0b50f3e4-607f-4151-9091-7d008d6ffc5c
 const uint8_t MbitMoreService::baseUUID[16] = {0x0b, 0x50, 0xf3, 0xe4, 0x60, 0x7f, 0x41, 0x51, 0x90, 0x91, 0x7d, 0x00, 0x8d, 0x6f, 0xfc, 0x5c};
@@ -32,6 +33,11 @@ const uint16_t MbitMoreService::charUUID[mbitmore_cIdx_COUNT] = {
     0x0123, // ANALOG_IN_P3
     0x0130  // MESSAGE
 };
+
+
+// SECURITY_MODE_ENCRYPTION_NO_MITM = 1
+// SECURITY_MODE_ENCRYPTION_OPEN_LINK = 2
+// SECURITY_MODE_ENCRYPTION_WITH_MITM = 3
 
 /**
  * Constructor.
@@ -53,7 +59,9 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(commandChBuffer),
       MM_CH_BUFFER_SIZE_COMMAND,
       MM_CH_BUFFER_SIZE_COMMAND,
-      microbit_propWRITE | microbit_propWRITE_WITHOUT | microbit_propREAD);
+      microbit_propWRITE | microbit_propWRITE_WITHOUT | microbit_propREAD,
+      1);
+    
 
   CreateCharacteristic(
       mbitmore_cIdx_STATE,
@@ -61,7 +69,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(stateChBuffer),
       MM_CH_BUFFER_SIZE_STATE,
       MM_CH_BUFFER_SIZE_STATE,
-      microbit_propREAD);
+      microbit_propREAD,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_MOTION,
@@ -69,7 +78,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(motionChBuffer),
       MM_CH_BUFFER_SIZE_MOTION,
       MM_CH_BUFFER_SIZE_MOTION,
-      microbit_propREAD);
+      microbit_propREAD,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_PIN_EVENT,
@@ -77,7 +87,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(pinEventChBuffer),
       MM_CH_BUFFER_SIZE_NOTIFY,
       MM_CH_BUFFER_SIZE_NOTIFY,
-      microbit_propREAD | microbit_propNOTIFY);
+      microbit_propREAD | microbit_propNOTIFY,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_ACTION_EVENT,
@@ -85,7 +96,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(actionEventChBuffer),
       MM_CH_BUFFER_SIZE_NOTIFY,
       MM_CH_BUFFER_SIZE_NOTIFY,
-      microbit_propREAD | microbit_propNOTIFY);
+      microbit_propREAD | microbit_propNOTIFY,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_ANALOG_IN_P0,
@@ -93,7 +105,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(analogInP0ChBuffer),
       MM_CH_BUFFER_SIZE_ANALOG_IN,
       MM_CH_BUFFER_SIZE_ANALOG_IN,
-      microbit_propREAD | microbit_propREADAUTH);
+      microbit_propREAD | microbit_propREADAUTH,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_ANALOG_IN_P1,
@@ -101,7 +114,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(analogInP1ChBuffer),
       MM_CH_BUFFER_SIZE_ANALOG_IN,
       MM_CH_BUFFER_SIZE_ANALOG_IN,
-      microbit_propREAD | microbit_propREADAUTH);
+      microbit_propREAD | microbit_propREADAUTH,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_ANALOG_IN_P2,
@@ -109,7 +123,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(analogInP2ChBuffer),
       MM_CH_BUFFER_SIZE_ANALOG_IN,
       MM_CH_BUFFER_SIZE_ANALOG_IN,
-      microbit_propREAD | microbit_propREADAUTH);
+      microbit_propREAD | microbit_propREADAUTH,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_ANALOG_IN_P3,
@@ -117,7 +132,8 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(analogInP3ChBuffer),
       MM_CH_BUFFER_SIZE_ANALOG_IN,
       MM_CH_BUFFER_SIZE_ANALOG_IN,
-      microbit_propREAD | microbit_propREADAUTH);
+      microbit_propREAD | microbit_propREADAUTH,
+      1);
 
   CreateCharacteristic(
       mbitmore_cIdx_DATA,
@@ -125,12 +141,13 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
       (uint8_t *)(dataChBuffer),
       MM_CH_BUFFER_SIZE_NOTIFY,
       MM_CH_BUFFER_SIZE_NOTIFY,
-      microbit_propREAD | microbit_propNOTIFY);
+      microbit_propREAD | microbit_propNOTIFY,
+      1);
 
-  // // Stop advertising.
+  // Stop advertising.
   // uBit.ble->stopAdvertising();
 
-  // // Configure advertising.
+  // Configure advertising.
   // ble_uuid_t adv_uuids[] = {{serviceUUID, BLE_UUID_TYPE_BLE}};
   // ble_advdata_t advdata;
   // memset(&advdata, 0, sizeof(advdata));
@@ -146,7 +163,27 @@ MbitMoreService::MbitMoreService() : uBit(pxt::uBit) {
   //                                MICROBIT_BLE_ADVERTISING_INTERVAL,
   //                                MICROBIT_BLE_ADVERTISING_TIMEOUT, &advdata);
 
-  // // Start advertising.
+  // Configure advertising.
+  // bool connectable = true;
+  // bool discoverable = true;
+  // bool whitelist = false;
+  // uint16_t interval_ms = MICROBIT_BLE_ADVERTISING_INTERVAL;
+  // int timeout_seconds = MICROBIT_BLE_ADVERTISING_TIMEOUT;
+
+  // ble_advdata_t advdata;
+  // memset(&advdata, 0, sizeof(advdata));
+  // advdata.name_type = BLE_ADVDATA_FULL_NAME;
+  // advdata.include_appearance = true;
+  // advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+
+  // ble_uuid_t adv_uuids[] = {{serviceUUID, BLE_UUID_TYPE_BLE}};
+  // advdata.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
+  // advdata.uuids_complete.p_uuids = adv_uuids;
+
+  // uBit.ble->configureAdvertising(connectable, discoverable, whitelist, interval_ms, timeout_seconds, &advdata);
+  // uBit.ble->configureAdvertising(connectable, discoverable, whitelist, interval_ms, timeout_seconds);
+
+  // Start advertising.
   // uBit.ble->advertise();
 
   fiber_add_idle_component(this);
@@ -163,6 +200,7 @@ void MbitMoreService::onConnect(const microbit_ble_evt_t *p_ble_evt) {
  * Invoked when BLE disconnects.
  */
 void MbitMoreService::onDisconnect(const microbit_ble_evt_t *p_ble_evt) {
+  // uBit.ble->advertise();
 }
 
 /**
@@ -192,7 +230,7 @@ void MbitMoreService::onDataRead(microbit_onDataRead_t *params) {
     params->data = analogInP2ChBuffer;
     params->length = 2;
   } else if (params->handle == valueHandle(mbitmore_cIdx_ANALOG_IN_P3)) {
-    mbitMore->updateAnalogIn(analogInP3ChBuffer, 2);
+    mbitMore->updateAnalogIn(analogInP3ChBuffer, 3);
     params->data = analogInP3ChBuffer;
     params->length = 2;
   }
