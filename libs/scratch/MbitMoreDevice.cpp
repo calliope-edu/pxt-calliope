@@ -224,15 +224,20 @@ void MbitMoreDevice::onBLEConnected(MicroBitEvent _e) {
 
 /**
  * @brief Invoked when BLE disconnected.
- * 
+ *
+ * Intentionally a no-op: do not reset the device on BLE drop. The
+ * connection widget supports USB and BLE in parallel; resetting on BLE
+ * disconnect would tear down an active USB serial session.
+ *
  * @param _e event which has disconnection data
  */
 void MbitMoreDevice::onBLEDisconnected(MicroBitEvent _e) {
-  uBit.reset(); // reset to off microphone and its LED.
+  // (was: uBit.reset() — see commit message)
 }
 
 void MbitMoreDevice::onSerialConnected() {
-  uBit.ble->stopAdvertising();
+  // Keep BLE advertising active so the connection widget can attach
+  // both transports independently (was: uBit.ble->stopAdvertising()).
   initializeConfig();
   uBit.display.stopAnimation(); // To stop display friendly name.
   uBit.display.print("C");

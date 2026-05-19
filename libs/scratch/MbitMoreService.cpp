@@ -240,10 +240,10 @@ void MbitMoreService::onDataRead(microbit_onDataRead_t *params) {
  * Periodic callback from MicroBit idle thread.
  */
 void MbitMoreService::idleCallback() {
-  if (getConnected()) {
-  } else {
-    mbitMore->displayFriendlyName();
-  }
+  // Intentionally a no-op. Was displaying the friendly name on idle —
+  // that commandeers the LED matrix and prevents user code from
+  // painting anything while BLE is disconnected. The connection
+  // widget handles friendly-name display in the host UI instead.
 }
 
 /**
