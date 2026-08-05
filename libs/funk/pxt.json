@@ -4,14 +4,8 @@
     "public": true,
     "weight": 97,
     "icon": "./static/packages/radio/icon.png",
-    "additionalFilePath": "../../node_modules/pxt-common-packages/libs/radio",
-    "yotta": {
-        "config": {
-            "microbit-dal": {
-                "bluetooth": {
-                    "enabled": 0
-                }
-            }
-        }
-    }
+    "dependencies": {
+        "radio": "file:../radio"
+    },
+    "files": []
 }
