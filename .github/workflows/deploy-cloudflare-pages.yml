@@ -1,0 +1,94 @@
+name: deploy-cloudflare-pages
+
+# Baut den Editor als statisches Paket und lädt ihn zu Cloudflare Pages hoch.
+#
+# Der Build läuft hier und nicht bei Cloudflare, weil Pages-Builds nach 20 Minuten
+# abbrechen; ein vollständiger staticpkg-Lauf braucht gemessene ~28 Minuten (mit
+# warmem hexcache, ohne den deutlich mehr). Das Pages-Projekt muss deshalb als
+# "Direct Upload" angelegt sein — ein Git-verbundenes Projekt lässt sich nicht
+# nachträglich umstellen:
+#
+#   npx wrangler pages project create calliope-makecode --production-branch main
+#
+# Secrets: CLOUDFLARE_API_TOKEN (Berechtigung "Cloudflare Pages: Edit") und
+# CLOUDFLARE_ACCOUNT_ID.
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Cloudflare-Pages-Projektname
+        default: calliope-makecode
+        required: true
+  push:
+    branches: [static-hosting]
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      # Ohne diesen Cache stößt jeder Lauf die nativen C++-Builds (~50 Stück) erneut
+      # über Microsofts Build-Service an — das ist der langsamste Teil des Builds.
+      - uses: actions/cache@v4
+        with:
+          path: built/hexcache
+          key: hexcache-${{ hashFiles('pxtarget.json', 'package.json', 'libs/**/pxt.json') }}
+          restore-keys: hexcache-
+
+      - run: npm install -g pxt
+      - run: npm install
+
+      # --minify ist nicht optional: unminifiziert liegt main.js bei 23,7 MiB, und
+      # Cloudflare weist einzelne Dateien über 25 MiB ab.
+      # Kein --route, Pages liefert im Wurzelverzeichnis aus.
+      - run: pxt staticpkg -o built/packaged --minify
+
+      - name: Assets nachziehen
+        run: |
+          # targetconfig.json, target.js und die gerenderten Doku-Seiten verlinken
+          # absolut auf /static/..., die Dateien liegen aber unter docs/static/.
+          # pxts eigener Server bildet das serverseitig ab (cli/server.ts, sendHtml),
+          # ein Fileserver nicht. Alternative wäre eine _redirects-Regel:
+          #   /static/* /docs/static/:splat 200
+          cp -r built/packaged/docs/static built/packaged/static
+
+          # staticpkg ersetzt @cdnUrl@ in den og:/twitter:/msapplication-Metatags nicht
+          sed -i 's|@cdnUrl@/blob/[a-f0-9]*/||g' built/packaged/index.html
+
+          # Dateinamen sind über Deployments hinweg stabil, deshalb kein immutable
+          # auf die JS-Bundles.
+          cat > built/packaged/_headers <<'EOF'
+          /fonts/*
+            Cache-Control: public, max-age=31536000, immutable
+          /static/*
+            Cache-Control: public, max-age=604800
+          EOF
+
+      - name: Cloudflare-Limits prüfen
+        run: |
+          files=$(find built/packaged -type f | wc -l)
+          echo "Dateien im Paket: $files (Limit 20.000)"
+          test "$files" -lt 20000 || { echo "::error::über 20.000 Dateien"; exit 1; }
+          big=$(find built/packaged -type f -size +25M)
+          if [ -n "$big" ]; then
+            echo "::error::Dateien über 25 MiB (Cloudflare lehnt sie ab):"
+            echo "$big"
+            exit 1
+          fi
+          du -sh built/packaged
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy built/packaged --project-name=${{ github.event.inputs.project || 'calliope-makecode' }}

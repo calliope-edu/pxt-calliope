@@ -29,6 +29,7 @@
         "libs/audio-recording"
     ],
     "cloud": {
+        "apiRoot": "https://www.makecode.com/api/",
         "workspace": false,
         "packages": true,
         "sharing": true,
