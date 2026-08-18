@@ -48,6 +48,12 @@ jobs:
       - run: npm install -g pxt
       - run: npm install
 
+      # --minify macht ein nacktes require("uglify-js") im CLI; pxt-core deklariert
+      # das Paket nirgends (auch nicht als lazyDependency), es funktioniert upstream nur,
+      # weil pxts eigenes Repo es als devDependency hat. Ohne diese Zeile stirbt der
+      # Build erst im Packaging-Schritt mit "Cannot find module 'uglify-js'".
+      - run: npm install --no-save uglify-js@3.17.4
+
       # --minify ist nicht optional: unminifiziert liegt main.js bei 23,7 MiB, und
       # Cloudflare weist einzelne Dateien über 25 MiB ab.
       # Kein --route, Pages liefert im Wurzelverzeichnis aus.
