@@ -80,6 +80,28 @@ jobs:
             Cache-Control: public, max-age=604800
           EOF
 
+      - name: simx-Proxy anlegen
+        run: |
+          # Simulator-Extensions (Jacdac-Dashboard usw.) liegen NICHT im Paket: pxt
+          # berechnet ihre URL als <sim-origin>/simx/<repo>/-/index.html. Ohne diese
+          # Function liefert Pages dafuer die index.html des Editors, und das iframe
+          # zeigt den Editor erneut.
+          # Ein 302 auf die CDN-Kopie hilft nicht: simdriver merkt sich
+          # frame.dataset['origin'] aus der berechneten URL und postet nur an diese
+          # Origin (nur auf localhost ist es "*"). Also muss der Inhalt unter unserer
+          # eigenen Domain kommen -> durchreichen statt umleiten.
+          mkdir -p 'built/packaged/functions/simx'
+          cat > 'built/packaged/functions/simx/[[path]].js' <<'JS'
+          export async function onRequest({ request }) {
+            const url = new URL(request.url);
+            const upstream = "https://trg-calliopemini.userpxt.io" + url.pathname + url.search;
+            const res = await fetch(upstream, {
+              headers: { accept: request.headers.get("accept") || "*/*" },
+            });
+            return new Response(res.body, { status: res.status, headers: res.headers });
+          }
+          JS
+
       - name: Cloudflare-Limits prüfen
         run: |
           files=$(find built/packaged -type f | wc -l)
@@ -97,4 +119,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy built/packaged --project-name=${{ github.event.inputs.project || 'calliope-makecode' }}
+          command: pages deploy built/packaged --project-name=${{ github.event.inputs.project || 'calliope-makecode' }} --branch=main
+          # --branch=main ist Pflicht: wrangler leitet den Branch sonst aus git ab, und
+          # alles ausser dem Production-Branch des Projekts wird ein Preview-Deployment
+          # unter <branch>.<projekt>.pages.dev statt der Produktions-URL.
