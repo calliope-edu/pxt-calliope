@@ -78,7 +78,7 @@ namespace basic {
     //% brightness.defl=20
     //% expandableArgumentMode="toggle"
     //% inlineInputMode=inline
-    //% weight=11 group="RGB LED"
+    //% weight=11 group="Calliope mini V3"
     export function setLedColors(color1: number, color2: number, color3: number, brightness: number = 20): void {
         if (hardware._rgbLedCount() < 3) return
         if (!_rgbBuf3) _rgbBuf3 = pins.createBuffer(9)
