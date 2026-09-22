@@ -47,6 +47,9 @@
             "calliope-edu/pxt-grove": {
                 "preferred": true
             },
+            "amerlander/pxt-grove": {
+                "simx": { "devUrl": "http://localhost:3400", "aspectRatio": 0.78 }
+            },
             "calliope-edu/pxt-sunlightsensor-si1151": {
                 "tags": [
                     "Climate"
