@@ -432,6 +432,42 @@ namespace hardware {
 } // hardware
 
 namespace pins {
+#if !MICROBIT_CODAL
+    // --- Calliope v1/v2 (DAL) P0 PWM workaround -----------------------------
+    // mbed-classic's nRF51 PWM HAL declares its channel table as
+    //     static PinName pwm_pins[PWM_CHANNELS] = {NC};
+    // which only initialises element 0 to NC; C zero-fills elements 1 and 2.
+    // On the Calliope, P0 is nRF pin P0_0, and PinName P0_0 == 0 — so channels
+    // 1 and 2 spuriously appear to be already assigned to P0 at boot.
+    //
+    // pwmout_init()/pwmout_pulsewidth_us() call pwm_get_channel() first and only
+    // run pwm_connect() when it returns NC. For P0 it returns the bogus channel 1,
+    // so the GPIOTE/PPI routing that actually toggles the pin is never set up and
+    // P0 emits no PWM at all — servo write / analog write on P0 silently do
+    // nothing (PINOP discards the DAL return code). P0 is the only affected pin,
+    // because it is the only one whose PinName is 0.
+    //
+    // Fix: before the first PWM use of P0, write an analog value of 0 to it. That
+    // reaches the HAL twice in one call and clears both bogus slots:
+    //   setAnalogValue(0) -> obtainAnalogChannel() -> new DynamicPwm(P0_0)
+    //                        -> pwmout_init() -> pwm_get_channel() hits slot 1,
+    //                           so pwmout_pulsewidth_us(0) -> pwm_disconnect() frees it
+    //                     -> PwmOut::write(0) -> pwmout_pulsewidth_us(0) -> frees slot 2
+    // The table is then [NC,NC,NC], so the next call allocates cleanly and runs
+    // pwm_connect(), and P0 produces PWM for the rest of the session.
+    static bool p0PwmPrimed = false;
+    static void primeP0Pwm(int name) {
+        if (p0PwmPrimed || (int)name != MICROBIT_ID_IO_P0)
+            return;
+        p0PwmPrimed = true; // set first: setAnalogValue() re-enters via PINOP
+        MicroBitPin *p0 = getPin(MICROBIT_ID_IO_P0);
+        if (p0) p0->setAnalogValue(0);
+    }
+    #define PRIME_P0_PWM(name) primeP0Pwm((int)(name))
+#else
+    #define PRIME_P0_PWM(name) do {} while (0)
+#endif
+
     #define PINOP(op) \
       MicroBitPin *pin = getPin((int)name); \
       if (!pin) return; \
@@ -497,6 +533,7 @@ namespace pins {
     //% value.min=0 value.max=1023
     //% name.shadow=analog_pin_shadow
     void analogWritePin(int name, int value) {
+        PRIME_P0_PWM(name);
         PINOP(setAnalogValue(value));
     }
 
@@ -606,6 +643,7 @@ namespace pins {
     //% name.shadow=analog_pin_shadow
     //% group="Servo"
     void servoWritePin(int name, int value) {
+        PRIME_P0_PWM(name);
         PINOP(setServoValue(value));
     }
 
@@ -628,6 +666,7 @@ namespace pins {
     //% value.shadow=analog_pin_shadow
     //% group="Servo"
     void servoSetPulse(int name, int micros) {
+        PRIME_P0_PWM(name);
         PINOP(setServoPulseUs(micros));
     }
 
