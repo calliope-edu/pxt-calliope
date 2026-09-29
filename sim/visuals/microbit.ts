@@ -1014,8 +1014,16 @@ namespace pxsim.visuals {
             // console.log("play gesture", key);
             try {
                 if (!this.element) return;
-                // Apply animation to the root SVG element so all children (including LED matrix) transform
-                const boardEl = this.element as Element;
+                // Apply animation to the root SVG element so all children (including LED matrix)
+                // transform. When breadboarding, the board element is a child of the composition
+                // host <svg> that also holds the wire layers, so animate that host instead --
+                // otherwise the board shakes but the cables and breadboard stay put. Same target
+                // selection as updateTilt(), which is why hover-tilt already moved the wires.
+                // The CSS selectors are `svg.<key>_animation`, and the host is an <svg> too, so
+                // they match either target unchanged.
+                const parent: any = this.element.parentNode;
+                const host: any = (parent && parent.tagName && parent.tagName.toLowerCase() === "svg") ? parent : null;
+                const boardEl = (host || this.element) as Element;
                 // Extra safety check: ensure classList exists before using it
                 if (!boardEl || !boardEl.classList) {
                     // console.log("playGestureAnimation: boardEl or classList not ready");
@@ -1073,9 +1081,34 @@ namespace pxsim.visuals {
         public getCoord(pinNm: string): Coord {
             // The static map holds Calliope mini v3 positions; when the v2 board is shown, the
             // GPIO header sits elsewhere, so resolve those pins from the v2 coordinate map.
-            if (this.domHardwareVersion == 2 && pinCoordsV2[pinNm])
-                return pinCoordsV2[pinNm];
-            return this.pinNmToCoord[pinNm];
+            const coord = (this.domHardwareVersion == 2 && pinCoordsV2[pinNm])
+                ? pinCoordsV2[pinNm]
+                : this.pinNmToCoord[pinNm];
+            return this.fanOutPinCoord(pinNm, coord);
+        }
+
+        // Nudge numbered GPIO connector pins apart so that cables running to the same
+        // breadboard column can be told apart: even pin numbers move one way along the header,
+        // odd ones the other.
+        //
+        // The offset MUST be on x. pxt-core's WireFactory.drawWire() routes the board end of
+        // each wire through `closestEdge(coord) +/- PIN_DIST/2`, i.e. it REPLACES the y with a
+        // value derived from the nearest board edge and keeps only coord[0]. A y offset is
+        // therefore discarded (and, worse, can flip which edge a pin snaps to); an x offset
+        // survives into the drawn wire.
+        //
+        // Only numbered connector pins are touched (Pnn, and C_Pnn for completeness). Power,
+        // ground, touch, button, motor and Grove pads keep their exact positions.
+        private fanOutPinCoord(pinNm: string, coord: Coord): Coord {
+            if (!coord) return coord;
+            const m = /^(?:C_)?P(\d+)$/.exec(pinNm);
+            if (!m) return coord;
+            // ~25% of the pin pitch (17.1 on v3, 17.5 on v2 -- the entries wires resolve to are
+            // on the same scale, so one constant serves both). Enough to separate the two cable
+            // bundles, small enough that each wire still clearly belongs to its own pad.
+            const offset = 4.3;
+            const dir = (parseInt(m[1]) % 2 === 0) ? 1 : -1;
+            return [coord[0] + dir * offset, coord[1]];
         }
 
         public highlightPin(pinNm: string): void {
@@ -2641,27 +2674,67 @@ namespace pxsim.visuals {
             }
         }
 
-        private attachAccelerometerEvents() {
-            // Always attach event listeners; the handlers will check `this.props.disableTilt`
-            let tiltDecayer: any =  undefined;
-            this.element.addEventListener(pointerEvents.move, (ev: MouseEvent) => {
-                if (this.props && this.props.disableTilt) return;
-                const state = this.board;
-                if (!state.accelerometerState.accelerometer.isActive) return;
+        // Tilt handling, ported from pxt-microbit (which fixed both problems below):
+        //
+        //  * Hit area: the listener is on `document`, and the board's on-screen rectangle is
+        //    computed explicitly, so hovering the breadboard (or anywhere else outside the
+        //    board) does NOT tilt. The old code listened on the board <svg>, but with a
+        //    breadboard present that element is composed into a larger host <svg> whose box
+        //    covers the breadboard too, so hovering the breadboard tilted the device.
+        //  * Lag: the old code called getBoundingClientRect() on every single mousemove,
+        //    forcing a synchronous layout each time, and ran the decay on setInterval(50).
+        //    The board's own CSS transform also made that box wrong. This derives the box
+        //    from the (untransformed) viewBox plus the page box, and drives the decay with
+        //    requestAnimationFrame.
+        private findParentElement(): SVGSVGElement {
+            let el = this.element;
+            while (el.parentNode && (el.parentNode as Element).nodeName == "svg")
+                el = el.parentNode as SVGSVGElement;
+            return el;
+        }
 
-                if (tiltDecayer) {
-                    clearInterval(tiltDecayer);
-                    tiltDecayer = 0;
+        private attachAccelerometerEvents() {
+            const state = this.board;
+            let tiltDecayer: number = undefined;
+
+            const startTiltDecay = () => {
+                if (tiltDecayer) return;
+                const doDecay = () => {
+                    let accx = state.accelerometerState.accelerometer.getX(MicroBitCoordinateSystem.RAW);
+                    accx = Math.floor(Math.abs(accx) * 0.85) * (accx > 0 ? 1 : -1);
+                    let accy = state.accelerometerState.accelerometer.getY(MicroBitCoordinateSystem.RAW);
+                    accy = Math.floor(Math.abs(accy) * 0.85) * (accy > 0 ? 1 : -1);
+                    let accz = -Math.sqrt(Math.max(0, 1023 * 1023 - accx * accx - accy * accy));
+                    if (Math.abs(accx) <= 24 && Math.abs(accy) <= 24) {
+                        tiltDecayer = undefined;
+                        accx = 0;
+                        accy = 0;
+                        accz = -1023;
+                    }
+                    else {
+                        tiltDecayer = requestAnimationFrame(doDecay);
+                    }
+                    state.accelerometerState.accelerometer.update(accx, accy, accz);
+                    this.updateTilt();
+                }
+                tiltDecayer = requestAnimationFrame(doDecay);
+            }
+
+            // xPos/yPos are relative to the board's top-left corner.
+            const handleMove = (xPos: number, yPos: number, boardWidth: number, boardHeight: number) => {
+                // Outside the board (this is what keeps the breadboard from tilting).
+                if (yPos < 0 || yPos > boardHeight || xPos < 0 || xPos > boardWidth) {
+                    startTiltDecay();
+                    return;
                 }
 
-                const bbox = this.element.getBoundingClientRect();
+                if (tiltDecayer) {
+                    cancelAnimationFrame(tiltDecayer);
+                    tiltDecayer = undefined;
+                }
 
-                // ev.clientX and ev.clientY are not defined on mobile iOS
-                const xPos = ev.clientX != null ? ev.clientX : ev.pageX;
-                const yPos = ev.clientY != null ? ev.clientY : ev.pageY;
-
-                const ax = (xPos - bbox.width / 2) / (bbox.width / 3);
-                const ay = (yPos - bbox.height / 2) / (bbox.height / 3);
+                const ax = (xPos - boardWidth / 2) / (boardWidth / 3);
+                const ay = (yPos - boardHeight / 2) / (boardHeight / 3);
 
                 const x = - Math.max(- 1023, Math.min(1023, Math.floor(ax * 1023)));
                 const y = - Math.max(- 1023, Math.min(1023, Math.floor(ay * 1023)));
@@ -2670,30 +2743,84 @@ namespace pxsim.visuals {
 
                 state.accelerometerState.accelerometer.update(x, y, z);
                 this.updateTilt();
-            }, false);
-            this.element.addEventListener(pointerEvents.leave, (ev: MouseEvent) => {
+            }
+
+            document.addEventListener(pointerEvents.move, (ev: MouseEvent) => {
                 if (this.props && this.props.disableTilt) return;
-                let state = this.board;
                 if (!state.accelerometerState.accelerometer.isActive) return;
 
-                if (!tiltDecayer) {
-                    tiltDecayer = setInterval(() => {
-                        let accx = state.accelerometerState.accelerometer.getX(MicroBitCoordinateSystem.RAW);
-                        accx = Math.floor(Math.abs(accx) * 0.85) * (accx > 0 ? 1 : -1);
-                        let accy = state.accelerometerState.accelerometer.getY(MicroBitCoordinateSystem.RAW);
-                        accy = Math.floor(Math.abs(accy) * 0.85) * (accy > 0 ? 1 : -1);
-                        let accz = -Math.sqrt(Math.max(0, 1023 * 1023 - accx * accx - accy * accy));
-                        if (Math.abs(accx) <= 24 && Math.abs(accy) <= 24) {
-                            clearInterval(tiltDecayer);
-                            tiltDecayer = 0;
-                            accx = 0;
-                            accy = 0;
-                            accz = -1023;
-                        }
-                        state.accelerometerState.accelerometer.update(accx, accy, accz);
-                        this.updateTilt();
-                    }, 50)
+                const boardElement = this.element as unknown as HTMLElement;
+                const parentSvg = this.findParentElement();
+
+                const xPos = ev.clientX != null ? ev.clientX : ev.pageX;
+                const yPos = ev.clientY != null ? ev.clientY : ev.pageY;
+
+                // The outermost SVG carries the tilt transform, so its client rect is not a
+                // stable reference. Derive the untransformed box from the viewBox aspect ratio
+                // and the page box instead (the sim SVG is always maximized within the page).
+                const pageBounds = document.body.getBoundingClientRect();
+
+                if (parentSvg && parentSvg !== this.element) {
+                    // Breadboard present: the board <svg> is nested in a bigger host <svg>,
+                    // so map the board's viewBox-space x/y/width/height into page pixels.
+                    const parentViewBoxWidth = parentSvg.viewBox.baseVal.width;
+                    const parentViewBoxHeight = parentSvg.viewBox.baseVal.height;
+                    const aspectRatio = parentViewBoxWidth / parentViewBoxHeight;
+
+                    let parentWidth: number;
+                    let parentHeight: number;
+                    if (pageBounds.width / pageBounds.height > aspectRatio) {
+                        parentHeight = pageBounds.height;
+                        parentWidth = parentHeight * aspectRatio;
+                    }
+                    else {
+                        parentWidth = pageBounds.width;
+                        parentHeight = parentWidth / aspectRatio;
+                    }
+
+                    const parentLeft = pageBounds.left + (pageBounds.width - parentWidth) / 2;
+                    const parentTop = pageBounds.top + (pageBounds.height - parentHeight) / 2;
+
+                    const boardWidth = parseFloat(boardElement.getAttribute("width"));
+                    const boardHeight = parseFloat(boardElement.getAttribute("height"));
+                    const boardLeft = parseFloat(boardElement.getAttribute("x"));
+                    const boardTop = parseFloat(boardElement.getAttribute("y"));
+
+                    const boardPixelLeft = parentLeft + (boardLeft / parentViewBoxWidth) * parentWidth;
+                    const boardPixelTop = parentTop + (boardTop / parentViewBoxHeight) * parentHeight;
+                    const boardPixelWidth = (boardWidth / parentViewBoxWidth) * parentWidth;
+                    const boardPixelHeight = (boardHeight / parentViewBoxHeight) * parentHeight;
+
+                    handleMove(xPos - boardPixelLeft, yPos - boardPixelTop, boardPixelWidth, boardPixelHeight);
                 }
+                else {
+                    // No breadboard: the board <svg> is the top-level element.
+                    const boardViewboxWidth = this.element.viewBox.baseVal.width;
+                    const boardViewboxHeight = this.element.viewBox.baseVal.height;
+                    const aspectRatio = boardViewboxWidth / boardViewboxHeight;
+
+                    let boardWidth: number;
+                    let boardHeight: number;
+                    if (pageBounds.width / pageBounds.height > aspectRatio) {
+                        boardHeight = pageBounds.height;
+                        boardWidth = boardHeight * aspectRatio;
+                    }
+                    else {
+                        boardWidth = pageBounds.width;
+                        boardHeight = boardWidth / aspectRatio;
+                    }
+
+                    const boardLeft = pageBounds.left + (pageBounds.width - boardWidth) / 2;
+                    const boardTop = pageBounds.top + (pageBounds.height - boardHeight) / 2;
+
+                    handleMove(xPos - boardLeft, yPos - boardTop, boardWidth, boardHeight);
+                }
+            }, false);
+
+            document.addEventListener(pointerEvents.leave, (ev: MouseEvent) => {
+                if (this.props && this.props.disableTilt) return;
+                if (!state.accelerometerState.accelerometer.isActive) return;
+                startTiltDecay();
             }, false);
         }
 

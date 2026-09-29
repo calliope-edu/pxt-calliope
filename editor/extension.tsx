@@ -41,6 +41,11 @@ pxt.editor.initExtensionsAsync = function (opts: pxt.editor.ExtensionOptions): P
         productId: 0x1025
     }])
 
+    // Let the packetio wrapper re-run the simulator, so the simulated board can follow
+    // the Calliope mini revision that is actually connected over WebUSB.
+    if (opts.projectView)
+        flash.setProjectView(opts.projectView);
+
     res.mkPacketIOWrapper = flash.mkPacketIOWrapper;
     res.blocklyPatch = patch.patchBlocks;
     res.showProgramTooLargeErrorAsync = dialogs.showProgramTooLargeErrorAsync;

@@ -355,6 +355,12 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
 
         this.initialized = true
         this.io.onConnectionChanged()
+        // The board revision (usesCODAL, probed above) is only known now, so this is the
+        // earliest point at which the simulator can be matched to the connected device.
+        // Pass the probed value directly: the devVariant getter reports "mbdal" whenever
+        // usesCODAL is still undefined (it is reset on every disconnect), which would
+        // publish a wrong variant while a device swap is in flight.
+        syncSimulatorWithDevice(this.usesCODAL ? "mbcodal" : "mbdal")
         // start jacdac, serial async
         this.startReadSerial(connectionId)
     }
@@ -1114,6 +1120,8 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
             this.initialized = true;
             this.connecting  = false;
             this.io.onConnectionChanged();
+            // A J-Link board is always a mini v2 (devVariant "mbdal"); match the simulator.
+            syncSimulatorWithDevice(this.devVariant);
 
             // start serial reader (best-effort; failure must not break flashing)
             this.serialRetries = 0;
@@ -1492,6 +1500,62 @@ class CalliopeWrapper implements pxt.packetio.PacketIOWrapper {
     }
     unsupportedParts() { return this._active.unsupportedParts?.() ?? []; }
     get devVariant()   { return (this._active as any).devVariant as string | undefined; }
+}
+
+// Set from editor/extension.tsx so the packetio wrapper can ask the editor to re-run the
+// simulator. Kept as a plain setter (rather than reaching for a global) because
+// initExtensionsAsync is the only place that is handed the IProjectView.
+let projectView: pxt.editor.IProjectView | undefined;
+export function setProjectView(view: pxt.editor.IProjectView) {
+    projectView = view;
+}
+
+// Make the simulator show the board that is actually plugged in.
+//
+// "matchWebUSBDeviceInSim" (pxtarget.json) makes pxt-core hand the connected device's
+// devVariant to the simulator, but only inside the run message -- so a board connected
+// while the sim is already running is not noticed until the next run. Restarting the
+// simulator when the detected variant changes re-runs it with the new variant, and
+// sim/dalboard.ts then selects the matching board revision.
+//
+// This is called from the wrappers' own reconnect paths, right after the point where the
+// board revision becomes known (DAPWrapper probes the DAPLink board id for v1-vs-v3; a
+// J-Link is always a v2). It deliberately does NOT live on CalliopeWrapper.reconnectAsync:
+// pxt.packetio.initAsync() only constructs the wrapper and never calls that method, so a
+// hook there never fires on a normal connect.
+// The variant the simulator is currently showing. Tracking what the SIMULATOR shows (not
+// what was last connected) is what makes device swapping work: reconnecting the same board
+// is a no-op, while swapping to the other revision always re-runs the sim.
+let simVariant: string | undefined = undefined;
+function syncSimulatorWithDevice(variant: string | undefined) {
+    if (!variant || variant === simVariant) return;
+    simVariant = variant;
+    // pxt.log, not this file's log(): the latter goes through pxt.debug, which is silent
+    // unless the editor runs in debug mode, and this one line is worth seeing when a board
+    // is connected.
+    pxt.log(`simulator: matching board to connected device (${variant})`);
+    try {
+        if (!projectView) return;
+        // Stop, then start -- neither call on its own works here:
+        //   * restartSimulator() delegates to the driver's restart() while the sim is
+        //     running, which replays the CACHED run message; `theme` (the device variant)
+        //     is only computed while the run options are rebuilt, so the board never changes.
+        //   * startSimulator() alone is refused while the sim is running:
+        //     shouldStartSimulator() returns false for simState 2 (starting) / 3 (running),
+        //     which is the "Ignoring call to start simulator" log.
+        // stopSimulator() sets simState back to 0, which unblocks startSimulator() and makes
+        // it rebuild the run options -- the only path that re-reads the connected variant.
+        //
+        // The simState reset goes through React's setStateAsync, so start must not run in the
+        // same tick; defer it. Stopping a running program is acceptable here: the simulated
+        // board would otherwise keep showing the wrong Calliope mini revision.
+        const view = projectView;
+        Promise.resolve(view.stopSimulator())
+            .then(() => view.startSimulator())
+            .catch(e => pxt.log(`simulator: could not restart: ${e}`));
+    } catch (e) {
+        pxt.log(`simulator: could not request restart: ${e}`);
+    }
 }
 
 export function mkPacketIOWrapper(io: pxt.packetio.PacketIO): pxt.packetio.PacketIOWrapper {

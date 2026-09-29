@@ -185,6 +185,24 @@ namespace pxsim {
             return 3;
         }
 
+        // Board revision implied by a device connected over WebUSB, or 0 when none is.
+        //
+        // With "matchWebUSBDeviceInSim" set in pxtarget.json, pxt-core puts the connected
+        // device's compile variant into the run message's `theme` field (it is the value of
+        // PacketIOWrapper.devVariant). editor/flash.ts reports "mbcodal" for a mini v3 (the
+        // DAPLink board id is probed in DAPWrapper.reconnectAsync) and "mbdal" for a v1/v2
+        // (a v2 is a SEGGER J-Link; a v1 is a non-CODAL DAPLink).
+        //
+        // Note the sim only models two revisions, v2 and v3, so a v1 renders as the v2 board
+        // -- which is correct as far as the simulated feature set goes, since v1 and v2 share
+        // the mbdal build.
+        static hardwareVersionFromTheme(theme: string | pxt.Map<string>): number {
+            const variant = typeof theme === "string" ? theme : undefined;
+            if (variant === "mbcodal") return 3;
+            if (variant === "mbdal") return 2;
+            return 0;
+        }
+
         ensureHardwareVersion(version: number) {
             if (version > this.hardwareVersion) {
                 this.hardwareVersion = version;
@@ -195,9 +213,11 @@ namespace pxsim {
 
         initAsync(msg: SimulatorRunMessage): Promise<void> {
             super.initAsync(msg);
-            // Calliope mini simulator revision (v2/v3) is chosen via the in-sim toggle button
-            // and persisted, so a re-run keeps the last-selected board. Defaults to v3.
-            this.hardwareVersion = DalBoard.readSimHardwareVersion();
+            // Calliope mini simulator revision (v2/v3). A device connected over WebUSB wins:
+            // the simulator should show the board that is actually plugged in. With no device,
+            // fall back to the in-sim toggle button's persisted choice (defaults to v3).
+            const connectedVersion = DalBoard.hardwareVersionFromTheme(msg.theme);
+            this.hardwareVersion = connectedVersion || DalBoard.readSimHardwareVersion();
             const boardDef = msg.boardDefinition;
             const cmpsList = msg.parts;
             const cmpDefs = msg.partDefinitions || {};
