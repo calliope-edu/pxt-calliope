@@ -28,7 +28,9 @@ namespace input {
 #if MICROBIT_CODAL
         registerWithDal(uBit.io.logo.id, action, body);
 #else
-        target_panic(PANIC_VARIANT_NOT_SUPPORTED);
+        // mini V1/V2 have no touch logo: ignore the registration instead of
+        // panicking, so a program using this block still runs on those boards.
+        (void)action; (void)body;
 #endif
     }
 
@@ -45,7 +47,7 @@ namespace input {
 #if MICROBIT_CODAL
         return uBit.io.logo.isTouched();
 #else
-        target_panic(PANIC_VARIANT_NOT_SUPPORTED);
+        // no touch logo on mini V1/V2 -> never pressed (see onLogoEvent)
         return false;
 #endif
     }

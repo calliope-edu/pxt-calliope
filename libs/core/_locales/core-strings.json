@@ -308,6 +308,8 @@
   "PulseValue.Low|block": "low",
   "Rotation.Pitch|block": "pitch",
   "Rotation.Roll|block": "roll",
+  "SerialPin.A1_RX|block": "A1 RX",
+  "SerialPin.A1_TX|block": "A1 TX",
   "SoundExpression.playUntilDone|block": "play sound $this until done",
   "SoundExpression.playUntilDone|param|this|label": "sound",
   "SoundExpression.play|block": "play sound $this",

@@ -726,6 +726,10 @@ declare namespace led {
     P14 = 114,  // MICROBIT_ID_IO_P14
     P15 = 115,  // MICROBIT_ID_IO_P15
     P16 = 116,  // MICROBIT_ID_IO_P16
+    //% block="A1 RX"
+    A1_RX = 116,  // MICROBIT_ID_IO_P16
+    //% block="A1 TX"
+    A1_TX = 117,  // MICROBIT_ID_IO_P17
     USB_TX = 1001,
     USB_RX = 1002,
     }
