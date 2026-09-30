@@ -149,7 +149,31 @@ enum IconNames {
     SmallSquare,
     //% block="scissors"
     //% jres=icons.scissors
-    Scissors
+    Scissors,
+    //% block="arrow north"
+    //% jres=icons.arrownorth
+    ArrowNorth,
+    //% block="arrow north east"
+    //% jres=icons.arrownortheast
+    ArrowNorthEast,
+    //% block="arrow East"
+    //% jres=icons.arroweast
+    ArrowEast,
+    //% block="arrow south east"
+    //% jres=icons.arrowsoutheast
+    ArrowSouthEast,
+    //% block="arrow south"
+    //% jres=icons.arrowsouth
+    ArrowSouth,
+    //% block="arrow south west"
+    //% jres=icons.arrowsouthwest
+    ArrowSouthWest,
+    //% block="arrow west"
+    //% jres=icons.arrowwest
+    ArrowWest,
+    //% block="arrow north west"
+    //% jres=icons.arrownorthwest
+    ArrowNorthWest
 }
 
 enum ArrowNames {
@@ -168,7 +192,7 @@ enum ArrowNames {
     //% blockIdentity=images.arrowNumber block="West"
     West,
     //% blockIdentity=images.arrowNumber block="North West"
-    NorthWest,
+    NorthWest
 }
 
 namespace basic {
@@ -176,7 +200,7 @@ namespace basic {
     /**
      * Draws the selected icon on the LED screen
      * @param icon the predefined icon id
-     * @param interval the amount of time (milliseconds) to show the icon. Default is 600.
+     * @param interval the amount of time (milliseconds) to block the LED Matrix for showing the icon. Default is 600.
      */
     //% weight=90 blockGap=8
     //% blockId=basic_show_icon
@@ -220,6 +244,7 @@ namespace images {
     //% weight=50 blockGap=8
     //% help=images/arrow-image
     //% blockId=builtin_arrow_image block="arrow image %i"
+    //% deprecated=true
     export function arrowImage(i: ArrowNames): Image {
         switch (i) {
             // compass directions
@@ -543,6 +568,55 @@ namespace images {
                                         # # . # #
                                         . # # # .
                                         . . # . .`);
+            // arrows
+            case IconNames.ArrowNorth: return images.createImage(`
+                                        . . # . .
+                                        . # # # .
+                                        # . # . #
+                                        . . # . .
+                                        . . # . .`);
+            case IconNames.ArrowNorthEast: return images.createImage(`
+                                        . . # # #
+                                        . . . # #
+                                        . . # . #
+                                        . # . . .
+                                        # . . . .`);
+            case IconNames.ArrowEast: return images.createImage(`
+                                        . . # . .
+                                        . . . # .
+                                        # # # # #
+                                        . . . # .
+                                        . . # . .`);
+            case IconNames.ArrowSouthEast: return images.createImage(`
+                                        # . . . .
+                                        . # . . .
+                                        . . # . #
+                                        . . . # #
+                                        . . # # #`);
+            case IconNames.ArrowSouth: return images.createImage(`
+                                        . . # . .
+                                        . . # . .
+                                        # . # . #
+                                        . # # # .
+                                        . . # . .`);
+            case IconNames.ArrowSouthWest: return images.createImage(`
+                                        . . . . #
+                                        . . . # .
+                                        # . # . .
+                                        # # . . .
+                                        # # # . .`);
+            case IconNames.ArrowWest: return images.createImage(`
+                                        . . # . .
+                                        . # . . .
+                                        # # # # #
+                                        . # . . .
+                                        . . # . .`);
+            case IconNames.ArrowNorthWest: return images.createImage(`
+                                        # # # . .
+                                        # # . . .
+                                        # . # . .
+                                        . . . # .
+                                        . . . . #`);
             default: return images.createImage(`
                                         . . . . .
                                         . . . . .
@@ -557,6 +631,7 @@ namespace images {
     //% help=images/arrow-number
     //% blockId=device_arrow block="%arrow"
     //% shim=TD_ID
+    //% deprecated=true
     export function arrowNumber(arrow: ArrowNames): number {
         return arrow;
     }
