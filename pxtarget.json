@@ -424,7 +424,7 @@
         "homeScreenHero": {
             "imageUrl": "./static/calliope/hero/hero.jpg",
             "name": "Flashing Heart",
-            "url": "/projects/flashing-heart",
+            "url": "/calliope/firststeps/firstSteps",
             "description": "Let's go – start your first tutorial with Calliope mini",
             "cardType": "tutorial"
         },
