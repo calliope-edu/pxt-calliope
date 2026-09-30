@@ -30,7 +30,7 @@ serial.
 
 ```blocks
 radio.setGroup(1)
-input.onButtonPressed(Button.A, () => {
+input.onButtonEvent(Button.A, input.buttonEventClick(), () => {
     radio.sendNumber(input.temperature());
 });
 radio.onDataReceived(() => {
@@ -51,5 +51,5 @@ Sample output to serial when ``A`` button pressed:
 [on data packet received](/reference/radio/on-data-packet-received)
 
 ```package
-radio
+funk
 ```

@@ -4,7 +4,7 @@ Write a string to the [serial](/device/serial) port,
 without starting a new line afterward.
 
 ```sig
-serial.writeString("")
+serial.writeString("");
 ```
 
 ### ~ reminder
@@ -33,10 +33,10 @@ This program writes the word `JUMBO` to the serial port repeatedly,
 without any new lines.
 
 ```blocks
-basic.forever(function() {
-    serial.writeString("JUMBO")
-    basic.pause(1000)
-})
+basic.forever(() => {
+    serial.writeString("JUMBO");
+    basic.pause(1000);
+});
 ```
 
 ## See also

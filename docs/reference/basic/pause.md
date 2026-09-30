@@ -1,6 +1,6 @@
 # Pause
 
-Pause the program for a duration of the number milliseconds you say. 
+Pause the program for the number of milliseconds you say. 
 You can use this function to slow your program down.
 
 ```sig
@@ -9,23 +9,24 @@ basic.pause(400)
 
 ## Parameters
 
-* **ms**: the number of milliseconds (duration) of your pause time. To convert from seconds: 100 milliseconds = 1/10 second and 1000 milliseconds = 1 second.
+* ``ms`` is the number of milliseconds that you want to pause (100 milliseconds = 1/10 second, and 1000 milliseconds = 1 second).
 
-## Example
+## Example: diagonal line
 
-Randomly turn on and off the LED pixels on the screen.
+This example draws a diagonal line by turning on LED `0, 0` (top left) through LED `4, 4` (bottom right). 
+The program pauses 500 milliseconds after turning on each LED. 
+Without `pause`, the program would run so fast that you would not have time to see each LED turning on.
 
 ```blocks
-let duration = 500
-basic.forever(function () {
-    led.toggle(randint(0, 4), randint(0, 4))
-    basic.pause(duration)
-})
+for (let i = 0; i < 5; i++) {
+    led.plot(i, i)
+    basic.pause(500)
+}
 ```
 
 ## Advanced
 
-If **ms** is an invalid number (`NaN`, not a number), the pause will default to `20` ms.
+If `ms` is `NaN` (not a number), it will default to `20` ms.
 
 ## See also
 

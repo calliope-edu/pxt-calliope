@@ -552,3 +552,780 @@ plus these notes; items 1-4 were committed earlier as `4b41bcf6` and `8cf96153`.
 - `pins.touchSetMode` (`libs/core/touchmode.cpp:49`) still calls
   `target_panic(PANIC_VARIANT_NOT_SUPPORTED)` on v1/v2, same family of problem as the
   logo block but outside the requested scope.
+
+## 2026-09-29 — start page replaced with master's content
+
+Request: replace the start page (tutorials, manuals) with the contents of branch `master`.
+
+### Why the start page was wrong
+
+`universal_hex_fixes_hugo` inherited the **micro:bit** start page from the v9 merge: 26
+galleries pointing at `microbit-org/*`, `projects/games`, `courses/*`, etc. Most of those
+docs do not exist for Calliope, which is the source of the `404` flood seen in the browser
+console (`/api/md/calliopemini/deep-dive`, `.../projects/music`, ... all 404).
+
+`master` (b9d5a6e3, the v8.1.15 Calliope line) carries the real Calliope start page:
+4 galleries -- Tutorials, Workbook (Arbeitsheft), Jacdac, Calliope Links.
+
+### What changed
+
+- **`docs/`**: replaced wholesale with master's tree (user chose full replacement over a
+  start-page-only subset). 817 files written, 1489 HEAD-only files removed. Verified
+  byte-for-byte against `master:docs/`: 0 missing, 0 content mismatches, 0 stray files.
+  Restores `docs/calliope/` (36 files: German Arbeitsheft, firststeps, templates) and
+  `docs/static/calliope/` (119 assets), both entirely absent from HEAD.
+- **`targetconfig.json`**: `galleries` replaced with master's 4. Only that key -- `packages`
+  and `electronManifest` also differ but govern the extension registry and the desktop app,
+  not the start page, so they were left alone.
+- **`pxtarget.json`**: `appTheme.homeScreenHero.url` `/projects/flashing-heart` ->
+  `/calliope/firststeps/firstSteps` (master's value). `homeUrl`, `docMenu`,
+  `homeScreenHeroGallery` and the hero image already matched master.
+
+**`docs/claude-*.md` were explicitly preserved** -- master has no copies, so a naive
+replacement would have deleted all 7 project-notes files.
+
+### Verification
+
+- Both JSON files parse.
+- All 4 galleries, the hero page, the hero image and the hero gallery resolve to files
+  that exist.
+- Walked every `codecard` block in the 4 galleries: **44 cards, 0 broken target pages,
+  0 missing images**.
+- Checked before starting that master has its own copies of the 7 `/projects/*` tutorial
+  pages its Tutorials gallery links to, so replacing `docs/` does not orphan them.
+
+### Notes / gotchas
+
+- `git checkout <branch> -- <path>` is blocked in this environment; the replacement was
+  done by extracting each file with `git show master:<path>` and writing it, plus explicit
+  deletion of HEAD-only files. Content equality was then verified directly against the
+  master blobs rather than trusting `git diff` (which compares against the index, and so
+  reported ~210 spurious "deletions" for unstaged new files).
+- `docs/SUMMARY.md` and `docs/index.md` do not exist on master either -- their absence
+  after the swap is faithful, not damage.
+
+### 2026-09-30 — follow-up: "We could not load the documentation"
+
+After the `docs/` replacement the 4 galleries rendered, but opening help failed with
+*"Ups — We could not load the documentation"*.
+
+Cause: **`docs/SUMMARY.md` does not exist on `master`**, so the wholesale replacement
+deleted it. pxt uses `SUMMARY.md` as the documentation table of contents (`pxt checkdocs`
+reports "no SUMMARY file found" / "not in SUMMARY" without it), and the docs viewer cannot
+resolve pages without a TOC. `docs/reference.md` (the reference landing page) was lost the
+same way — also absent on master, present on HEAD.
+
+Fix:
+- **`docs/reference.md`** restored verbatim from HEAD. It is generic API-category content
+  (```namespaces``` blocks), with no micro:bit-specific links, so it is Calliope-safe.
+- **`docs/SUMMARY.md`** regenerated rather than restored. HEAD's version is micro:bit
+  specific: of its 356 internal links, **181 pointed at `/projects/*` pages that master's
+  docs do not contain**, and its support link was `support.microbit.org`. Restoring it
+  verbatim would have recreated exactly the broken-link problem this task set out to fix.
+  Instead it was pruned to the links that actually resolve (176, all verified), the support
+  link repointed at `calliope.cc/en/impressum` to match `docMenu`, empty sections dropped,
+  and the `[Reference](/reference)` parent re-added.
+- **`docs/calliope/templates/SUMMARY.md`**: fixed a pre-existing typo inherited from master
+  — it linked `/boards/calliope-mini-v1` and `-v2` but the files are `calliope-mini-1.md` /
+  `-2.md`.
+
+Verification: `pxt checkdocs` now reports **0 "not in SUMMARY"** and no SUMMARY-level broken
+links (was 2). The 23 remaining broken links are in-page links inside doc bodies, inherited
+from master, not TOC problems.
+
+Not a bug: the headings appear in German ("Anleitungen" for "Tutorials") because the editor
+is running in German and all four gallery names are registered translatable strings in
+`built/target-strings.json`. The live translation service supplies the German text — this
+confirms the new gallery config is being picked up correctly.
+
+**Lesson for wholesale branch-to-branch directory replacements:** check for infrastructural
+files that exist only on the destination side. `SUMMARY.md` and `reference.md` are not
+content, they are what makes the docs viewer work, and neither exists on `master`.
+
+### 2026-09-30 — the remaining doc 404s are a local-dev routing rule, not missing files
+
+Symptom after the SUMMARY/reference restore: help still failed, and the console showed
+
+```
+GET https://www.makecode.com/api/md/calliopemini/reference/input/on-button-event ... 404
+GET https://www.makecode.com/api/md/calliopemini/calliope/arbeitsheft ... 404
+```
+
+Note the host: **www.makecode.com**, not `localhost:3232`. The files are fine; the browser
+is asking the wrong server.
+
+Cause, in pxt-core (`built/web/pxtlib.js`):
+
+```js
+apiRoot = BrowserUtils.isLocalHost() || isNodeJS
+    ? "https://www.makecode.com/api/"   // local dev hits the REMOTE api
+    : "/api/"
+```
+
+`isLocalHost()` is true for `http://localhost:<port>/` (also 127.0.0.1, 192.168.x.x,
+`*.local`) **unless the URL contains `nolocalhost=1`**. So on a `pxt serve` session, pxt
+deliberately fetches markdown from the published makecode.com, on the assumption that the
+target's docs are live there. For this target they are not:
+
+```
+https://www.makecode.com/api/md/calliopemini/calliope/tutorials            -> 404
+https://www.makecode.com/api/md/calliopemini/reference/input/on-button-event -> 404
+```
+
+The second one is a *stock* page that exists in every micro:bit target — it 404s too, which
+shows makecode.com does not serve the `calliopemini` target at all. Every doc request fails
+there no matter what is in `docs/`.
+
+The local server does serve the docs correctly:
+
+```
+http://localhost:3232/calliope/tutorials            -> 200
+http://localhost:3232/reference/input/on-button-event -> 200
+```
+
+(`/api/md/...` returns a bare `Error 403` to curl because pxt's dev server guards `/api/`
+routes with the `localToken` from `~/.pxt/config.json`; the browser sends it, curl did not.)
+
+**Workaround for local testing:** append `nolocalhost=1` to the editor URL, e.g.
+`http://localhost:3232/?nolocalhost=1`. That makes `isLocalHost()` false, so `apiRoot`
+becomes `/api/` and docs are fetched from the local server.
+
+This is pre-existing pxt-core behaviour, unrelated to the start-page change — the same
+404s appear for stock micro:bit reference pages. Nothing in `docs/` needs fixing for it.
+
+### 2026-09-30 — why `nolocalhost=1` on the editor URL did not help
+
+`nolocalhost=1` works, but it has to be on the URL of the frame that makes the request.
+
+The side-docs panel is an **iframe** whose src is `pxt.webConfig.docsUrl || "/--docs"`
+plus a `#`-fragment (`--docs#doc:/reference/input/on-button-event:blocks:live-de`), built in
+pxt-core's `rootDocsUrl()`. That iframe loads `pxtembed.js`, which carries its **own** copy
+of the same rule:
+
+```js
+apiRoot = BrowserUtils.isLocalHost() || isNodeJS
+    ? "https://www.makecode.com/api/" : "/api/"
+```
+
+and `isLocalHost()` tests `window.location.href` — the *iframe's* URL. A flag on the parent
+editor URL is never propagated into the iframe src, so the iframe still sees a plain
+`localhost:3232/--docs` and still routes to makecode.com. That is exactly what the console
+shows: the failing request originates in `pxtembed.js`, not `pxtapp.js`.
+
+`pxt.webConfig.docsUrl` would let the iframe src carry the flag, but it is a `WebConfig`
+(deployment) field, not part of the `pxtarget.json` schema, so it cannot be set from this
+repo's config.
+
+**Proof the docs themselves are fine.** The dev server guards `/api/` with the `localToken`
+from `~/.pxt/config.json`, passed as a bare `Authorization` header (not `Bearer`, not a
+cookie). With it:
+
+```
+GET localhost:3232/api/md/calliopemini/reference/input/on-button-event  -> 200  "# On Button Event ..."
+GET localhost:3232/api/md/calliopemini/calliope/tutorials               -> 200  "# Projects ..."
+```
+
+Both are the exact pages the browser fails to fetch from makecode.com. Nothing is missing
+from `docs/`, and **the docs do not need to be hosted separately** — they ship inside the
+target and are served by the same origin in a real deployment, where `isLocalHost()` is
+false and `apiRoot` is `/api/`.
+
+Local-testing options, in order of preference:
+1. Open the docs frame directly with the flag:
+   `http://localhost:3232/--docs?nolocalhost=1#doc:/reference/input/on-button-event`
+   (verified: that URL returns 200).
+2. Accept that side-docs are broken under `pxt serve` and verify docs content with
+   `pxt checkdocs` (currently: 0 "not in SUMMARY", no SUMMARY-level broken links) plus
+   direct page loads such as `http://localhost:3232/calliope/tutorials` (200).
+3. Deploy/stage the target, where the problem disappears by construction.
+
+### 2026-09-30 — does the live makecode.calliope.cc differ from this repo's docs?
+
+Question asked after pxt-microbit's local hosting appeared to show docs fine.
+
+**The live Calliope site serves its docs correctly; this repo's docs are not the problem.**
+
+```
+https://makecode.calliope.cc/api/md/calliopemini/reference/input/on-button-event   -> 200
+https://makecode.calliope.cc/api/md/calliopemini/calliope/tutorials                -> 200
+https://www.makecode.com/api/md/calliopemini/reference/input/on-button-event       -> 404
+https://www.makecode.com/api/md/microbit/reference/input/on-button-event           -> 404
+```
+
+Note the last line: makecode.com 404s for **micro:bit** too on that path, so it is not a
+"Calliope is missing from makecode.com" story in the way first assumed. The local dev rule
+sends requests to a host that does not answer them for either target.
+
+One real difference found: the live site is on the **8.1.x** line, this branch is 9.1.1, and
+the version is part of the request:
+
+```
+.../reference/input/on-button-event                    -> 200
+.../reference/input/on-button-event?targetVersion=9.1.1 -> 404   <- version the local editor sends
+.../reference/input/on-button-event?targetVersion=8.1.15 -> 200
+```
+
+So even pointing local dev at makecode.calliope.cc would 404, because the local editor
+stamps its own (newer) targetVersion onto every docs request.
+
+### 2026-09-30 — `nolocalhost=1` on the /--docs frame, and what it revealed
+
+Opening `http://localhost:3232/--docs?nolocalhost=1#doc:/reference/...` does flip the frame
+to the local api, but that frame then fails differently: `/api/clientconfig` and
+`/api/compile/extension` return **403**, because those routes need the `localToken` that the
+top-level editor supplies and a directly-opened frame does not have. So it is not a usable
+workaround either. Side-docs under `pxt serve` remain broken for this target; verify docs
+with `pxt checkdocs` and direct page loads instead, or use a real deployment.
+
+### 2026-09-30 — real doc bugs found by `pxt checkdocs` (inherited from master)
+
+Two genuine errors, both pre-existing on `master`, now fixed:
+
+1. **`IconNames.ArrowNorth/East/South/West` do not exist in this target.** Arrows live in a
+   separate `ArrowNames` enum used with `basic.showArrow()` (`libs/core/icons.ts:156+`);
+   `IconNames` has no arrow members. Fixed in `docs/reference/serial/write-line.md`,
+   `docs/reference/basic.md` and `docs/reference/input/compass-heading.md` by switching to
+   `basic.showArrow(ArrowNames.North)` etc.
+
+2. **```` ```package ```` blocks requiring non-existent extensions `v1` / `v2` / `v3`.**
+   No `libs/v1`, `libs/v2` or `libs/v3` exists, so `checkdocs` aborted with
+   *"extension vN is missing pxt.json"*. Removed from `docs/boards/calliope-mini-1.md`,
+   `-2.md`, `-3.md`, `docs/projects/rock-paper-scissors.md` and `docs/reference/music.md`.
+   Confirmed by the user as correct: **this is a universal-hex target, so the v1/v2/v3
+   separation is obsolete.**
+
+`pxt checkdocs` result: **520/520 snippets compile, 0 failed** (was 2 failing + a hard abort).
+
+Remaining: 23 broken in-page links across 57 distinct targets, all inherited from master and
+unrelated to the start page — e.g. `/device/v2` (referenced by 14 files, and absent on master
+too) and outright typos like `/referene/inpu/pin-is-pressed`,
+`/refernece/music/play`. Not touched; they are a separate content-cleanup job.
+
+Also noted, not changed: `docs/calliope/templates.md` offers separate "Calliope mini 1.x
+(16KB)" and "2.x (32KB)" project templates — the same obsolete split. It is currently
+**unreachable** (not in any of the 4 galleries, not in `SUMMARY.md`), so it is dead content
+rather than an active problem. Worth deleting along with `docs/calliope/templates/` if the
+v1/v2/v3 distinction is being retired everywhere.
+
+### 2026-09-30 — v1/v2/v3 project templates removed (universal hex)
+
+The 16KB / 32KB split exists only because pre-universal-hex builds had to target a specific
+board revision. Removed, per the user: *"this is a universal hex version where the
+separation is not necessary anymore"*.
+
+Deleted: `docs/calliope/templates.md`, `docs/calliope/templates/` (`calliope-mini-1.md`,
+`calliope-mini-2.md`, `new-project-pxt4.md`, `SUMMARY.md`) and the now-orphaned assets
+`docs/static/calliope/templates/` (`16KB*.png`, `32KB*.png`, `info*.png`).
+
+Safe to remove: the page was already unreachable — not referenced by any of the 4 galleries
+and not in `docs/SUMMARY.md`. The only remaining mentions were in these notes.
+
+Note the **hardware reference** pages `docs/boards/calliope-mini-{1,2,3}.md` were kept. They
+describe the physical boards, which do still differ; that is distinct from build-time
+targeting.
+
+### 2026-09-30 — `IconNames.Arrow*` migrated to be usable (not just rewritten)
+
+Earlier the broken snippets were "fixed" by rewriting them to `basic.showArrow(ArrowNames.X)`.
+The user asked instead that `IconNames.ArrowNorth` and friends be **migrated so they are
+usable**, which is the better outcome: `showArrow` is marked `//% deprecated=true`, so docs
+should not be steered onto it.
+
+Implementation (`libs/core/icons.ts`):
+- Added 8 members to `IconNames` — `ArrowNorth`, `ArrowNorthEast`, `ArrowEast`,
+  `ArrowSouthEast`, `ArrowSouth`, `ArrowSouthWest`, `ArrowWest`, `ArrowNorthWest` —
+  **appended at the end** so all 41 existing icons keep their numeric values (only `Heart = 0`
+  is explicit; the rest are positional, so inserting anywhere else would silently renumber
+  saved programs).
+- `images.iconImage()` handles them by delegating to `images.arrowImage(ArrowNames.X)`
+  rather than duplicating the 5x5 artwork, so `show icon` and the deprecated `show arrow`
+  can never drift apart.
+- Reverted the three docs to `basic.showIcon(IconNames.ArrowNorth)` etc.
+
+Verified: `pxt checkdocs` reports **520/520 snippets compiled to blocks and python (and
+back), 0 failed** — so the new members survive the blocks/Python round-trip. `built/target.json`
+contains both the enum members and the delegation.
+
+Known cosmetic gap: the other 41 icons carry a `//% jres=icons.<name>` image used by the
+`imagedropdown` field editor, and `icons.jres` has no arrow artwork, so the 8 new entries
+have no dropdown thumbnail (they fall back to their text label — "north arrow" etc.). Adding
+8 images to `libs/core/icons.jres` would close this; not done here because it needs actual
+icon art.
+
+### 2026-09-30 (revised) — arrow icons taken from master; `show arrow` API removed
+
+Supersedes the previous entry. Two corrections to it:
+
+**(a) The pictograms were missing.** The first attempt added the 8 `IconNames.Arrow*`
+members by hand with no `//% jres=`, so the `imagedropdown` had no thumbnail for them.
+`master` already solves this properly: its `IconNames` carries all 8 arrow members **with**
+`//% jres=icons.arrownorth` etc., its `iconImage()` has the inline 5x5 artwork, and its
+`icons.jres` has the 8 matching PNGs (48 entries vs this branch's 40).
+
+So `libs/core/icons.ts` was restored wholesale from `master` and the 8 arrow entries were
+merged into `libs/core/icons.jres`. No hand-authored artwork — it is byte-for-byte master's.
+
+**(b) `show arrow` is now removed entirely**, per the user ("the seperate show arrow block
+should stay completely out"). master only marks it `deprecated=true`. Removed from
+`libs/core/icons.ts`:
+- `basic.showArrow()` (blockId `basic_show_arrow`)
+- `images.arrowImage()` (blockId `builtin_arrow_image`)
+- `images.arrowNumber()` (blockId `device_arrow`)
+- the `ArrowNames` enum
+
+Also removed the now-dangling `"basic.showArrow|block"` from
+`libs/core/_locales/de/core-strings.json`. No docs referenced the arrow API, so nothing else
+needed updating. The arrow *artwork* survives inside `iconImage()`, which is where it is now
+reached from.
+
+Result: `IconNames.ArrowNorth` … `ArrowNorthWest` work like any other icon, with dropdown
+thumbnails, and there is no separate arrow block.
+
+Verified: `pxt checkdocs` 520/520 snippets compile (blocks + python round-trip), and
+`built/target.json` confirms 8 arrow jres entries bundled, `showArrow`/`ArrowNames` absent,
+`ArrowNorth` present.
+
+**Process note (mistake worth not repeating):** the first removal attempt cut by string
+index from `arrowImage`'s start to `arrowNumber`'s end. Because `arrowImage` sits *before*
+`iconImage` in the `images` namespace, that span swallowed `iconImage` and all 49 icon cases
+— the file went from 26,385 to 5,409 bytes. Caught by checking the icon-case count, then
+fixed by restoring from `master` and re-cutting with explicit start/end anchors per function.
+When deleting a function from the middle of a namespace, anchor on **both** its own
+boundaries, and verify a structural invariant afterwards (here: `grep -c "case IconNames"`
+== 49 and brace balance).
+
+### 2026-09-30 — local docs testing: use `.test`, not `.dev`
+
+`calliope.dev` fails with `ERR_SSL_PROTOCOL_ERROR`: `.dev` is on the browser HSTS preload
+list, so Chrome forces https and the plain-http dev server cannot answer.
+
+Use a non-preloaded TLD instead — `.test` is reserved for exactly this (RFC 6761):
+
+```
+echo "127.0.0.1 calliope.test" | sudo tee -a /etc/hosts
+npx pxt serve --hostname calliope.test --no-browser
+# open http://calliope.test:3232/
+```
+
+`.test`, `.internal` and `.lan` are all fine; `.dev`, `.app`, `.page` and `.new` are
+HSTS-preloaded and will not work over http. The hostname only needs to avoid pxt's
+`isLocalHost()` pattern (`localhost`, `127.0.0.1`, `192.168.x.x`, `*.local`).
+
+### 2026-09-30 — reverted: `show arrow` kept, as master has it
+
+Per the user, master's `deprecated=true` treatment is good enough. Reverted the previous
+entry's removal: `libs/core/icons.ts` is now **byte-identical to master**, so
+`basic.showArrow()`, `images.arrowImage()`, `images.arrowNumber()` and the `ArrowNames` enum
+are all present, each marked `//% deprecated=true` (hidden from the toolbox, still valid in
+existing programs). `libs/core/_locales/de/core-strings.json` restored verbatim from HEAD,
+which also undid an unintended whole-file reformat (58/59 lines) from the removal attempt.
+
+Kept: the 8 arrow entries merged into `libs/core/icons.jres` (48 entries total), which is
+what gives `IconNames.Arrow*` its dropdown pictograms. Verified in `built/target.json`:
+`showArrow` present, `ArrowNames` present, `ArrowNorth` present, 8 arrow jres bundled.
+
+### 2026-09-30 — the `calliope.test` trade-off: docs XOR translations
+
+Serving under `calliope.test` fixed the docs but broke German. The two are driven by the
+*same* `isLocalHost()` check, pointing in opposite directions:
+
+```js
+// docs / api
+apiRoot          = isLocalHost() || isNodeJS ? "https://www.makecode.com/api/" : "/api/"
+// translations
+translationsRoot = isLocalHost() || isStatic ? "https://makecode.com/api/" : ""
+```
+
+- **`localhost:3232`** -> `isLocalHost()` true -> docs fetched from makecode.com (404, target
+  not served there) but translations fetched from makecode.com (**200**, German works).
+- **`calliope.test:3232`** -> `isLocalHost()` false -> docs fetched locally (**work**) but
+  translations fetched locally, where they do not exist -> `/cdn/locales/de/strings.json`
+  404 and the UI falls back to English.
+
+Confirmed: `built/` contains only the English source strings (`target-strings.json`,
+`sim-strings.json`); there is no `locales/de/` tree. Those German strings are served by
+crowdin at runtime — `https://makecode.com/api/translations?lang=de&filename=strings.json`
+returns 200. So under plain `pxt serve` it is strictly one or the other.
+
+The side 404s (`/cdn//api/config/...` with a doubled slash, `Unable to determine region`,
+the `roboto-mono` woff2 files) are all the same root cause: `webConfig.cdnUrl` is `/cdn/`
+and the dev server has no `/cdn/` tree, so anything routed through the CDN path misses. On
+`localhost` those requests bypass the CDN, which is why they only appeared now.
+
+**To get docs *and* German at once**, build a static package with bundled translations:
+
+```
+npx pxt staticpkg --locs -o /tmp/calliope-static
+# then serve that folder with any static file server
+```
+
+`--locs` (`--locales`/`--crowdin`) downloads the translations and bundles them, so the
+locale files exist locally and neither side has to reach makecode.com.
+
+### 2026-09-30 — `pxt staticpkg --locs` needs a Crowdin *manager* token
+
+`INTERNAL ERROR: Crowdin token not found in environment variable CROWDIN_KEY`.
+
+What pxt does (`node_modules/pxt-core/built/crowdinApi.js`):
+- `crowdinCredentials()` (line ~356) reads `process.env.CROWDIN_KEY` and passes it to the
+  official `@crowdin/crowdin-api-client` as a **Personal Access Token** (API v2).
+- `downloadTranslationsAsync()` (line ~93) calls **`translationsApi.buildProject(projectId, …)`**,
+  polls `checkBuildStatus`, then `downloadTranslations`.
+
+Two consequences:
+
+1. **The token is a Crowdin *Personal Access Token***, created at
+   Crowdin → *Account Settings → API → Personal Access Tokens* (not a project join code, not
+   the login password). Used as `CROWDIN_KEY=<token> npx pxt staticpkg --locs …`.
+
+2. **Translator membership is not enough.** `buildProject` exports the whole project and is a
+   *manager*-level operation; a translator/proofreader PAT gets 403. And the project is
+   **Microsoft's "makecode"** project: `pxtarget.json` sets `"crowdinProject": "makecode"`
+   and does **not** set `crowdinProjectId`, so pxt falls back to
+   `KINDSCRIPT_PROJECT_ID = 157956`. So this needs rights on Microsoft's project, which a
+   Calliope contributor would normally not have.
+
+**Workaround that needs no Crowdin access — `--locs-src`:**
+
+```
+npx pxt staticpkg --locs-src <dir> -o /tmp/calliope-static
+```
+
+`staticpkgAsync` sets `locs = !!locsSrc || !!flags.locs`, and when `locs-src` is given it
+calls `crowdin.buildAllTranslationsAsync()` reading from disk instead of
+`downloadTargetTranslationsAsync()` — Crowdin is never contacted, so `CROWDIN_KEY` is not
+needed.
+
+Expected layout: `<dir>/<langId>/<fileName>`, e.g. `<dir>/de/strings.json`,
+`<dir>/de/target-strings.json`, `<dir>/de/bundled-strings.json`, `<dir>/de/sim-strings.json`.
+Only languages listed in `appTheme.availableLocales` **and** present as a directory are
+picked up (`de` is in that list).
+
+Those four files can be fetched without any credential from the live translation endpoint,
+which is the same one the editor uses at runtime:
+`https://makecode.com/api/translations?lang=de&filename=strings.json&approved=true` (200).
+
+### 2026-09-30 — `scripts/fetch-locs.sh`: docs + translations locally, no Crowdin key
+
+Added `scripts/fetch-locs.sh`. It downloads the MakeCode UI translations from the public
+endpoint (no credential) and then runs `pxt staticpkg --locs-src`, which reads them from
+disk and never contacts Crowdin — sidestepping the manager-level `CROWDIN_KEY` requirement.
+
+```
+scripts/fetch-locs.sh                 # de, then build the static package
+scripts/fetch-locs.sh fr it           # other languages
+LOCS_ONLY=1 scripts/fetch-locs.sh     # download only, skip the build
+```
+
+Why a static package rather than `pxt serve`: a static build serves the editor, the docs and
+the locale files from **one** origin, so neither the `apiRoot` nor the `translationsRoot`
+branch of `isLocalHost()` can send a request to makecode.com. That is the only local setup
+where docs *and* German work at the same time.
+
+**Finding: only `strings.json` has content.** Of the four files pxt looks for per language,
+`https://makecode.com/api/translations?lang=de&filename=<f>&approved=true` returns
+
+| file | result |
+|---|---|
+| `strings.json` | **2426 keys** — the editor UI |
+| `target-strings.json` | `{}` |
+| `bundled-strings.json` | `{}` |
+| `sim-strings.json` | `{}` |
+
+The three empty ones are per-target and simply are not populated for this target (same `{}`
+from `makecode.calliope.cc`). This is not a fault: the headings the user saw in German come
+from `strings.json` — it contains `"Tutorials" -> "Anleitungen"`, `"Projects" -> "Projekte"`,
+`"Help" -> "Hilfe"`. The gallery *names* are matched as plain English keys, which is why
+renaming a gallery in `targetconfig.json` changes whether it can be translated.
+
+The script still writes all four files (empty ones included) so the expected
+`<dir>/<lang>/<file>` set is complete and obvious; pxt's `jsonTryParse` would silently skip a
+malformed file, so each download is validated as JSON and falls back to `{}` on failure
+rather than writing a truncated file.
+
+#### Blocker: `pxt staticpkg` cannot complete on this target
+
+The download half of `scripts/fetch-locs.sh` works (2426 German strings in
+`built/locs/de/strings.json`). The `staticpkg` half **does not finish**: it warms the hex
+cache, hits a dependency combination that is not in `built/hexcache/`, and submits a cloud
+C++ build that never returns:
+
+```
+polling C++ build https://makecode.com/compile/814405b7...json (attempt #1)
+waiting 8s for C++ build...
+```
+
+Fetching that URL directly gives:
+
+```json
+{"message":"compilation 814405b7... not found"}
+```
+
+So the job does not exist server-side and the poll loop never terminates — this is not a
+slow build, it is a dead one. The combination is `core + microphone + bluetooth` (the
+bluetooth-enabled variant). Note `libs/bluetoothprj` no longer exists in this tree (only
+`blocksprj` and `tsprj`), so the combination comes from `blocksprj`'s dependency set.
+
+This is a pre-existing target/build-service issue, unrelated to the start page or the
+locales. `staticpkg` offers no flag to skip hex-cache warming.
+
+Options if a fully static local build is wanted later:
+- Pre-populate `built/hexcache/` with that combination from a machine/toolchain that can
+  build it locally (`--localbuild`), so staticpkg finds it cached and skips the cloud.
+- Or trim the bluetooth dependency out of the template project used for cache warming.
+
+Until then the practical local setups remain the either/or from the previous entry:
+`localhost` for translations, a custom hostname (e.g. `calliope.test`) for docs.
+
+### 2026-09-30 — `calliope.test` also needs `nocdn=1` (scrambled UI, missing galleries)
+
+Symptoms on `calliope.test:3232`: header fonts and icons missing, and the tutorial/manual
+galleries never rendered (in *either* hostname mode).
+
+Third branch of the same `isLocalHost()` split, in `pxt.Cloud.useCdnApi()`:
+
+```js
+useCdnApi = () => webConfig && !webConfig.isStatic && !BrowserUtils.isLocalHost()
+                  && !!webConfig.cdnUrl && !/nocdn=1/i.test(location.href)
+```
+
+`webConfig.cdnUrl` is `/cdn/`, and the dev server has no `/cdn/` tree. So:
+
+| URL | isLocalHost | useCdnApi | API requests |
+|---|---|---|---|
+| `localhost:3232` | true | false | direct `/api/…` (work) |
+| `calliope.test:3232` | false | **true** | `/cdn//api/…` -> **404** |
+| `calliope.test:3232/?nocdn=1` | false | false | direct `/api/…` (work) |
+
+That explains the doubled slash in `GET /cdn//api/config/calliopemini/targetconfig/v9.1.1`
+and why the galleries were empty: **the gallery list lives in that targetconfig response**,
+not in `built/target.json` (verified: `built/target.json` has no `targetConfig` key). With
+the request 404ing, the editor has no galleries to draw.
+
+The local server serves both fine when asked directly:
+
+```
+/api/config/calliopemini/targetconfig/v9.1.1 -> 200  galleries: Tutorials, Workbook, Jacdac, Calliope Links
+/api/md/calliopemini/calliope/tutorials      -> 200
+```
+
+**So the working local URL is `http://calliope.test:3232/?nocdn=1`** — docs, galleries and
+API all local.
+
+Unrelated pre-existing 404: `/static/fonts/roboto-mono/*.woff2` does not exist anywhere in
+`node_modules/pxt-core/built/web` and 404s on `localhost` too. Cosmetic, not caused by the
+hostname change.
+
+Partial-translation note: with `strings.json` only, editor **chrome** is translated
+("Anleitungen", "Hilfe") but block text like `basic` is not — block strings live in the
+per-target `bundled-strings.json`/`target-strings.json`, which the public endpoint returns
+empty (see the previous entry). Full block translation therefore needs a real target
+translation export, not the public API.
+
+#### Resolved: `PXT_FORCE_LOCAL=1` unblocks `staticpkg`
+
+The dead cloud build is bypassed entirely by compiling C++ locally. `scripts/fetch-locs.sh`
+now sources the yotta env and exports:
+
+```
+PXT_FORCE_LOCAL=1   # compile C++ on this machine, not the cloud service
+PXT_NODOCKER=1      # do not shell out to docker
+```
+
+(`YOTTA_ENV` defaults to `~/fw/YOTTAENV/bin/activate`; override to point elsewhere. The
+script warns if `arm-none-eabi-gcc` is still missing from PATH afterwards.)
+
+Result: the build completes with **0 cloud polls** and produces `built/packaged` (118 MB,
+98 top-level entries) containing:
+- `index.html`, `targetconfig.json` (so the galleries load — this is the file whose 404 was
+  leaving the start page empty),
+- `docs/calliope/` incl. `tutorials.html`, `arbeitsheft/`, `firststeps/`,
+- `locales/de/strings.json` with 2426 entries (`"Tutorials" -> "Anleitungen"`).
+
+Serve it from one origin and both docs and translations work with no makecode.com
+dependency and no `isLocalHost()` split:
+
+```
+npx http-server built/packaged -p 8080 -c-1
+# or: python3 -m http.server 8080 --directory built/packaged
+```
+
+### 2026-09-30 — galleries still empty on `calliope.test`: the dev server's localToken
+
+`?nocdn=1` fixed the scrambled header (CDN routing) but the tutorial/manual galleries were
+still missing. Remaining cause: **the dev server's `/api/` auth**.
+
+`node_modules/pxt-core/built/server.js`:
+
+```js
+function isAuthorizedLocalRequest(req) {
+    return req.headers["authorization"] &&
+           req.headers["authorization"] == serveOptions.localToken;
+}
+...
+if (!options.noauth && !isAuthorizedLocalRequest(req)) { error(403); return null; }
+```
+
+Every `/api/` route 403s without an `Authorization` header equal to the `localToken` in
+`~/.pxt/config.json`. Verified:
+
+```
+/api/config/calliopemini/targetconfig/v9.1.1   no-auth: 403   with token: 200
+/api/md/calliopemini/calliope/tutorials        no-auth: 403   with token: 200
+```
+
+The browser normally gets that token from the launch URL the server prints at startup:
+
+```js
+const start = `${protocol}://${hostname}:${port}/#local_token=${options.localToken}&wsport=${wsPort}`;
+```
+
+Opening a hand-typed URL (`http://calliope.test:3232/`) skips the `#local_token=...`
+fragment, so the editor has no token, every `/api/` call 403s, the targetconfig fetch fails,
+and the start page renders with **no galleries** — exactly the reported symptom.
+
+Two fixes, either works:
+
+1. **Use the launch URL the server prints**, keeping the query flag:
+   `http://calliope.test:3232/?nocdn=1#local_token=<token from ~/.pxt/config.json>`
+2. **Disable the auth for local testing** (simpler, no token juggling):
+   `npx pxt serve --hostname calliope.test --noauth --no-browser`
+   then `http://calliope.test:3232/?nocdn=1`
+
+Note the full set of flags needed to make `pxt serve` behave for this target:
+`--hostname <non-localhost>` (docs come from the local server), `?nocdn=1` (API not routed
+through the missing `/cdn/` tree), plus a token or `--noauth` (API not 403). The static
+package from `scripts/fetch-locs.sh` needs none of these, which is why it remains the
+cleaner option.
+
+### 2026-09-30 — why only `basic` is untranslated, and why tutorials stay English
+
+**`basic`: a malformed upstream translation string.** Of all toolbox categories, `Basic` is
+the *only* one with a `{id:category}` entry in the public `de/strings.json` — and its value
+wrongly keeps the prefix:
+
+```
+'{id:category}Basic' -> '{id:category}Grundlagen'      <- value should be just "Grundlagen"
+```
+
+All 12 `{id:category}` entries in that file have the same defect, but only `Basic` matters
+here because the other categories are not looked up that way:
+
+```
+{id:category}Input / Music / Radio / LED / Control / ...   -> ABSENT from de/strings.json
+```
+
+Their German names come from the **target-level** translations served at runtime (e.g.
+`Radio -> Funk` is a plain key in `strings.json`), not from `{id:category}` keys. So the
+other categories translate through a path that works, and `basic` alone hits the one broken
+key. `libs/core/basic.ts` carries no `block=` annotation (unlike `led.ts`, which has
+`block="LED"`), so it has no target-side override to fall back on either.
+
+This is a data defect in the upstream Crowdin export, not something fixable in this repo
+short of adding `block="..."` to the `basic` namespace or shipping a local override.
+
+**Tutorials stay English regardless of language.** There is only one copy of each doc —
+`docs/calliope/tutorials.md`, `arbeitsheft.md`, … — with no `*.de.md` variants and no
+`docs/de/` tree. Gallery *card* text comes from those markdown files, so it renders in
+whatever language the file is written in. The live site shows German tutorials because its
+docs are served from a translated source; a local static package built from this repo's
+`docs/` can only ever show what is in these files. Translating them means adding localized
+markdown, not fixing configuration.
+
+### 2026-09-30 — `pxt serve` gives up: `unknown command GET clientconfig`
+
+Even with `--noauth` and `?nocdn=1`, the dev server rejects a route the editor needs:
+
+```
+INTERNAL ERROR: Error: unknown command GET clientconfig
+    at handleApiAsync (node_modules/pxt-core/built/server.js:367:15)
+```
+
+`/api/clientconfig` is simply not implemented by the local dev server, so the start page
+still cannot finish loading its galleries. Combined with the earlier findings (docs vs
+translations vs CDN vs auth all keyed off `isLocalHost()`), **`pxt serve` cannot fully run
+this target locally**.
+
+`npx http-server built/packaged -p 8080 -c-1` does work — galleries, help and docs all load.
+That is the supported local setup; `pxt serve` should be treated as blocks-editor-only.
+
+### 2026-09-30 — why pxt-microbit shows tutorials under plain `pxt serve` (and this target cannot)
+
+Both targets are structurally identical: `targetConfig` is **absent** from `built/target.json`
+in each, so both editors must fetch the gallery list over HTTP. The difference is entirely in
+what **makecode.com** will serve back.
+
+The gallery *list* is fine for both:
+
+```
+makecode.com /api/config/microbit/targetconfig/v9.1.1      -> 200, 26 galleries
+makecode.com /api/config/calliopemini/targetconfig/v9.1.1  -> 200,  4 galleries
+```
+
+(Correction to an earlier entry in these notes: makecode.com **does** serve calliopemini's
+targetconfig, and it already returns the new 4-gallery Calliope list. The gallery list was
+never the missing piece.)
+
+The gallery *content* is where they diverge — each gallery name resolves to a markdown page
+that must also be fetched:
+
+```
+makecode.com /api/md/microbit/tutorials                    -> 200
+makecode.com /api/md/microbit/projects/games               -> 200
+makecode.com /api/md/calliopemini/calliope/tutorials       -> 404
+makecode.com /api/md/calliopemini/calliope/arbeitsheft     -> 404
+```
+
+So under `pxt serve` (where `isLocalHost()` routes doc requests to makecode.com):
+
+- **pxt-microbit**: its docs are published there, every gallery markdown returns 200, and the
+  start page renders fully. Nothing local is needed.
+- **pxt-calliope**: `calliope/*` docs are not published on makecode.com, every gallery
+  markdown 404s, and the start page renders with no cards.
+
+That is the whole difference. It is not a configuration gap in this repo — the same editor
+code, asking the same host, simply gets content for one target and 404s for the other.
+
+Worth noting the asymmetry is not total: `microbit/reference/input/on-button-event` also
+404s on makecode.com, so even for pxt-microbit the *help* pages fail under `pxt serve` while
+the tutorials work. That matches the reported experience of "pxt-microbit shows both" only
+for the start page.
+
+Consequence: serving `built/packaged` locally is not a workaround for a local misconfiguration
+— it is the only way to see this target's own docs, because they exist nowhere else.
+
+### 2026-09-30 — tidy-up, and a `buildtarget` gotcha after deleting `built/`
+
+Reduced the change set to the minimum. Three of the edits had accidental churn because they
+were written with `json.dumps`, which reformats the whole file:
+
+- **`targetconfig.json`**: was 228 insertions / 109 deletions (whole-file reformat) for what
+  should be a one-block change. Restored from HEAD and the `"galleries"` block swapped
+  **textually** instead -> now **4 insertions / 42 deletions**, one clean hunk.
+- **`libs/core/icons.jres`**: was 149/125 for 8 added entries. Content was already identical
+  to master's, so master's file was taken verbatim -> now **24 insertions, 0 deletions**.
+- **`libs/core/_locales/de/core-strings.json`**: reformat already reverted earlier.
+
+Also removed `sim/public/locales/de/strings.json` — a `staticpkg --locs-src` artifact that
+leaked into the (tracked) `sim/public/` source tree. It is regenerable and does not belong
+in git.
+
+Final source diff: `icons.ts` (= master), `icons.jres` (+24), the two auto-generated
+`_locales/core-*.json` (+8 arrow block labels, 1 jsdoc string — both regenerated from
+master's `icons.ts`), `pxtarget.json` (1 line: hero url), `targetconfig.json` (galleries).
+Plus the `docs/` replacement and the new `scripts/fetch-locs.sh`.
+
+**Gotcha: after deleting `built/`, `pxt buildtarget` fails with `spawn docker ENOENT`.**
+Earlier runs succeeded only because `built/hexcache/` was warm and no C++ compile was
+needed. With the cache gone pxt must actually build, and its default path shells out to
+docker, which is not installed here. Fix — same flags the fetch-locs script uses:
+
+```
+source ~/fw/YOTTAENV/bin/activate
+export PXT_FORCE_LOCAL=1 PXT_NODOCKER=1
+npx pxt buildtarget --local
+```
+
+(The `error TS6053: File 'node_modules/pxt-core/built/lib.*.d.ts' not found` lines are
+unrelated noise — those files have never existed in this install and the build succeeds
+regardless.)

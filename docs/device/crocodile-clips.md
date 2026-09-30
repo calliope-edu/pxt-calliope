@@ -38,11 +38,11 @@ Each time the crocodile clip is firmly connected and disconnected from pin `P0`,
 the @boardname@ will return a random Number between 0 and the parameter limit.
 
 ```blocks
-input.onPinPressed(TouchPin.P0, () => {
+input.onPinTouchEvent(TouchPin.P0, input.buttonEventValue(ButtonEvent.Down), () => {
     basic.showNumber(randint(0, 10))
 })
 ```
 
 ## See also
 
-[micro:bit pins](/device/pins)
+[Calliope mini pins](/device/pins)

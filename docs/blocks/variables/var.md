@@ -80,11 +80,11 @@ If you want to remember and modify data, you'll need a variable.
 A counter is a great example:
 
 ```blocks
-let counter = 0
-input.onButtonPressed(Button.A, function () { 
-    counter = counter + 1
-    basic.showNumber(counter)
-})
+let counter = 0;
+input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => { 
+  counter = counter + 1;
+  basic.showNumber(counter);
+});
 ```
 
 ## Local variables

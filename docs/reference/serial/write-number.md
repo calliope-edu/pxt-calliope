@@ -3,7 +3,7 @@
 Write a number to the [serial](/device/serial) port.
 
 ```sig
-serial.writeNumber(0)
+serial.writeNumber(0);
 ```
 
 A number value is written to the serial port as characters in a string representation. The number `876`, for example:
@@ -58,9 +58,9 @@ If you use the ``led.plotBarGraph`` function, it writes the number
 being plotted to the serial port too.
 
 ```blocks
-basic.forever(function() {
+basic.forever(() => {
     led.plotBarGraph(input.lightLevel(), 255)
-    basic.pause(10000)
+    basic.pause(10000);
 })
 ```
 

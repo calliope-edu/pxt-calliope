@@ -7,13 +7,11 @@ faster or slower by the amount you say.
 music.changeTempoBy(20)
 ```
 
-### ~hint
+## ~ hint
 
-#### Simulator
+**Simulator**: This function only works on the @boardname@ and in some browsers.
 
-``||music:change tempo by||`` works on the @boardname@. It might not work in the simulator on every browser.
-
-### ~
+## ~
 
 ## Parameters
 

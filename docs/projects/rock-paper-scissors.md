@@ -2,19 +2,18 @@
 
 ## {Introduction @unplugged}
 
-![Cartoon of the Rock Paper Scissors game](/static/mb/projects/a4-motion.png)
+![Animation of the Rock Paper Scissors game](/static/calliope/tutorials/07_stone_paper_scissors_animation.gif)
 
-Turn your micro:bit into a **Rock Paper Scissors** game that you can play with your friends!
+Turn your Calliope mini into a **Rock Paper Scissors** game that you can play with your friends!
 
 ## {Step 1}
 
 First we need to make a variable to keep track of whether we have a Rock, Paper or Scissors in our hand. A variable is a container for storing values. Click on the ``||variables:Variables||`` category in the Toolbox. Click on the **Make a Variable** button. Give your new variable the name "hand" and click Ok.
 
-![A animation that shows how to create a variable](/static/mb/projects/rock-paper-scissors/newvar.gif)
 
 ## {Step 2}
 
-Click on the ``||variables:Variables||`` category in the Toolbox again. You'll notice that there are some new blocks that have appeared. Drag a ``||variables:set hand||`` block into the ``||input:on shake||`` block. We'll start our Rock Paper Scissors game when we shake 👋 our micro:bit.
+Click on the ``||variables:Variables||`` category in the Toolbox again. You'll notice that there are some new blocks that have appeared. Drag a ``||variables:set hand||`` block into the ``||input:on shake||`` block. We'll start our Rock Paper Scissors game when we shake 👋 our Calliope mini.
 
 ```blocks
 let hand = 0;
@@ -25,7 +24,7 @@ input.onGesture(Gesture.Shake, function() {
 
 ## {Step 3}
 
-Click on the ``||math:Math||`` category in the Toolbox. Drag a ``||math:pick random||`` block and drop it into the ``||variables:set hand||`` block replacing the number 0. Now when we shake our micro:bit, the variable hand will contain a random number between 1 and 3.
+Click on the ``||math:Math||`` category in the Toolbox. Drag a ``||math:pick random||`` block and drop it into the ``||variables:set hand||`` block replacing the number 0. Now when we shake our Calliope mini, the variable hand will contain a random number between 1 and 3.
 
 ```blocks
 let hand = 0;
@@ -190,35 +189,35 @@ input.onGesture(Gesture.Shake, function() {
 
 ## {Step 13}
 
-Let's test your code! Press the white **SHAKE** button on the micro:bit on-screen simulator, or move your cursor quickly back and forth over the simulator. Do you see the icons for rock, paper and scissors randomly appear?  ⭐ Great job! ⭐
+Let's test your code! Press the white **SHAKE** button on the Calliope mini on-screen simulator, or move your cursor quickly back and forth over the simulator. Do you see the icons for rock, paper and scissors randomly appear?  ⭐ Great job! ⭐
 
-![Shaking a @boardname@ simulator](/static/mb/projects/rock-paper-scissors/rpssim3.gif)
 
 ## {Step 14}
 
-If you have a @boardname@ device, connect it to your computer and click the ``|Download|`` button. Follow the instructions to transfer your code onto the @boardname@. Once your code has been downloaded, attach your micro:bit to a battery pack and challenge another micro:bit or a human to a game of Rock, Paper, Scissors!
+If you have a @boardname@ device, connect it to your computer and click the ``|Download|`` button. Follow the instructions to transfer your code onto the @boardname@. Once your code has been downloaded, attach your Calliope mini to a battery pack and challenge another Calliope mini or a human to a game of Rock, Paper, Scissors!
 
-![A @boardname@ in a hand](/static/mb/projects/rock-paper-scissors/hand.jpg)
 
 ## {Step 15}
 
-Go further - Try adding 🎵 Music 🎵 blocks to your Rock Paper Scissors game for different sound effects. Note that some Music blocks may require a micro:bit v2 device to play.
+Go further - Try adding 🎵 Music 🎵 blocks to your Rock Paper Scissors game for different sound effects. Note that some Music blocks may require a Calliope mini 3 device to play.
 
 ```blocks
+
 let hand = 0
 input.onGesture(Gesture.Shake, function () {
     hand = randint(1, 3)
     if (hand == 1) {
         basic.showIcon(IconNames.SmallSquare)
-        music.play(music.builtinPlayableSoundEffect(soundExpression.giggle), music.PlaybackMode.UntilDone)
+        music.playTone(131, music.beat(BeatFraction.Whole))
     } else if (hand == 2) {
         basic.showIcon(IconNames.Square)
-        music.play(music.tonePlayable(262, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+        music.playTone(392, music.beat(BeatFraction.Double))
     } else {
         basic.showIcon(IconNames.Scissors)
-        music.play(music.createSoundExpression(WaveShape.Square, 1600, 1, 255, 0, 300, SoundExpressionEffect.None, InterpolationCurve.Curve), music.PlaybackMode.UntilDone)
+        music.playTone(784, music.beat(BeatFraction.Whole))
     }
 })
+
 ```
 
 ```blockconfig.global
@@ -228,3 +227,5 @@ randint(1, 3)
 ```template
 input.onGesture(Gesture.Shake, function() {})
 ```
+
+

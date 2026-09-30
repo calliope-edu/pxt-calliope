@@ -1,22 +1,22 @@
 # Flashing Heart
 
-## Code a Flashing Heart @unplugged
+## Introduction @unplugged
 
-Code the lights on the micro:bit into a flashing heart animation! 💖
+Learn how to use the LEDs and make a flashing heart! 
+(Want to learn how lights work? [Watch this video](https://youtu.be/qqBmvHD5bCw)).
 
-![Heart shape in the LEDs](/static/mb/projects/flashing-heart/sim.gif)
 
-## {Step 1 @fullscreen}
+![Heart shape in the LEDs](/static/calliope/tutorials/01_flashing_heart_animation.gif)
 
-Click on the ``||basic:Basic||`` category in the Toolbox. 
-Drag the ``||basic:show leds||`` block into the ``||basic:forever||`` block. 
-Then in the ``||basic:show leds||`` block, click on the squares to draw a heart design.
+## Step 1 @fullscreen
 
-![An animation that shows how to drag a block and paint a heart](/static/mb/projects/flashing-heart/showleds.gif)
+Place the ``||basic:show leds||`` block in the ``||basic:forever||`` block and draw a heart.
 
-## {Step 2}
+![An animation that shows how to drag a block and paint a heart](/static/calliope/tutorials/add_show_led.gif)
 
-Drag another ``||basic:show leds||`` block underneath the first.
+## Step 2 @fullscreen
+
+Place another ``||basic:show leds||`` block. You can leave it blank and draw what you want.
 
 ```blocks
 basic.forever(function() {
@@ -35,17 +35,15 @@ basic.forever(function() {
 })
 ```
 
-## {Step 3}
+## Step 3 @fullscreen
 
-Look at the @boardname@ on the screen. Do you see a flashing heart animation? ⭐ Great job! ⭐ 
+Look at the virtual @boardname@, you should see the heart and your drawing blink on the screen.
 
-## {Step 4}
+![Heart shape in the LEDs](/static/calliope/tutorials/01_flashing_heart_animation.gif)
 
-If you have a @boardname@ device, connect it to your computer and click the ``|Download|`` button. Follow the instructions to transfer your code onto the @boardname@ and watch the hearts flash! 
+## Step 4 @fullscreen
 
-## {Step 5}
-
-Go further - try adding more ``||basic:show leds||`` blocks to create a longer animation! Learn more about how the @boardname@ lights work by watching [this video](https://youtu.be/qqBmvHD5bCw).
+If you have a @boardname@ connected, click ``|Download|`` to transfer your code and watch the hearts flash!
 
 ```template
 basic.forever(function() {})

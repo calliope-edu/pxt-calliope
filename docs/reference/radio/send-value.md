@@ -29,7 +29,7 @@ or model rocket.
 
 ```blocks
 radio.setGroup(99)
-input.onButtonPressed(Button.A, () => {
+input.onButtonEvent(Button.A, input.buttonEventClick(), () => {
     radio.sendValue("acc", input.acceleration(Dimension.X))
 })
 ```
@@ -50,5 +50,5 @@ radio.onReceivedValue(function (name, value) {
 [on received value](/reference/radio/on-received-value)
 
 ```package
-radio
+funk
 ```
