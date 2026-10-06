@@ -277,7 +277,7 @@
   "basic.showArrow|param|interval": "the amount of time (milliseconds) to show the icon. Default is 600.",
   "basic.showIcon": "Draws the selected icon on the LED screen",
   "basic.showIcon|param|icon": "the predefined icon id",
-  "basic.showIcon|param|interval": "the amount of time (milliseconds) to show the icon. Default is 600.",
+  "basic.showIcon|param|interval": "the amount of time (milliseconds) to block the LED Matrix for showing the icon. Default is 600.",
   "basic.showLeds": "Draws an image on the LED screen.",
   "basic.showLeds|param|interval": "time in milliseconds to pause after drawing.",
   "basic.showLeds|param|leds": "the pattern of LED to turn on/off.",
