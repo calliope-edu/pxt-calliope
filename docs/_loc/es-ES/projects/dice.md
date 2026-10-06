@@ -1,0 +1,61 @@
+# Dado
+
+## Introduction @unplugged
+
+Let's turn the @boardname@ into a dice! (Want to learn how the accelerometer works? [Ver el video](https://youtu.be/byngcwjO51U)).
+
+![A mini dice](https://cdn.makecode.com/blob/755f42a2ce868380446c926f957b1f1a9e53b7e3/static/calliope/tutorials/04_dice_animation.gif)
+
+## Step 1 @fullscreen
+
+We need 3 pieces of code: one to detect a throw (shake), another to pick a random number, and then one to show the number.
+
+Use the `||input:on shake||` block you see in the editor workspace. It runs code when you shake the @boardname@.
+
+```blocks
+input.onGesture(Gesture.Shake, function() {
+
+})
+```
+
+## Step 2 @fullscreen
+
+Get a `||basic:show number||` block and place it inside the `||input:on shake||` block to display a number.
+
+```blocks
+input.onGesture(Gesture.Shake, function() {
+    basic.showNumber(0)
+})
+```
+
+## Step 3 @fullscreen
+
+Put a `||Math:pick random||` block in the `||basic:show number||` block to pick a random number.
+
+```blocks
+input.onGesture(Gesture.Shake, function() {
+    basic.showNumber(randint(0, 10))
+})
+```
+
+## Step 4 @fullscreen
+
+A typical dice shows values from `1` to `6`. So, in `||Math:pick random||`, don't forget to choose the right minimum and maximum values!
+
+```blocks
+input.onGesture(Gesture.Shake, function() {
+    basic.showNumber(randint(1, 6))
+})
+```
+
+## Paso 5
+
+Use the simulator to try out your code. Does it show the number you expected?
+
+## Paso 6
+
+If you have a @boardname@ connected, click `|Download|` and transfer your code to the @boardname@!
+
+```template
+input.onGesture(Gesture.Shake, function() {})
+```

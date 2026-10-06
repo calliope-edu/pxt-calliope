@@ -1329,3 +1329,793 @@ npx pxt buildtarget --local
 (The `error TS6053: File 'node_modules/pxt-core/built/lib.*.d.ts' not found` lines are
 unrelated noise — those files have never existed in this install and the build succeeds
 regardless.)
+
+### 2026-09-30 — start-page banners missing in the static package
+
+The hero banner and its cards rendered without images in `built/packaged`.
+
+Cause: `staticpkg` never copies `docs/static/` to the package root, but the start page asks
+for those files at **`/static/...`**:
+
+- `appTheme.homeScreenHero.imageUrl` = `./static/calliope/hero/hero.jpg`
+- `appTheme.homeScreenHeroGallery` = `/hero-banner`, whose cards in `docs/hero-banner.md`
+  use `imageUrl: /static/calliope/hero/02_Hero_CalliopEO.png` etc.
+
+In the package the files existed only under `built/packaged/docs/static/...`; there was no
+`/static` directory at all, so every banner image 404'd.
+
+On the live site that path is not a file either — it is a redirect to the CDN blob store:
+
+```
+GET https://makecode.calliope.cc/static/calliope/hero/hero.jpg
+-> 302 https://cdn.makecode.com/blob/bae8d433…//static/calliope/hero/hero.jpg
+```
+
+A locally served static package has no CDN behind it, so the files have to be present at
+that path. `targetFileList()` (pxt-core `cli.js`) only packages `built/**` plus
+`sim/public/**`, which is why `docs/static` is left out.
+
+Fix: `scripts/fetch-locs.sh` now copies `docs/static/.` into `$OUT_DIR/static/` after
+`staticpkg` finishes. Audited all 14 `/static/` references in `appTheme` afterwards —
+**0 missing** (hero image, banner cards, the `download/*` walkthrough images, logos,
+touch icons).
+
+Also added `sim/public/locales/` to `.gitignore`: `staticpkg --locs-src` regenerates it into
+the tracked `sim/public/` tree on every run, so deleting it by hand does not stick.
+
+### 2026-09-30 — GameKit (display-shield) simulator extension under local serve
+
+The extension is `~/fw/GameKit/display-shield`. Its simulator is **not** bundled in the
+extension (`pxt.json` has no `simFiles`); it is a separate Vite app in `simx/`
+(`@display-shield/simx`, `server.port: 3000`, `base: "./"`). It talks to the program over the
+control channel `calliope-edu/gamekit` (`shieldhelpers.ts:58`:
+`control.simmessages.send("calliope-edu/gamekit", …)`).
+
+The target already registers it correctly — `targetconfig.json`
+`packages.approvedRepoLib`:
+
+```json
+"calliope-edu/gamekit": {
+  "tags": ["Display"],
+  "simx": { "sha": "ce55a0ed…", "devUrl": "http://localhost:3000" },
+  "preferred": true
+}
+```
+
+So nothing is missing from this repo's config. The reason it does not load is **how pxt
+picks the simx URL** (pxt-core `built/web/pxtapp.js`):
+
+```js
+const useDev = U.isLocalHost() && /[?&]simxdev(?:[=&#]|$)/i.test(window.location.href);
+if (useDev && ext.devUrl) ext.url = new URL(ext.index, ext.devUrl).toString();
+else                      ext.url = new URL(["simx", repo, "-", ext.index].join("/"), simUrl.origin);
+```
+
+Two independent requirements:
+
+1. `devUrl` is used **only** with `?simxdev` in the URL **and** `isLocalHost()` true. The flag
+   alone is not enough — on `calliope.test:3232` `isLocalHost()` is false, so `devUrl` is
+   ignored even with `?simxdev`.
+2. Without that, pxt falls back to `<simUrl.origin>/simx/calliope-edu/gamekit/-/<index>`,
+   which only resolves if the built simx app is served at that path. The dev server has no
+   `/simx/` tree and `staticpkg` does not create one, so it 404s — which is why it fails in
+   the packaged build *and* in pxt-microbit's local serve (same code path, same gap).
+
+`simx/node_modules` is not installed, so the dev server cannot start as-is.
+
+**Route A — `pxt serve`, simx dev server (live reload):**
+
+```
+cd ~/fw/GameKit/display-shield/simx && npm install && npm run dev   # serves :3000
+# separate shell:
+npx pxt serve --hostname localhost --no-browser
+# open http://localhost:3232/?simxdev
+```
+
+`localhost` is required here (not `calliope.test`), which conflicts with the docs workaround —
+docs and the GameKit simulator cannot both work under `pxt serve`.
+
+**Route B — static package (works with docs too):**
+
+```
+cd ~/fw/GameKit/display-shield/simx && npm install && npm run build   # -> simx/dist
+mkdir -p built/packaged/simx/calliope-edu/gamekit/-
+cp -r ~/fw/GameKit/display-shield/simx/dist/. built/packaged/simx/calliope-edu/gamekit/-/
+```
+
+The Vite config uses `base: "./"`, so the build is relocatable and can be dropped at that
+path. No `?simxdev` needed — this is the non-dev branch pxt already takes. Untested here
+because `npm install` was not run; verify the exact `<index>` filename from the built
+manifest before finalising the path.
+
+### 2026-09-30 — GameKit simx working in the static package (route B)
+
+The 404 confirmed the predicted path exactly:
+
+```
+GET /simx/calliope-edu/gamekit/-/index.html?language=de -> 404
+```
+
+`simx/dist` was already built (`index.html` + `assets/`); only the copy into the package was
+missing. Installing it there fixes the simulator:
+
+```
+mkdir -p built/packaged/simx/calliope-edu/gamekit/-
+cp -r ~/fw/GameKit/display-shield/simx/dist/. built/packaged/simx/calliope-edu/gamekit/-/
+```
+
+Verified the built app's asset references resolve from that nested location — Vite's
+`base: "./"` emits `./assets/index-*.js` / `.css`, both present. No `?simxdev` needed: this
+is the non-dev branch pxt takes by default.
+
+`scripts/fetch-locs.sh` now automates it via a `SIMX` variable:
+
+```
+SIMX="calliope-edu/gamekit=$HOME/fw/GameKit/display-shield/simx/dist" scripts/fetch-locs.sh
+```
+
+Space-separated `<repo>=<dist>` entries; warns if a dist dir is missing.
+
+**Also fixed: `@cdnUrl@` placeholders.** The log showed
+
+```
+GET /@cdnUrl@/blob/a8677b6c…/static/icons/apple-touch-icon.png -> 404
+```
+
+`staticpkg` leaves the `@cdnUrl@/blob/<sha>/` template placeholder in the generated HTML
+(6 refs each in `index.html` and `teachertool.html`). The JS runtime handles this itself —
+`BrowserUtils.patchCdn` replaces `@cdnUrl@/(blob|commit)/<sha>/` with `./` when there is no
+online CDN — but the static HTML is never passed through it. The script now rewrites those
+to plain local paths **in `*.html` only**; the occurrences in `pxtlib.js` / `pxtapp.js` /
+`serviceworker.js` are the handler itself and must not be touched.
+
+The referenced file (`static/icons/apple-touch-icon.png`) is present at the package root
+thanks to the earlier `docs/static` copy, so the rewrite resolves.
+
+### 2026-09-30 — the roboto-mono 404s are a real repo bug (correction)
+
+I had twice dismissed these as "pre-existing pxt-core noise". That was wrong on the cause,
+though right that it predates this work.
+
+`theme/fonts.less` self-hosts Roboto Mono and references **12 subset files**:
+
+```
+/static/fonts/roboto-mono/{latin,latin-ext,cyrillic,cyrillic-ext,greek,vietnamese}-{400,500}-normal.woff2
+```
+
+Its own header comment says *"Files live in docs/static/fonts/roboto-mono/"* — but that
+directory **does not exist**. `docs/static/fonts/` contains only:
+
+```
+RobotoMono-Italic-VariableFont_wght.ttf
+RobotoMono-VariableFont_wght.ttf
+roboto-mono-v30-latin-ext-regular.woff2      <- different naming scheme
+```
+
+Confirmed absent on **both** `HEAD` and `master`, so the `docs/` replacement did not cause
+it: the `.less` was committed referencing files that were never committed alongside it.
+
+Impact is not only console noise. In the built `semantic.css` the family is declared in 12
+`@font-face` blocks and **applied in 32 other rules**, so every one of those falls back to a
+generic monospace. The fix is to add the 12 woff2 subsets to
+`docs/static/fonts/roboto-mono/` (fontsource roboto-mono, per the file's own provenance
+comment), or to rewrite `theme/fonts.less` to use the one `roboto-mono-v30-latin-ext-regular.woff2`
+that is actually present.
+
+Not fixed here: it needs the font binaries, which should be sourced deliberately rather than
+guessed at.
+
+### Note on manual edits to `built/packaged`
+
+The simx install and the `@cdnUrl@` rewrite were applied **directly to the existing
+`built/packaged`** so the running server picks them up without a full rebuild, *and* added to
+`scripts/fetch-locs.sh` so a rebuild reproduces them. `built/` is gitignored, so these
+in-place edits never reach a commit — but they are not reproducible from a clean tree except
+through the script.
+
+### 2026-09-30 — roboto-mono subsets generated (`scripts/build-fonts.sh`)
+
+Fixed the font 404s by generating the 12 woff2 subsets `theme/fonts.less` already declares,
+rather than rewriting the CSS.
+
+**The source TTFs already contain every script.** Checking the cmap of
+`RobotoMono-Regular.ttf` (the user had added the TTFs under `static/fonts/roboto-mono/`):
+
+```
+latin 195/256   cyrillic 96/96   cyrillic-ext 179/208   greek 75/144   vietnamese 90/90
+```
+
+The 12 "language" files are not different fonts — they are that one font sliced by
+`unicode-range` so a browser fetches only the scripts a page renders. Nothing needed
+downloading.
+
+`scripts/build-fonts.sh` parses `theme/fonts.less`, and for each `@font-face` takes its
+`font-weight` (400 -> `RobotoMono-Regular.ttf`, 500 -> `RobotoMono-Medium.ttf`), its target
+filename, and **its `unicode-range` verbatim**, then runs `pyftsubset --flavor=woff2`.
+Reading the ranges out of the CSS rather than hard-coding them means the files cannot drift
+from the rules that declare them.
+
+Result: 12 files, **91 KB total**, into `docs/static/fonts/roboto-mono/`. Verified with
+fontTools that each is `flavor=woff2` with a sane glyph count (latin 242, cyrillic-ext 179,
+vietnamese 108, …), that all 12 names match the CSS exactly, and that there are no strays.
+
+Path note: the files go in **`docs/static/`**, not the repo-root `static/` where the source
+TTFs live — a served build maps `/static/...` to `docs/static/...`, which is why files in
+`static/fonts/roboto-mono/` were never served. `scripts/fetch-locs.sh` already copies all of
+`docs/static/`, so a rebuild picks them up with no further change.
+
+Practical effect: a latin-only (German/English) user now downloads ~25 KB of font instead of
+404ing and falling back to a generic monospace; the Cyrillic/Greek/Vietnamese subsets are
+only fetched if a page actually renders those scripts.
+
+The generated files are **not gitignored**, so committing `docs/static/fonts/roboto-mono/`
+fixes this for every checkout. Requires fontTools + brotli only when regenerating
+(`FONT_VENV` defaults to `~/VENV`).
+
+### 2026-09-30 — simx lost on rebuild; simx step now auto-detects
+
+The GameKit simulator disappeared from `built/packaged` after a rebuild. Cause: `staticpkg`
+starts with `rimraf($OUT_DIR)`, so **anything copied into the package by hand is destroyed on
+the next build**.
+
+The fonts, the `docs/static` copy and the `@cdnUrl@` rewrite all survived, which confirmed
+the rebuild went through `scripts/fetch-locs.sh` — those are its steps. Only simx was
+missing, because that step was gated on an opt-in variable:
+
+```sh
+if [ -n "${SIMX:-}" ] && [ -d "$OUT_DIR" ]; then
+```
+
+A plain `scripts/fetch-locs.sh` never sets `SIMX`, so the step silently skipped. That was a
+bad default: the one post-build fix that needed remembering a variable was also the one that
+vanished.
+
+Now it auto-detects, and says so either way:
+
+```sh
+if [ -z "${SIMX:-}" ]; then
+    GAMEKIT_DIST="${GAMEKIT_DIST:-$HOME/fw/GameKit/display-shield/simx/dist}"
+    if [ -d "$GAMEKIT_DIST" ]; then
+        SIMX="calliope-edu/gamekit=$GAMEKIT_DIST"
+        echo "==> auto-detected simx: calliope-edu/gamekit"
+    else
+        echo "==> no simx found at $GAMEKIT_DIST (build it with: cd <simx> && npm run build)"
+    fi
+fi
+```
+
+`SIMX` still overrides it, and `GAMEKIT_DIST` relocates the default.
+
+**Checklist — everything that must be re-applied after `staticpkg`** (all now automated in
+`scripts/fetch-locs.sh`; worth verifying after any rebuild):
+
+| item | why |
+|---|---|
+| `docs/static` -> `$OUT/static` | banner + theme images (`/static/...` is CDN-served live) |
+| roboto-mono woff2 x12 | inside `docs/static`, so carried by the copy above |
+| `@cdnUrl@` rewrite in `*.html` | staticpkg leaves the template placeholder unresolved |
+| simx -> `$OUT/simx/<repo>/-/` | staticpkg neither builds nor copies simulator extensions |
+| `locales/<lang>` | from `--locs-src`, handled by staticpkg itself |
+
+## 2026-10-05 — localizing tutorials: how pxt actually does it
+
+Question: what is the best way to ship tutorials/docs in several languages?
+
+### How pxt resolves a localized doc
+
+**There is no on-disk convention for translated docs.** Not `tutorials.de.md`, not
+`docs/de/tutorials.md` — pxt never looks for either.
+
+`pxt serve` (`node_modules/pxt-core/built/server.js`, `readMdAsync`):
+
+```js
+function readMdAsync(pathname, lang) {
+    if (!lang || lang == "en") {
+        return nodeutil.resolveMd(root, pathname);   // from disk
+    } else {
+        return pxt.Cloud.markdownAsync(mdpath, lang); // from the cloud, never disk
+    }
+}
+```
+
+Static build (`pxtapp.js`, `markdownAsync`, `isStatic` branch):
+
+```js
+h = `docs/${path}.md`;          // plain file path
+if (lang != "en") p.set("lang", lang);   // appended as a QUERY PARAM only
+```
+
+A static file server ignores `?lang=de` and returns the one file on disk. That is exactly why
+the packaged build shows English tutorials with the editor set to German.
+
+The live site works because the cloud serves real translations:
+
+```
+makecode.calliope.cc/api/md/calliopemini/calliope/tutorials?lang=en -> "# Projects ..."
+...?lang=de                                                         -> "# Projekte ..."
+```
+
+### The supported pipeline
+
+`pxtarget.json` has `"uploadDocs": true` and `"crowdinProject": "makecode"`. On a CI build of
+`master` (or a `vX.Y.Z` tag), pxt uploads `docs/**.md` to Crowdin; translators work there; the
+cloud `/api/md/...?lang=xx` endpoint then serves the translated markdown. Authors keep **one
+English copy per page** in `docs/` and never hand-maintain translated files.
+
+So: the "best way" is to write tutorials in English in `docs/`, and let the Crowdin pipeline
+produce the other languages. That requires the target's docs to be wired into the Crowdin
+project and published — which is the same prerequisite as the earlier finding that
+`makecode.com` 404s `calliopemini/calliope/*` because those docs are not published yet.
+
+### If translations are needed before/without that pipeline
+
+Options, in rough order of fidelity:
+
+1. **Separate pages + localized gallery entries.** Write `docs/calliope/tutorials.md` and
+   `docs/calliope/tutorials-de.md`, and point a second gallery at the German one. Crude but
+   needs no infrastructure; the language toggle will not switch them, so it is really "a
+   German section", not a localized page.
+2. **Per-language static packages.** Build `built/packaged-de` with `docs/` swapped for a
+   German tree before `staticpkg`. Clean separation, one deploy per language, no editor
+   language switching between them.
+3. **Serve `/api/md/` yourself.** Put a small server in front of the static package that
+   honours `?lang=` and serves `docs/<lang>/<page>.md` when present, falling back to English.
+   This is the only option that makes the editor's own language switcher work offline, and
+   it reimplements what the cloud endpoint does.
+
+Not recommended: patching `readMdAsync`/`markdownAsync` in `node_modules/pxt-core` — it is
+regenerated on install and the change would be invisible to anyone else.
+
+### 2026-10-05 — cost of per-language static packages
+
+Measured on the current `built/packaged` (136 MB by `du -sb`; ~143 MB as `du -h` rounds):
+
+```
+  total package          136.3 MB
+    docs/                 54.0 MB
+      docs/static (imgs)  24.7 MB   <- identical per language
+      docs md+html        29.3 MB   <- the only part that translates
+    everything else       82.3 MB   <- identical per language (engine, vs, fonts,
+                                       sounds, hexcache, target.json, root static)
+```
+
+**A full second copy costs +136 MB. But the content that actually differs is far smaller:**
+
+| scope per extra language | added |
+|---|---|
+| everything, md + html | +28.9 MB |
+| everything, **md only** | **+1.1 MB** |
+| `calliope/` only, md + html | +1.5 MB |
+| `calliope/` only, md only | +0.1 MB |
+
+Two facts drive this:
+
+1. **Markdown is tiny; the HTML is the bulk.** 586 `.md` files total 1.1 MB, while 588
+   `.html` total 27.9 MB — each `.html` is a full standalone page (~49 KB of chrome around
+   ~1.8 KB of content, e.g. `tutorials.html` 49,281 B vs `tutorials.md` 1,794 B).
+2. **The editor fetches `.md`, not `.html`.** In the static branch of `markdownAsync` the
+   path is `docs/<page>.md`. The per-page `.html` files only matter for browsing docs
+   directly (`/docs/calliope/tutorials`). If the standalone deliverable is "the editor",
+   the `.html` set does not need duplicating per language.
+
+**Recommended shape:** one shared package plus a per-language `docs/**.md` overlay, rather
+than N full copies. Two languages then cost ~137 MB total instead of ~272 MB. If each
+language must be a wholly self-contained download, the +136 MB per language is unavoidable —
+but most of that is identical bytes, so a shared base is worth the small amount of serving
+logic.
+
+Caveat: this assumes translating only the markdown. Any translated *screenshots* land in
+`docs/static` and would add to the per-language cost; today that is 24.7 MB of shared images.
+
+### 2026-10-05 — multi-language docs in ONE static package (`scripts/package_static_multilang.sh`)
+
+Earlier I concluded there was no way to get a working language selector from a single
+static package. **That was wrong** — I had checked the fetch path, the translation DB, live
+localization and staticpkg's packaging, but not the client-side interception layer.
+
+Key detail that makes it easy: pxt issues doc requests through **XMLHttpRequest**, not
+`fetch` (`Util.httpRequestCoreAsync` builds an XHR). So a ~20-line shim wrapping
+`XMLHttpRequest.prototype.open` can redirect them, with no service worker and no server.
+
+Design:
+
+- Translations live at `docs/_loc/<lang>/<page>.md`, mirroring `docs/`.
+- The script copies them to `$OUT/docs/_loc/<lang>/`, generates `docs-lang-shim.js`
+  containing a **manifest of translated pages**, and injects it into every `*.html` in the
+  package (first thing in `<head>`, before pxt can issue a request).
+- The shim rewrites `/docs/<page>.md?lang=xx` -> `/docs/_loc/xx/<page>.md` **only when the
+  manifest says that page exists**, so untranslated pages transparently serve English.
+
+Rejected alternatives and why:
+- *Service worker*: pxt already registers one at root scope (it also drives WebUSB), only
+  one worker can control a scope, it is regenerated by every `staticpkg`, and service
+  workers need a secure context — a plain-HTTP host or `file://` would silently fall back
+  to English.
+- *`?lang=`-aware server*: works, but defeats the point of a package any static host can
+  serve.
+- *Patching `pxtapp.js`*: regenerated on every build, invisible to others.
+
+Verified by executing the generated shim under node against a stubbed XHR — all seven cases
+correct:
+
+```
+REWRITE  /docs/calliope/tutorials.md?lang=de -> /docs/_loc/de/calliope/tutorials.md?lang=de
+as-is    no lang  |  lang=en  |  lang=fr (not in manifest)
+as-is    de but page not translated  (-> English fallback)
+as-is    already /docs/_loc/...      (no double rewrite)
+as-is    non-docs URL
+```
+
+and end-to-end over `python3 -m http.server`: `/docs/_loc/de/calliope/tutorials.md` 200 and
+serving `# Projekte ...`, English original still 200, shim 200.
+
+A sample `docs/_loc/de/calliope/tutorials.md` was left in the tree as a working example;
+`rm -rf docs/_loc` to drop it.
+
+Size: only the translated **markdown** is duplicated (~1.1 MB for a full doc set, ~0.1 MB
+for `calliope/` alone), against a 136 MB package — versus +136 MB for a second full package.
+
+Caveat: `package_static_fetch_locs.sh` begins with a rimraf of `$OUT_DIR`, so this script
+must be re-run after every package rebuild.
+
+### 2026-10-05 — downloading real doc translations (`scripts/fetch-doc-translations.sh`)
+
+The hand-written sample proved the shim works; real translations come from the live site,
+which already serves the published Crowdin output per language:
+
+```
+https://makecode.calliope.cc/api/md/calliopemini/<page>?lang=de
+```
+
+Verified genuinely translated (not just HTTP 200 with English):
+
+```
+calliope/arbeitsheft            en "# Projects"          de "# Projekte"
+reference/input/on-button-event en "# On Button Event"   de "# Tasten Ereignisse"
+```
+
+**No credential needed** — a plain public GET, unlike `pxt staticpkg --locs`, which needs a
+manager-level `CROWDIN_KEY` against Microsoft's project (see the earlier entry). This is the
+practical way around that blocker.
+
+Two gotchas baked into the script:
+
+1. **Do not send `targetVersion`.** The live site runs an older target, so
+   `?targetVersion=9.1.1` 404s while the bare path returns 200.
+2. **A missing page is not an HTTP error.** The endpoint answers with markdown
+   `# Not found ...`, so the script matches that string rather than relying on the status
+   code.
+
+It also **skips pages whose German is byte-identical to the English**, i.e. not yet
+translated upstream. That matters: `docs/_loc` must contain only genuinely translated pages,
+because `package_static_multilang.sh` builds the shim's manifest from it and anything listed
+there stops falling back to English.
+
+Usage:
+
+```
+scripts/fetch-doc-translations.sh de              # every page under docs/
+PAGES="calliope/tutorials" scripts/fetch-doc-translations.sh de
+LIMIT=20 scripts/fetch-doc-translations.sh de
+scripts/package_static_multilang.sh de            # then install into the package
+```
+
+Smoke-tested on the 4 gallery pages: 4 translated, 0 skipped, 0 unavailable — and the
+downloaded `calliope/tutorials.md` has all 7 cards in German ("Blinkendes Herz",
+"Namensschild", "Smiley Knöpfe", "Würfel"), replacing the hand-written stub which had only
+the first.
+
+#### Result of the full German sweep
+
+```
+==> de: 367 translated, 13 untranslated (skipped), 1 unavailable
+```
+
+367 pages, **1.8 MB** on disk — tutorials, the whole Arbeitsheft, and the `reference/`
+help tree. Installed into the package; shim manifest lists all 367, 18 `*.html` carry the
+`<script>` tag, 367 `.md` present under `docs/_loc/de/`.
+
+The 13 skipped are byte-identical to English upstream (not yet translated); they keep
+serving English, which is the intended fallback. The 1 unavailable is a page that exists
+locally but not on the live site.
+
+Re-running `package_static_multilang.sh` reported *"shim injected into 0 page(s)"* — correct,
+not a failure: the tag was added on the first run and the injector skips files that already
+have it. The shim JS and manifest are still regenerated every run.
+
+Spot-checked the regenerated shim under node:
+
+```
+REWRITE  /docs/calliope/tutorials.md?lang=de            -> /docs/_loc/de/...
+REWRITE  /docs/calliope/arbeitsheft.md?lang=de          -> /docs/_loc/de/...
+REWRITE  /docs/reference/input/on-button-event.md?lang=de -> /docs/_loc/de/...
+as-is    /docs/calliope/tutorials.md?lang=en
+```
+
+Size check against the earlier estimate: the predicted "+1.1 MB for a full md-only doc set"
+came out at 1.8 MB for 367 pages — same order, slightly higher because the translated
+markdown is a little longer than the English.
+
+### 2026-10-05 — stale German docs after installing translations: IndexedDB cache
+
+Symptom after `fetch-doc-translations.sh de` + `package_static_multilang.sh de`: some cards
+translated, neighbouring cards in the same row not, help still English.
+
+The files are correct — the packaged `docs/_loc/de/calliope/tutorials.md` has **all seven**
+cards in German ("Blinkendes Herz", "Namensschild", "Smiley Knöpfe", "Würfel",
+"Liebesmesser", "Schere, Stein, Papier", "Münzwurf"). So this is not a fetch or shim
+problem.
+
+Cause: `markdownAsync` consults an **IndexedDB cache before any request**, keyed by
+`(lang, path)`:
+
+```js
+const r = isLocalHostDev() ? 0 : 3600_000;  // 1 hour
+const l = 24 * r * 7;                        // 7 days
+const h = await translationDb.getAsync(lang, path);
+...
+if (h) {
+    const age = Date.now() - h.time;
+    if (age > l)      tick("markdown.update.wait");
+    else if (age > r) { tick("markdown.update.background"); refetch(); }  // background only
+    if (h.md) return h.md;        // <- returns the STALE copy immediately
+}
+```
+
+On a cache hit it returns the cached markdown **immediately** and only refetches in the
+background, so the new content appears on a *later* load, not the current one. A hard reload
+does not help: IndexedDB is not part of the HTTP cache.
+
+That also explains the "mixed row": pages visited while the earlier one-card stub was
+installed were cached per page, so each card's gallery entry reflects whatever was current
+when that page was first fetched.
+
+Fix — clear the DB and reload:
+
+```js
+indexedDB.deleteDatabase("__pxt_translations_calliopemini")
+```
+
+(DevTools → Application → IndexedDB shows it as `__pxt_translations_<targetid>`; pxt also
+exposes `pxt.BrowserUtils.clearTranslationDbAsync()`.) A private window works too, since it
+starts with an empty DB.
+
+Note `isLocalHostDev()` sets the TTL to 0 — but that requires `localhost` *and* no
+`nolocalhost=1`, so a package served on `localhost:8080` is already in the zero-TTL case,
+while any other hostname gets the 1 hour / 7 day windows.
+
+### 2026-10-05 — language validation + multi-language runs
+
+Two improvements to `scripts/fetch-doc-translations.sh`.
+
+**1. It did not validate the language.** A typo such as `fr-FR` (instead of `fr`) would walk
+all 586 pages, translate nothing, and only reveal itself ~20 minutes later. Now two cheap
+checks run first:
+
+- the code must appear in `appTheme.availableLocales` (`pxtarget.json`);
+- a probe page (`calliope/tutorials` by default) must come back *different from English*,
+  proving the language actually has translations upstream.
+
+Bad codes are reported and skipped; if nothing is usable the script exits immediately.
+Verified: `fr-FR` and `xx` are rejected in seconds, while `fr el` proceed.
+
+**2. Several languages in one run; the English copy is now cached.** `LANGS` was always a
+list, so `scripts/fetch-doc-translations.sh fr el it es-ES uk` works — no need to run it
+five times. But the "is this page actually translated?" test compares against the English
+copy, which was being re-downloaded for every language. English copies are now cached in
+`built/.doc-en-cache/` and reused:
+
+```
+5 languages x 586 pages:  ~5,860 requests before
+                          ~3,516 after (2,344 redundant EN fetches saved)
+```
+
+Delete `built/.doc-en-cache` to force a refresh.
+
+All five requested languages have real translations upstream (probe on
+`calliope/tutorials`):
+
+```
+fr     # Projets        el     # Έργα          it     # Progetti
+es-ES  # Proyectos      uk     # Проєкти       de     # Projekte
+```
+
+Note the exact locale codes matter: `es-ES` not `es`, `uk` not `ua`. The validator catches
+these.
+
+### 2026-10-05 — `scripts/list-extensions.sh`: approved extensions as CSV
+
+Lists the online extensions as `;`-separated CSV, sorted by tag, tag in column 2.
+
+Source is `targetconfig.json` -> `packages.approvedRepoLib` (261 entries) — the same map
+the editor's Extensions dialog offers, so it is "currently online" for this target.
+
+Three judgement calls, each switchable:
+
+- **Multi-tag extensions get one row per tag.** Six entries carry several tags (e.g.
+  `calliope-edu/lofirobot` = AI, Motor, IoT). One row per tag keeps each tag section
+  complete and lets the file be grouped on column 2. `JOIN_TAGS=1` gives one row per
+  extension with tags joined by `|`.
+- **Untagged extensions are included with an empty tag and sort last** (146 of 257 visible
+  entries have no tag, so dropping them silently would hide more than half the list).
+  `SKIP_UNTAGGED=1` omits them.
+- **Hidden entries are excluded** (4, e.g. the deprecated `microsoft/pxt-jacdac`), since the
+  editor does not show them. `INCLUDE_HIDDEN=1` keeps them.
+
+```
+scripts/list-extensions.sh                 # stdout
+scripts/list-extensions.sh out.csv         # file (+ a summary line on stderr)
+JOIN_TAGS=1 scripts/list-extensions.sh
+SKIP_UNTAGGED=1 INCLUDE_HIDDEN=1 scripts/list-extensions.sh
+```
+
+Verified: 118 tag-rows + 146 untagged = 264 rows, matching an independent count of the
+config; output re-parses as 2-column CSV with `;`; multi-tag, untagged-last and
+hidden-excluded all behave as intended. Written with `csv.writer` so a value containing a
+semicolon would be quoted rather than silently breaking the columns.
+
+#### Correction: Recommended, multi-tag display, and bundled extensions
+
+The first version of `list-extensions.sh` missed three things.
+
+**1. "Recommended" was dropped.** It is not stored as a tag — `approvedRepoLib` marks those
+entries `"preferred": true`, and pxt-core renders a *Recommended* tab in the same tag-tab
+list as the real tags (`main.js`: `label: lf("Recommended")` alongside the tag entries). 40
+entries carry it. They are now emitted with the tag `Recommended` so the CSV matches the
+dialog. `PREFERRED_TAG=` renames it, `PREFERRED_TAG=-` disables it.
+
+**2. Multi-tag extensions.** These were already one-row-per-tag, which is correct, but with
+`preferred` folded in the effect is now visible:
+
+```
+calliope-edu/lofirobot;AI;online
+calliope-edu/lofirobot;IoT;online
+calliope-edu/lofirobot;Motor;online
+calliope-edu/lofirobot;Recommended;online
+```
+
+`JOIN_TAGS=1` collapses that to `AI|IoT|Motor|Recommended` on one row.
+
+**3. Bundled (internal) extensions were absent.** `datalogger`, `servo`, `bluetooth` and
+friends live in `pxtarget.json` -> `bundleddirs`, not in `approvedRepoLib`, because they
+ship inside the target rather than being fetched from GitHub — but a user can still add them
+from the dialog. 10 are now included, with a third column distinguishing them:
+
+```
+extension;tag;source
+datalogger;;bundled
+```
+
+Excluded from the bundled set: `core` (the target runtime, not a user-addable extension) and
+the ones marked `hidden` in their own `pxt.json` (`bitmap`, `devices`, `fonts`, `settings`,
+`color`). `INCLUDE_HIDDEN=1` keeps the hidden ones; `NO_BUNDLED=1` / `NO_ONLINE=1` restrict
+the source.
+
+Verified against an independent count of both config files:
+
+```
+online: 118 tag-rows + 40 Recommended + 132 untagged = 290
+bundled: 10
+TOTAL = 300    (matches the script's output exactly)
+```
+
+### 2026-10-05 — six languages installed
+
+Full sweep done. Per language, out of 381 candidate pages:
+
+| lang | translated | untranslated (skipped) | unavailable |
+|---|---|---|---|
+| de | 367 | 13 | 1 |
+| fr | 352 | 28 | 1 |
+| it | 346 | 34 | 1 |
+| es-ES | 339 | 41 | 1 |
+| uk | 163 | 217 | 1 |
+| el | 139 | 241 | 1 |
+
+**Coverage is uneven upstream.** de/fr/it/es-ES are ~90% translated; **el and uk are ~40%**,
+with 241 and 217 pages coming back byte-identical to English. Those are correctly skipped,
+so they are absent from the shim manifest and serve English at runtime — Greek and
+Ukrainian users get translated tutorials and partial help, the rest English. Nothing to fix
+on this side; it reflects Crowdin's current state.
+
+Also seen: a page can pass the "differs from English" test while still being largely
+English, e.g. `fr/reference/input/on-button-event.md` keeps its English title and body
+because only some strings differ. Partial translations are upstream data, not a script bug.
+
+Installed into the package: manifest covers **1706 pages across 6 languages**. Verified the
+shim rewrites every one, including the hyphenated regional code, and leaves English alone:
+
+```
+de -> /docs/_loc/de/...      el    -> /docs/_loc/el/...
+fr -> /docs/_loc/fr/...      uk    -> /docs/_loc/uk/...
+it -> /docs/_loc/it/...      es-ES -> /docs/_loc/es-ES/...
+en    as-is
+```
+
+Content confirmed distinct per language in the package: `# Projekte`, `# Projets`, `# Έργα`,
+`# Progetti`, `# Proyectos`, `# Проєкти`.
+
+**Size: 8.4 MB for six languages**, package 136 MB -> 151 MB (the rest of the growth is the
+earlier fonts/simx/static additions). Six separate per-language packages would have cost
+~800 MB.
+
+Reminder: test in a private window, or clear `__pxt_translations_calliopemini` in IndexedDB
+— `markdownAsync` returns the cached copy and only refetches in the background.
+
+### 2026-10-06 — why the translation fetch was slow, and two new scripts
+
+**Scripts used for the six languages** (for the record):
+
+```
+scripts/fetch-doc-translations.sh de
+scripts/fetch-doc-translations.sh fr el it es-ES uk
+scripts/package_static_multilang.sh de fr el it es-ES uk
+```
+
+#### Why it took so long — latency, not size
+
+Each page is ~2 KB, but every `curl` paid a fresh TCP+TLS handshake. Measured against the
+live site:
+
+```
+total=1.08s  connect=0.16s  tls=0.37s  size=2338B
+total=0.74s  connect=0.09s  tls=0.29s
+total=0.49s  connect=0.02s  tls=0.07s
+```
+
+~0.5-1.0 s per request x 2,667 requests (762 for the de run, 1,905 for the five-language
+run) = **22-45 minutes**, moving only 8.4 MB. The payload was never the cost.
+
+Fixed by fetching in parallel (`xargs -P 8`), each worker writing its own file so there is
+no shared state to race on. Measured on 24 URLs:
+
+```
+serial      11.26s   (0.47s each)
+4 parallel   2.65s   (0.11s each)
+8 parallel   1.27s   (0.05s each)   ~9x
+```
+
+Real run: 40 pages in **3.9 s** (was ~40 s), and all 35 resulting files byte-identical to
+the serial run — so the speedup costs nothing in correctness. `PAR=n` tunes it.
+
+#### `scripts/build-simx.sh` — build extension simulators
+
+7 extensions in `approvedRepoLib` declare a `simx`. The script lists them, classifying by
+`devUrl`:
+
+| kind | meaning | entries |
+|---|---|---|
+| `local` | devUrl is localhost -> meant to be built from source | gamekit, pxt-simx-sample, pxt-microbit-ml |
+| `remote` | devUrl is a public https site -> hosted upstream | display-shield, jacdac x2, smarthome |
+
+`--build` clones each buildable repo at the **`sha` pinned in targetconfig.json**, finds the
+app (a `package.json` with a build script, `simx/` first then repo root), runs
+`npm install && npm run build`, and stages `dist/` (or `build/`, `out/`) to
+`built/simx/<repo>/`. `--simx-arg` prints the `SIMX="repo=dist ..."` string that
+`package_static_fetch_locs.sh` consumes. `LOCAL_SRC="repo=path"` uses a local checkout
+instead of cloning; `INCLUDE_REMOTE=1` also attempts the upstream-hosted ones.
+
+Verified end to end on gamekit from the local checkout: built, staged, relative asset paths
+intact (`./assets/...`, so it works from the nested `/simx/<repo>/-/` path).
+
+#### `scripts/build-release.sh` — one entry point
+
+Runs fonts -> simx -> doc translations -> staticpkg -> translated docs + shim, in that
+order, and feeds the staged simulators into the package automatically.
+
+Language selection is the "smarts": it probes **one page per locale in parallel** to find
+which actually have upstream translations, and shows a sample heading for each:
+
+```
+  de       # Projekte
+  el       # Έργα
+  ja       # プロジェクト
+  ...
+```
+
+**All 35 non-English locales have translations** — probed in 2.75 s. Modes: interactive menu
+(numbers or codes), `--all`, `--none`, `--list`. `SKIP_FONTS=1` / `SKIP_SIMX=1` /
+`SKIP_DOCS=1` skip stages.
+
+Ordering matters and is encoded here: `staticpkg` begins with a rimraf of the output, so
+fonts/simx/docs must be prepared *before* it, and the shim installed *after*.

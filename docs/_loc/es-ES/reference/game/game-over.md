@@ -1,0 +1,25 @@
+# Game Over
+
+End the game and show the score.
+
+```sig
+game.gameOver();
+```
+
+## Ejemplo
+
+This program asks you to pick a button. If you press button `A`, the program says `YOU WIN!`. If you press button `B`, it shows an animation and ends the game.
+
+```blocks
+basic.showString("PICK A BUTTON");
+input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+    basic.showString("YOU WIN!");
+});
+input.onButtonEvent(Button.B, input.buttonEventValue(ButtonEvent.Down), () => {
+    game.gameOver();
+});
+```
+
+## Ver también
+
+[score](/reference/game/score), [add score](/reference/game/add-score), [start countdown](/reference/game/start-countdown)

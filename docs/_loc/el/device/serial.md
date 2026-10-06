@@ -1,0 +1,81 @@
+# Σειριακή
+
+The [serial](/reference/serial) supports [serial communication](https://en.wikipedia.org/wiki/Serial_port) between the Calliope mini and another computer. Basically, this allows you to send data from the Calliope mini to your own computer. This is very useful for debugging purposes: you can add `write line` statements in your code and see them display on your computer as the program executes.
+
+The code below shows a simple script that sends a line when the Calliope mini starts and another line each time the button `A` is pressed.
+
+```blocks
+serial.writeLine("started...")
+input.onButtonEvent(Button.A, input.buttonEventValue(ButtonEvent.Down), () => {
+    serial.writeLine("A pressed")
+})
+```
+
+Data is also automatically streamed to serial by the ** bar graph** block and picked up by the editor. This data can be streamed to the cloud as well.
+
+```blocks
+basic.forever(() => {
+   led.plotBarGraph(input.acceleration(Dimension.X), 0);
+});
+```
+
+## How to read the Calliope mini serial output from your computer
+
+Unfortunately, using the serial library requires quite a bit of a setup.
+
+### ~ hint
+
+#### Windows earlier than 10
+
+If you are running a Windows version earlier than 10, you must [install a device driver](https://os.mbed.com/docs/latest/tutorials/windows-serial-driver.html) (for the computer to recognize the serial interface of the Calliope mini).
+
+### ~
+
+Also, if you don't see the serial port as one of your computer's devices, you might need to [update the firmware](/device/firmware) on the @boardname@. Find the device name for the attached serial port in the following instructions for your operating system.
+
+## Windows
+
+### Tera Term
+
+* Install the terminal emulator [Tera Term](https://teratermproject.github.io/index-en.html). The the latest release and can be downloaded [from here](https://github.com/TeraTermProject/teraterm/releases). Scroll down to the "Assets" section and download the release package that is appropriate for your computer. For example, if you have an x64 based processor, click on the one that ends in "x64.exe".
+
+Once both the driver and the terminal emulator are installed, plug in the Calliope mini and wait until the device is fully setup. Then, open TeraTerm.
+
+* Hit `File` > `New Connection`
+* Check "Serial"; in the dropdown menu, pick the COM port that says "mbed Serial Port". Hit `Ok`.
+* In the menus, hit `Setup` > `Serial Port` and set the baud rate to `115200`.
+
+You should be good. Feel free to hit `Setup` > `Save Setup` in the menus to erase the default configuration file with a new one so that you don't have to type in the settings again.
+
+Please note that Windows will assign you a different COM port if you plug in another Calliope mini. If you're juggling between Calliope mini, you'll have to change the COM port every time.
+
+### Putty
+
+If you prefer another terminal emulator (such as [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)), here are some instructions.
+
+* Open Windows's [Device Manager](https://windows.microsoft.com/en-us/windows/open-device-manager); expand the section called "Ports (COM & LPT)"; write down the com number for "mbed Serial Port" (e.g. COM14)
+* Open PuTTY; on the main screen, use the following settings: Serial / COM14 / 115200. Replace COM14 with the COM port number you wrote down previously. Feel free to type in a name and hit "Save" to remember this configuration.
+
+![](https://cdn.makecode.com/blob/c00882abdab26ff27032759dc3a22074d2251643/static/mb/serial-library-0.png)
+
+* (optional): in the "Terminal" section, check "implicit cr in every lf"
+
+![](https://cdn.makecode.com/blob/86cc65967bfc64b1011ea8c73bb1282d2fa71047/static/mb/serial-library-1.png)
+
+## Linux
+
+* Install the program `screen` if it is not already installed.
+* Plug in the Calliope mini.
+* Open a terminal.
+* Find which device node the Calliope mini was assigned to with the command `ls /dev/ttyACM*`.
+* If it was `/dev/ttyACM0`, type the command `screen /dev/ttyACM0 115200`. If it was some other device node, use that one in the command instead. **Note:** You may need root access to run `screen` successfully. You can probably use the command `sudo` like this: `sudo screen /dev/ttyACM0 115200`.
+* To exit `screen`, type `Ctrl-A` `Ctrl-D`.
+
+Alternative programs include `minicom` and so on.
+
+## Mac OS
+
+* Plug in the Calliope mini
+* Open a terminal
+* `ls /dev/cu.*` will return to you a list of serial devices; one of them will look like `/dev/cu.usbmodem1422` (the exact number depends on your computer)
+* `screen /dev/cu.usbmodem1422 115200` will open up the Calliope mini serial output. To exit, hit `Ctrl-A` `Ctrl-D`.
