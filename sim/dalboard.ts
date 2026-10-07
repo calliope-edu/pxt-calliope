@@ -166,8 +166,8 @@ namespace pxsim {
             this.builtinVisuals["microservo"] = () => new visuals.MicroServoView();
 
             this.builtinParts["neopixel"] = (pin: Pin) => { return this.neopixelState(pin.id); };
-            this.builtinVisuals["neopixel"] = () => new visuals.NeoPixelView(pxsim.parsePinString);
-            this.builtinPartVisuals["neopixel"] = (xy: visuals.Coord) => visuals.mkNeoPixelPart(xy);
+            this.builtinVisuals["neopixel"] = () => new visuals.CalliopeNeoPixelView(pxsim.parsePinString);
+            this.builtinPartVisuals["neopixel"] = (xy: visuals.Coord) => visuals.mkCalliopeNeoPixelPart(xy);
 
             this.builtinPartVisuals["buttonpair"] = (xy: visuals.Coord) => visuals.mkBtnSvg(xy);
             this.builtinPartVisuals["ledmatrix"] = (xy: visuals.Coord) => visuals.mkLedMatrixSvg(xy, 8, 8);
@@ -342,10 +342,15 @@ namespace pxsim {
         if (gpioPin == "*")
             return board().edgeConnectorState.getPin(DAL.MICROBIT_ID_IO_P0);
 
-        const m = /^(Analog|Digital)Pin\.P(\d)+/.exec(gpioPin);
+        // Resolve by enum member name through the edge connector's name -> id map, which lists every
+        // DigitalPin/AnalogPin alias (P, C and A names). The former regex only accepted P names and kept
+        // just the last digit (P16 -> 6), and indexed `pins` by number although LOGO sits at index 4, so
+        // e.g. DigitalPin.C16 returned undefined and crashed the neopixel part.
+        const m = /^(Analog|Digital)Pin\.(\w+)/.exec(gpioPin);
         if (!m)
             return undefined;
-        const pinNum = parseInt(m[2]);
-        return board().edgeConnectorState.pins[pinNum]
+        const ec = board().edgeConnectorState;
+        const id = (ec.props.servos || {})[m[2]];
+        return id !== undefined ? ec.getPin(id) || undefined : undefined;
     }
 }

@@ -122,6 +122,8 @@ namespace pxsim.pins {
         const lp = neopixelState(pin);
         if (!lp) return;
         lp.width = width;
+        // re-layout the strip right away, not only on its next show()
+        runtime.queueDisplayUpdate();
     }
 }
 

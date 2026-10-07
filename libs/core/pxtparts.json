@@ -142,21 +142,21 @@
         "simulationBehavior": "neopixel",
         "visual": {
             "builtIn": "neopixel",
-            "width": 58,
-            "height": 113,
-            "pinDistance": 9,
+            "width": 435,
+            "height": 150,
+            "pinDistance": 15,
             "pinLocations": [
                 {
-                    "x": 10,
-                    "y": 0
+                    "x": 7.5,
+                    "y": -15
                 },
                 {
-                    "x": 19,
-                    "y": 0
+                    "x": 30,
+                    "y": -15
                 },
                 {
-                    "x": 28,
-                    "y": 0
+                    "x": -15,
+                    "y": -15
                 }
             ]
         },
