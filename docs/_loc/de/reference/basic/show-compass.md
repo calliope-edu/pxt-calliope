@@ -1,1 +1,0 @@
-# Kompassnadel Anzeigen
