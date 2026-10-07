@@ -2119,3 +2119,259 @@ which actually have upstream translations, and shows a sample heading for each:
 
 Ordering matters and is encoded here: `staticpkg` begins with a rimraf of the output, so
 fonts/simx/docs must be prepared *before* it, and the shim installed *after*.
+
+### 2026-10-06 — how the package handles "remote" simulator extensions
+
+Short answer: **it does not load them from the internet — it does not load them at all.**
+
+The URL resolution has only two branches (`pxtapp.js`):
+
+```js
+if (useDev && t.devUrl) t.url = new URL(t.index, t.devUrl);              // dev only
+else                    t.url = <packageOrigin>/simx/<repo>/-/<index>;   // everything else
+```
+
+`useDev` requires `isLocalHost()` **and** `?simxdev`, so in a served package the second
+branch always wins. `devUrl` is never consulted there — **it is a dev-server convenience,
+not a production fallback**. So an extension whose simulator is not staged under
+`built/packaged/simx/<repo>/-/` resolves to a path that 404s, with or without a network
+connection.
+
+This means the `local` / `remote` labels in `scripts/build-simx.sh` describe only *where the
+source is convenient to get*, not how the package behaves. The packaged editor treats all
+seven identically: staged = works offline, not staged = broken.
+
+Current state of the package:
+
+| extension | staged |
+|---|---|
+| calliope-edu/gamekit | yes |
+| microsoft/pxt-simx-sample | no |
+| microbit-foundation/pxt-microbit-ml | no |
+| microbit-apps/display-shield | no |
+| jacdac/pxt-jacdac, jacdac/pxt-jacdac-test | no |
+| met-theokoch-schule/pxt-calliope-smarthome | no |
+
+Consequence: `--all` built only gamekit, because `build-simx.sh` skips `remote` entries by
+default. To make the others work in the package they must be built and staged too —
+`INCLUDE_REMOTE=1 scripts/build-simx.sh --build` attempts exactly that. Whether each one
+*can* be built locally is unverified (they are separate repos with their own toolchains).
+
+Also noted: a stray `built/packaged/simx/calliope-edu/gamekit/assets/` (2 files) sits
+outside the `-/` directory — residue from an earlier manual copy, not produced by the
+scripts, which only ever write to `<repo>/-/`. Harmless; the `-/` tree is complete and
+byte-identical to the staged source.
+
+### 2026-10-06 — simx: the pinned sha is a PREBUILT deployment, not source
+
+`INCLUDE_REMOTE=1 scripts/build-simx.sh --build` failed on all 7 with "no buildable app",
+*including* gamekit — which had built fine from the user's own checkout. The clones were
+fine; the detection logic was wrong.
+
+Cause: the `sha` in each `simx` entry points at a **gh-pages `deploy:` commit**, i.e. the
+already-built simulator (`index.html` + `assets` + `.nojekyll` at the repo root), not source.
+Verified on all seven:
+
+```
+ce55a0e deploy: ...   calliope-edu/gamekit
+7301f59 deploy: ...   microsoft/pxt-simx-sample
+6aa7c4d deploy: ...   microbit-foundation/pxt-microbit-ml
+1804c0b deploy: ...   jacdac/pxt-jacdac
+a83b30a deploy: ...   met-theokoch-schule/pxt-calliope-smarthome
+0825d56 deploy: ...   microbit-apps/display-shield
+```
+
+There is nothing to build — that artifact is exactly what pxt serves. `build-simx.sh` now
+stages `$src` directly when `index.html` is present at the pinned sha, and only falls back
+to `npm install && npm run build` for a genuine source checkout (e.g. via `LOCAL_SRC`).
+
+Result: **5 staged, 2 excluded, 0 failed.** `EXCLUDE` defaults to
+`jacdac/pxt-jacdac-test microbit-apps/display-shield` per the user.
+
+#### Two problems with the newly staged ones
+
+| extension | files | size | note |
+|---|---|---|---|
+| calliope-edu/gamekit | 36 | 25 MB | fine |
+| microsoft/pxt-simx-sample | 34 | 664 KB | fine |
+| microbit-foundation/pxt-microbit-ml | 34 | 1.9 MB | **absolute path** `href="/vite.svg"` |
+| jacdac/pxt-jacdac | 1628 | **313 MB** | whole jacdac-docs site |
+| met-theokoch-schule/pxt-calliope-smarthome | 59 | 16 MB | fine |
+
+1. **jacdac/pxt-jacdac is 313 MB** — more than twice the whole package (62 MB of videos,
+   37 MB images, 14 MB devices). Its `devUrl` is the `/tools/makecode-sim/` *sub-path* of
+   the docs site, so the deploy root is the entire site, not just the simulator. Bundling it
+   wholesale is not sensible.
+2. **pxt-microbit-ml references `/vite.svg`** (absolute), which 404s from the nested
+   `/simx/<repo>/-/` path. Cosmetic (a favicon) but worth knowing.
+
+Note jacdac's own `index.html` already hard-codes `/simx/jacdac/pxt-jacdac/-/...`, i.e. it is
+built expecting exactly that nested path — so the only problem is bulk, not wiring.
+
+### 2026-10-06 — simx staged from prebuilt deploys, jacdac pruned, _loc html dropped
+
+Three fixes after the `--all` run.
+
+**1. simx: stage the pinned deploy, do not build.** See the previous entry — every `sha` is
+a gh-pages `deploy:` commit. `build-simx.sh` now stages `$src` directly when `index.html`
+is present, and only builds for a real source checkout. Also excludes `.git` from the copy
+(it was failing on read-only pack files and would have shipped the history).
+
+Result: **5 staged, 2 excluded, 0 failed** — gamekit, pxt-simx-sample, pxt-microbit-ml,
+pxt-jacdac, pxt-calliope-smarthome. `EXCLUDE` defaults to `jacdac/pxt-jacdac-test
+microbit-apps/display-shield` per the user.
+
+**2. jacdac pruned 148 MB -> 19 MB.** Its deploy is the whole jacdac-docs site. pxt loads
+`index.html` at the deploy root (`index` defaults to `"index.html"` in pxt-core `main.js`:
+`Object.assign({index:"index.html",aspectRatio:…,permanent:true}, simx)`), and that page
+references exactly 19 files. Dropped `videos/ images/ devices/ sounds/ page-data/
+templates/` plus `*.js.map`. Verified **all 19 references still resolve**.
+
+`sitemap/` was initially pruned too, but `index.html` links it — kept, to avoid a pointless
+404. Per-repo rules live in a `case` in the script; override with `PRUNE_<slug>`.
+
+Total simx: **27 MB** for 5 simulators (jacdac 19, smarthome 7.4, ml 0.8, gamekit 0.4,
+sample 0.2).
+
+**3. `docs/_loc` was 119 MB for 4 MB of translations.** `staticpkg` renders a standalone
+`.html` for every `.md` under `docs/`, and the translated tree is already in place when it
+runs — so it generated **2162 pages at ~50 KB each**:
+
+```
+_loc html: 102.7 MB   generated, never fetched by the editor
+_loc md  :   4.0 MB   what the shim actually serves
+```
+
+The editor requests `docs/<page>.md`; the `.html` exists only for browsing docs directly,
+which the `_loc` tree is not reachable from. `package_static_multilang.sh` now deletes them
+after installing: **119 MB -> 12 MB**.
+
+Package overall: **296 MB -> 190 MB**, with all 2162 translations across 35 languages intact
+and the shim still resolving (`de`, `ja`, `uk` spot-checked).
+
+### 2026-10-06 — scripts renamed; simulators downloaded instead of cloned
+
+#### Renaming
+
+Three conventions had accumulated (`build-*`, `fetch-*`, `package_static_*` — the only
+underscored ones), and nothing in the names showed execution order or which script was the
+entry point. Renamed to numbered pipeline stages plus a distinct verb for the two scripts
+that are not stages:
+
+| was | now | role |
+|---|---|---|
+| `build-release.sh` | `make-package.sh` | **entry point** |
+| `build-fonts.sh` | `prepare-10-fonts.sh` | prepare |
+| `build-simx.sh` | `prepare-20-simulators.sh` | prepare |
+| `fetch-doc-translations.sh` | `prepare-30-translations.sh` | prepare |
+| `package_static_fetch_locs.sh` | `package-40-static.sh` | package |
+| `package_static_multilang.sh` | `package-50-languages.sh` | package |
+| `list-extensions.sh` | `report-extensions.sh` | reporting, not a stage |
+
+`ls scripts/` now reads in run order. The clustering matters because of a real constraint:
+**`package-40-static.sh` begins with a rimraf of the output**, so every `prepare-*` must run
+before it and `package-50-languages.sh` after. That is exactly what silently dropped the
+simx earlier.
+
+Also fixed five stale references to the long-gone `scripts/fetch-locs.sh` in comments and
+usage text, which would have misled anyone following them.
+
+#### Downloading instead of cloning
+
+The pinned sha is a gh-pages `deploy:` commit, so only that one tree is ever wanted — a
+clone drags in the entire history for nothing:
+
+| repo | clone | tarball |
+|---|---|---|
+| calliope-edu/gamekit | 25 MB | **444 KB** |
+| jacdac/pxt-jacdac | 313 MB | 107 MB |
+| jacdac/pxt-jacdac-test | 258 MB | (excluded) |
+| **total on disk** | **638 MB** | far less |
+
+`prepare-20-simulators.sh` now fetches
+`https://codeload.github.com/<repo>/tar.gz/<sha>` and extracts it, recording the sha in
+`.simx-sha` so a re-run with an unchanged sha skips the download entirely. Verified:
+gamekit 444 KB in 0.65 s; `pxt-simx-sample` re-downloaded clean at 164 KB with no `.git`.
+
+#### New `--install`
+
+`prepare-20-simulators.sh --install` copies already-staged simulators into an existing
+`built/packaged` **without rebuilding it**. Previously the only path was through
+`package-40-static.sh`, whose rimraf forces a full ~20 minute rebuild just to refresh one
+simulator — which is why the last update had to be done by hand. Verified: all 5 installed
+in seconds.
+
+### 2026-10-06 — jacdac simulator broken: `page-data/` must not be pruned
+
+Loading the jacdac extension gave:
+
+```
+GET /simx/jacdac/pxt-jacdac/-/page-data/app-data.json        404
+GET /simx/jacdac/pxt-jacdac/-/page-data/index/page-data.json 404
+Uncaught Error: page resources for /simx/jacdac/pxt-jacdac/-/index.html not found.
+                Not rendering React
+```
+
+My prune rule was wrong: `page-data/` is **Gatsby runtime data**, not docs-site content.
+The app fetches it on load and refuses to render without it. It is only **1.1 MB** — I had
+grouped it with the genuinely unused bulk purely by name.
+
+Removed from the prune list. Re-checked the remaining entries by counting runtime
+references in the app bundles rather than guessing:
+
+```
+page-data   4 hits   <- runtime, KEEP
+images      1 hit    <- "src/images/favicon.svg" in the webmanifest, not the pruned dir
+devices     1 hit    <- no actual fetch
+videos      0        sounds 0        templates 0        sitemap 0 (but index.html links it)
+```
+
+So `videos images devices sounds templates` remain pruned; `page-data` and `sitemap` are
+kept. jacdac is now **20 MB** (was 19 MB broken, 148 MB unpruned), all 19 `index.html`
+references resolve, and both previously-404ing files are present in the package.
+
+**Lesson:** prune by *measured references*, not by directory name. The earlier check only
+validated `index.html`'s direct links, which cannot see what the JS fetches at runtime.
+
+Also hardened `--install`: it now `rm -rf`s the target before copying, so a tree that
+shrinks between runs (exactly what happens when a prune rule changes) cannot leave stale
+files behind. Verified the staged and installed file sets are identical.
+
+### 2026-10-07 — scripts renamed again (acquire vs install), fonts retired
+
+**Names now say what the script does, not just what it is about.** "translations" vs
+"languages" did not distinguish *downloading* from *wiring into the package*, which is the
+whole difference between the two:
+
+```
+scripts/
+  make-package.sh                        entry point
+  prepare-10-fetch-simulators.sh         download + stage extension simulators
+  prepare-20-fetch-translations.sh       download translated markdown -> docs/_loc
+  package-30-static.sh                   UI locales + staticpkg + post-build fixes
+  package-40-install-translations.sh     install translations + the XHR shim
+  report-extensions.sh                   read-only report
+  one-off/
+    regenerate-fonts.sh                  not part of the pipeline
+```
+
+`fetch-*` = acquires from the network into the working tree. `package-*` = writes into
+`built/packaged` and must re-run after every rebuild (stage 30 begins with a rimraf).
+Simulators are fetched too (tarball of the pinned sha), so the `fetch-` prefix is accurate
+for both prepare stages.
+
+**Fonts removed from the pipeline.** The 12 generated woff2 are **committed** under
+`docs/static/fonts/roboto-mono/`, so a fresh clone already has them and `package-30` copies
+them with the rest of `docs/static`. Running the generator on every build was pointless —
+and would in fact *fail today*: the source TTFs (`static/fonts/roboto-mono/*.ttf`) are gone
+from disk and were never tracked in git.
+
+Kept as `scripts/one-off/regenerate-fonts.sh` rather than deleted, because it is the only
+record of how those files were produced (which subsets, which weights, ranges read from
+`theme/fonts.less`). Its header now says plainly that it is not needed unless `fonts.less`
+gains a subset/weight or the upstream font changes, and that the TTFs must be fetched again
+first.
+
+Stages renumbered 10/20/30/40 to close the gap left by fonts; `make-package.sh` is now
+`[1/4]`..`[4/4]`. All cross-references updated, all seven scripts syntax-check, and
+`--simx-arg`, `report-extensions` and `make-package --list` were re-run to confirm.
