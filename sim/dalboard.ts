@@ -176,15 +176,6 @@ namespace pxsim {
             this.samplesState = new samples.SamplesState();
         }
 
-        // Read the simulator board revision chosen via the in-sim v2/v3 toggle. Defaults to v3.
-        static readSimHardwareVersion(): number {
-            try {
-                const v = parseInt(localStorage.getItem("calliope:simHwVersion"));
-                if (v === 2 || v === 3) return v;
-            } catch (e) { }
-            return 3;
-        }
-
         // Board revision implied by a device connected over WebUSB, or 0 when none is.
         //
         // With "matchWebUSBDeviceInSim" set in pxtarget.json, pxt-core puts the connected
@@ -203,6 +194,22 @@ namespace pxsim {
             return 0;
         }
 
+        // Revision passed to control.simulatorBoardVersion(), read from the tracked
+        // compile-time arguments (trackArgs=0), or 0 when the program does not call it.
+        static requestedBoardVersion(fnArgs: any): number {
+            if (!fnArgs) return 0;
+            for (const k of Object.keys(fnArgs)) {
+                if (k.indexOf("simulatorBoardVersion") < 0) continue;
+                const calls = fnArgs[k];
+                if (!calls || !calls.length) continue;
+                // tracked value is the string literal, e.g. "v2" (a non-literal arrives as "*")
+                const v = parseInt(("" + calls[0]).replace(/[^0-9]/g, ""));
+                if (v === 1 || v === 2) return 2; // v1 and v2 share the v2 board
+                if (v === 3) return 3;
+            }
+            return 0;
+        }
+
         ensureHardwareVersion(version: number) {
             if (version > this.hardwareVersion) {
                 this.hardwareVersion = version;
@@ -213,15 +220,17 @@ namespace pxsim {
 
         initAsync(msg: SimulatorRunMessage): Promise<void> {
             super.initAsync(msg);
-            // Calliope mini simulator revision (v2/v3). A device connected over WebUSB wins:
-            // the simulator should show the board that is actually plugged in. With no device,
-            // fall back to the in-sim toggle button's persisted choice (defaults to v3).
-            const connectedVersion = DalBoard.hardwareVersionFromTheme(msg.theme);
-            this.hardwareVersion = connectedVersion || DalBoard.readSimHardwareVersion();
             const boardDef = msg.boardDefinition;
             const cmpsList = msg.parts;
             const cmpDefs = msg.partDefinitions || {};
             const fnArgs = msg.fnArgs;
+            // Calliope mini simulator revision (v2/v3): the board connected over WebUSB if
+            // there is one (editor/flash.ts restarts the sim when it changes), else a revision
+            // requested by the program via control.simulatorBoardVersion() (docs pages),
+            // otherwise v3.
+            this.hardwareVersion = DalBoard.hardwareVersionFromTheme(msg.theme)
+                || DalBoard.requestedBoardVersion(fnArgs)
+                || 3;
 
             // Show, from sim start, only the motor channel(s) the program actually uses — derived
             // from the tracked Motor argument of motors.dualMotorPower (trackArgs=0). Each tracked

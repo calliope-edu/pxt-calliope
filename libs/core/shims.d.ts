@@ -511,6 +511,16 @@ declare namespace control {
     function _hardwareVersion(): string;
 
     /**
+     * Documentation helper: render the given Calliope mini board revision in the simulator
+     * ("v1"/"v2" = mini V1/V2 board, "v3" = mini V3). Does nothing on the device. The
+     * simulator reads the argument at compile time (trackArgs), so the board is drawn
+     * correctly from the start. It must be a string literal: trackArgs records only string
+     * literals and enum members, a number would arrive as "*".
+     */
+    //% hidden=1 trackArgs=0 shim=control::simulatorBoardVersion
+    function simulatorBoardVersion(version: string): void;
+
+    /**
      * Derive a unique, consistent serial number of this device from internal data.
      */
     //% blockId="control_device_serial_number" block="device serial number" weight=9

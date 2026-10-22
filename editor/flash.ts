@@ -69,6 +69,15 @@ function murmur3_core(data: Uint8Array) {
     return [h0, h1]
 }
 
+function isValidUtf8(buf: Uint8Array): boolean {
+    try {
+        new TextDecoder("utf-8", { fatal: true }).decode(buf);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 function bufferConcat(a: Uint8Array, b: Uint8Array) {
     const r = new Uint8Array(a.length + b.length)
     r.set(a, 0)
@@ -228,6 +237,10 @@ class DAPWrapper implements pxt.packetio.PacketIOWrapper {
 
         readSerialLoop();
     }
+
+    /** Cancel any in-flight read loop. Safe to call when already disconnected: it only
+     *  invalidates the connection id the loops check, then waits for them to notice. */
+    cancelReadersAsync() { return this.stopReadersAsync(); }
 
     private stopReadersAsync() {
         log(`cancelling connection ${this.connectionId}`)
@@ -965,6 +978,11 @@ export function mkDAPLinkPacketIOWrapper(io: pxt.packetio.PacketIO): pxt.packeti
 
 // === Calliope mini v2 support (SEGGER J-Link OB) ===
 
+// How long to wait before flushing serial bytes that never got a line terminator.
+// Matches the DAP path's 500ms rule in readSerial().
+const SERIAL_FLUSH_MS = 500;
+// Rate for the J-Link VCOM; see the note at port.open().
+const SERIAL_BAUD = 115200;
 const JLINK_VID = 0x1366;  // SEGGER
 const JLINK_PID = 0x1025;  // Calliope mini v2
 const JLINK_INTERFACE = 2; // Vendor-specific interface for J-Link commands
@@ -1016,12 +1034,33 @@ function jlinkBuildProbeInfoCmd(sub: number, data?: Uint8Array): Uint8Array {
 class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
     icon = "icon usb";
     familyID = 0x9902;   // synthetic ID for Calliope v2
-    onSerial: (buf: Uint8Array, isStderr: boolean) => void = () => {};
+    // The port the user picked, kept across wrapper instances: Chrome reports no
+    // usbVendorId for CDC ports on Linux, so this is the only reliable way to pick the
+    // same port again after a reconnect.
+    static grantedPort: any = undefined;
+    onSerial: (buf: Uint8Array, isStderr: boolean) => void = () => { };
+    // bytes received since the last newline, awaiting a line terminator (see emitSerialLines)
+    private pendingSerial: Uint8Array | null = null;
+    private pendingSerialTimer: any = undefined;
     onCustomEvent: (type: string, payload: Uint8Array) => void = () => {};
     devVariant = "mbdal"; // Calliope v2 uses the same mbdal hex as v1
 
     private initialized = false;
     private connecting  = false;
+
+    /** True when this wrapper is bound to exactly the USBDevice handed in. */
+    usesDevice(d: pxt.usb.USBDevice): boolean { return this.device === d; }
+
+    /**
+     * User asked to see device data. This is the only path allowed to raise the
+     * Web Serial port picker, so the prompt appears as a direct result of that click
+     * instead of surfacing at some unrelated later moment.
+     */
+    requestSerialAsync(): Promise<void> {
+        this.serialRetries = 0;
+        return this.startSerialAsync(true)
+            .catch(e => logSerial(`requested serial failed: ${(e as Error).message}`));
+    }
     private jlinkInEP   = 3;   // defaults for Calliope v2.0; auto-detected below
     private jlinkOutEP  = 2;
     private disconnectListener: (ev: pxt.usb.USBConnectionEvent) => void = null;
@@ -1073,7 +1112,17 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
             }
             log(`jlink: endpoints in=${this.jlinkInEP} out=${this.jlinkOutEP}`);
 
-            await this.device.claimInterface(JLINK_INTERFACE);
+            // "An operation that changes interface state is in progress" is transient:
+            // it means a previous open/claim/release on this device has not settled yet.
+            // One short retry clears it; anything else propagates immediately.
+            try {
+                await this.device.claimInterface(JLINK_INTERFACE);
+            } catch (e) {
+                if ((e as Error)?.name !== "InvalidStateError") throw e;
+                log("jlink: claimInterface busy, retrying once");
+                await pxt.Util.delay(300);
+                await this.device.claimInterface(JLINK_INTERFACE);
+            }
             log("jlink: interface claimed");
 
             // Handshake: verify the probe supports MSD flashing
@@ -1122,13 +1171,26 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
             this.io.onConnectionChanged();
             // A J-Link board is always a mini v2 (devVariant "mbdal"); match the simulator.
             syncSimulatorWithDevice(this.devVariant);
+            // Make "Show data (device)" visible for this board.
+            //
+            // pxt-core's SerialIndicator renders nothing until a `serial` window message
+            // arrives (renderCore: `if (!this.active()) return <div/>`), which is fine for
+            // v1/v3 -- their serial arrives over the existing DAP connection, so data flows
+            // as soon as the program prints. A SEGGER v2 is different: its serial is a
+            // separate CDC port that needs a Web Serial grant, and the grant needs a click
+            // on exactly this button. Without priming it the button never appears, so the
+            // grant can never be given -- no data, no button, no way out.
+            //
+            // Post one empty device `serial` message (same shape pxt itself posts, no `sim`
+            // field so it matches the device indicator) to activate the button only.
+            showDeviceSerialButton();
 
             // start serial reader (best-effort; failure must not break flashing)
             this.serialRetries = 0;
             this.startSerialAsync()
-                .catch(e => log(`jlink serial: start failed: ${(e as Error).message}`));
+                .catch(e => pxt.log(`packetio: jlink serial start failed: ${(e as Error).message}`));
         } catch (e) {
-            log(`jlink: reconnect error: ${(e as Error).message}`);
+            pxt.log(`packetio: jlink reconnect error: ${(e as Error).message}`);
             this.initialized = false;
             this.connecting  = false;
             this.removeDisconnectListener();
@@ -1241,7 +1303,31 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
      * support, permission denied, no matching port) is logged and swallowed
      * so that flashing keeps working.
      */
-    private async startSerialAsync(): Promise<void> {
+    /**
+     * Acquire the CDC port and stream it into onSerial.
+     *
+     * `allowPrompt` gates `navigator.serial.requestPort()`. Automatic starts (connect,
+     * post-flash, retries) pass false: they run without user intent, so the picker would
+     * surface at an arbitrary later moment -- whenever some unrelated click happens to
+     * supply transient user activation -- which is what made it feel like it "arrives
+     * late". They still attach silently to an already-granted port, so once the user has
+     * picked it a single time serial just works from then on.
+     */
+    private async startSerialAsync(allowPrompt = false): Promise<void> {
+        // Serial bring-up can be triggered from several places at once: automatically
+        // on `jlink ready`, and again when the user clicks "Show data (device)".
+        // Without a guard the two race: the second call bumps serialGen (invalidating
+        // the first call's read loop, which then exits) and then fails to open the port
+        // the first call already opened -- leaving the port open with nobody reading it.
+        if (this.serialStarting) return this.serialStarting;
+        const run = this.startSerialCoreAsync(allowPrompt);
+        this.serialStarting = run.finally(() => { this.serialStarting = undefined; });
+        return this.serialStarting;
+    }
+
+    private serialStarting: Promise<void> | undefined = undefined;
+
+    private async startSerialCoreAsync(allowPrompt = false): Promise<void> {
         const nav: any = navigator;
         if (!nav.serial) {
             logSerial("Web Serial API unavailable in this browser");
@@ -1260,12 +1346,28 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
         let port: any = null;
         try {
             const ports: any[] = await nav.serial.getPorts();
-            // Fall back to the sole granted port only if it reports no vendor id
-            // (the Pop!_OS case); a port that positively identifies as another
-            // vendor's device (e.g. an Arduino) must not be hijacked.
-            port = ports.find(p => infoOf(p).usbVendorId === JLINK_VID)
+            // Chrome derives SerialPortInfo from the OS, and on Linux it reports NO
+            // usbVendorId at all for the CDC-ACM port (confirmed: "port open (vid=? pid=?)").
+            // So the VID match below usually fails here and must not be the only strategy.
+            //
+            // Order of preference:
+            //  1. the exact port the user picked earlier in this session -- the only
+            //     identification that is reliable when the OS reports no ids at all,
+            //  2. a positive SEGGER VID match, where the platform does supply ids,
+            //  3. the sole granted port, but only when it is unidentified AND it is the
+            //     only one: with several grants (e.g. an unrelated USB-serial adapter
+            //     also plugged in) picking one at random reads the wrong device, which
+            //     looks like a baud mismatch -- a line of high-bit bytes with no newline.
+            const remembered = JLinkPacketIOWrapper.grantedPort;
+            port = (remembered && ports.indexOf(remembered) >= 0 ? remembered : null)
+                ?? ports.find(p => infoOf(p).usbVendorId === JLINK_VID)
                 ?? (ports.length === 1 && infoOf(ports[0]).usbVendorId == undefined ? ports[0] : null);
-            if (port) logSerial("reusing granted port");
+            if (port)
+                log(`jlink serial: reusing granted port`
+                    + ` (${ports.length} granted, ${port === remembered ? "remembered" : "matched"})`);
+            else if (ports.length > 1)
+                pxt.log(`packetio: jlink serial - ${ports.length} granted ports, none identifiable;`
+                    + ` asking which one to use`);
         } catch (e) {
             logSerial(`getPorts failed: ${(e as Error).message}`);
         }
@@ -1274,6 +1376,12 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
         // flashing don't have it, so only prompt when activation is available.
         // The grant is persistent, so once accepted getPorts() finds it forever.
         if (!port) {
+            if (!allowPrompt) {
+                // No grant yet and this start was not user-initiated. Do not prompt:
+                // wait until the user opens the serial view (see connectSerialAsync).
+                log("jlink serial: no granted port yet; waiting for \"Show data (device)\"");
+                return;
+            }
             const activation = nav.userActivation;
             if (activation && !activation.isActive) {
                 logSerial("no granted port and no user activation");
@@ -1286,25 +1394,41 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
                 // No filter: a VID/PID filter yields an empty chooser when Chrome
                 // reports no usbVendorId for the CDC port (see note above).
                 port = await nav.serial.requestPort();
-                logSerial("port picked");
+                // Remember it: on this platform it is the only durable way to find the
+                // same port again, since getInfo() reports no vendor/product id.
+                JLinkPacketIOWrapper.grantedPort = port;
+                log("jlink serial: port picked");
             } catch (e) {
                 // user dismissed the picker or no matching port
-                logSerial(`no port selected: ${(e as Error).message}`);
+                pxt.log(`packetio: jlink serial - no port selected: ${(e as Error).message}`);
                 return;
             }
         }
 
-        const gen = ++this.serialGen;
+        // Already streaming this very port? Nothing to do. Re-opening it throws
+        // "The port is already open" and would tear down the working reader.
+        if (this.serialPort === port) return;
+
         try {
-            await port.open({ baudRate: 115200 });
+            // The J-Link VCOM keeps its power-up 9600 until it receives SET_LINE_CODING.
+            // Chrome 155 on Linux sent none when opening at the standard 115200 (verified
+            // with usbmon), so the VCOM sampled the 115200 target as garbage
+            // (5c af af ef bd ff ...). Chrome 156 and Chrome on macOS work. If it comes
+            // back: opening at 115201 (non-standard rate, passed through by Chrome) made
+            // the J-Link switch immediately; 1 baud off is far below UART tolerance.
+            await port.open({ baudRate: SERIAL_BAUD });
         } catch (e) {
             // e.g. the OS is still re-binding the CDC device after the
             // post-flash target reset, or another process (minicom, screen,
             // ModemManager, cat) holds /dev/ttyACM0 — usually transient.
-            logSerial(`open failed: ${(e as Error).message}`);
+            pxt.log(`packetio: jlink serial - open failed: ${(e as Error).message}`);
             this.scheduleSerialRetry();
             return;
         }
+        // Claim the generation only once the port is actually open. Bumping it before
+        // the open would invalidate a healthy read loop started by a concurrent call
+        // even when this attempt goes on to fail.
+        const gen = ++this.serialGen;
         // a stop() may have happened while we were opening
         if (gen !== this.serialGen || !this.initialized) {
             try { await port.close(); } catch (e) { }
@@ -1312,7 +1436,11 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
         }
         this.serialRetries = 0; // serial is up — reset the retry budget
         this.serialPort = port;
-        logSerial("port open @115200");
+        {
+            const i: any = infoOf(port);
+            log(`jlink serial: port open @${SERIAL_BAUD} `
+                + `(vid=${i.usbVendorId?.toString(16) ?? "?"} pid=${i.usbProductId?.toString(16) ?? "?"})`);
+        }
 
         this.serialLoopEnd = this.readSerialLoop(gen);
     }
@@ -1338,6 +1466,96 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
         }, 2000);
     }
 
+    /**
+     * Assemble raw CDC bytes into whole lines before handing them to onSerial.
+     *
+     * A Web Serial read returns whatever the OS has buffered -- for this board that
+     * is typically a single byte at a time. pxt's serial view accumulates whatever
+     * it receives in `serialInputDataBuffer` and only emits a line on "\n" (or once
+     * 255 chars pile up), so forwarding raw chunks means a program that prints
+     * without a trailing newline never displays at all.
+     *
+     * The DAP path (mini v1/v3) has always done this assembly in readSerial(); doing
+     * the same here makes v2 behave identically. Trailing data with no newline is
+     * flushed after an idle timeout, mirroring DAP's 500ms rule, so prompts and
+     * progress output still appear.
+     */
+    private emitSerialLines(chunk: Uint8Array): void {
+        let buf = this.pendingSerial ? bufferConcat(this.pendingSerial, chunk) : chunk;
+        let ptr = 0;
+        let beg = 0;
+        while (ptr < buf.length) {
+            if (buf[ptr] == 10 || buf[ptr] == 13) {
+                ptr++;
+                // eat \r\n
+                while (ptr < buf.length && (buf[ptr] == 10 || buf[ptr] == 13))
+                    ptr++;
+                const line = buf.slice(beg, ptr);
+                if (line.length) this.emitSerial(line);
+                beg = ptr;
+            } else {
+                ptr++;
+            }
+        }
+        buf = buf.slice(beg);
+        this.pendingSerial = buf.length ? buf : null;
+        this.schedulePendingSerialFlush();
+    }
+
+    /**
+     * Flush a newline-less tail so output that never terminates a line still shows.
+     *
+     * The timer is armed once and deliberately NOT re-armed per chunk: a program that
+     * prints steadily without newlines delivers a byte every few ms, and resetting the
+     * deadline on each one would starve the flush forever (the tail would only appear
+     * once output stopped). Arming once bounds the delay to SERIAL_FLUSH_MS.
+     */
+    private schedulePendingSerialFlush(): void {
+        if (!this.pendingSerial) {
+            if (this.pendingSerialTimer) {
+                clearTimeout(this.pendingSerialTimer);
+                this.pendingSerialTimer = undefined;
+            }
+            return;
+        }
+        if (this.pendingSerialTimer) return; // already counting down
+        const gen = this.serialGen;
+        this.pendingSerialTimer = setTimeout(() => {
+            this.pendingSerialTimer = undefined;
+            if (gen !== this.serialGen || !this.initialized) return;
+            const tail = this.pendingSerial;
+            this.pendingSerial = null;
+            if (tail && tail.length) this.emitSerial(tail);
+        }, SERIAL_FLUSH_MS) as any;
+    }
+
+    /**
+     * Hand one line to pxt, dropping bytes that are not valid text.
+     *
+     * The SEGGER VCOM starts its UART at a slower rate than the one requested and
+     * only switches to 115200 after a moment (seen with hterm and webserial.dev too:
+     * a burst like `5c af af ef bd ff 7c af ...`, then clean lines). pxt decodes each
+     * message strictly and silently discards one containing a single invalid byte, so
+     * that startup burst -- often glued to the first real line -- would swallow
+     * output. Strip what isn't text instead: real text passes untouched.
+     */
+    private emitSerial(line: Uint8Array): void {
+        if (!isValidUtf8(line)) {
+            // keep only what follows the last garbage byte: the burst also contains
+            // stray ASCII (0x5c '\\', 0x7c '|') that would otherwise prefix the line
+            let last = -1;
+            line.forEach((b, i) => { if (b >= 0x80) last = i; });
+            line = line.slice(last + 1)
+                .filter(b => (b >= 0x20 && b < 0x7f) || b === 0x09 || b === 0x0a || b === 0x0d);
+            if (!line.some(b => b > 0x20)) return; // nothing readable left
+        }
+        try {
+            this.onSerial(line, false);
+        } catch (err) {
+            logSerial(`decode error: ${(err as Error).message}`);
+        }
+    }
+
     private async readSerialLoop(gen: number): Promise<void> {
         const port = this.serialPort;
         try {
@@ -1354,11 +1572,8 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
                         const { value, done } = await reader.read();
                         if (done) return; // stream ended (usually stopSerial's cancel)
                         if (value && value.length) {
-                            try {
-                                this.onSerial(new Uint8Array(value.buffer, value.byteOffset, value.byteLength), false);
-                            } catch (err) {
-                                logSerial(`decode error: ${(err as Error).message}`);
-                            }
+                            this.emitSerialLines(
+                                new Uint8Array(value.buffer, value.byteOffset, value.byteLength));
                         }
                     }
                 } catch (e) {
@@ -1459,34 +1674,81 @@ class CalliopeWrapper implements pxt.packetio.PacketIOWrapper {
     constructor(io: pxt.packetio.PacketIO) {
         this.io  = io;
         this.dap = new DAPWrapper(io);
-        // Override the device-change handler set by DAPWrapper so reconnects
-        // go through CalliopeWrapper and can re-detect the device type.
+        // DAPWrapper's constructor installed its own device-change handler (disconnect,
+        // reset usesCODAL/jacdacInHex, reconnect). Keep it and use it unchanged for DAP
+        // boards, so the DAP path behaves exactly as before; this wrapper only has to
+        // pick J-Link vs DAP and tear down the other session.
+        this.dapDeviceChanged = this.io.onDeviceConnectionChanged as (connect: boolean) => Promise<void>;
         this.io.onDeviceConnectionChanged = async (connect: boolean) => {
             log(`device connection changed: ${connect}`);
-            if (!connect) { await this.disconnectAsync(); return; }
-            await this.reconnectAsync();
+            if (!connect) {
+                if (this.jlink) { await this.jlink.disconnectAsync(); return; }
+                await this.dapDeviceChanged(false);
+                return;
+            }
+            await this.reconnectAsync(true);
         };
     }
 
-    async reconnectAsync(): Promise<void> {
+    private dapDeviceChanged: (connect: boolean) => Promise<void>;
+
+    /**
+     * @param fromDeviceChange true when called for a USB attach event: the DAP branch
+     *   then runs DAPWrapper's original device-change handler instead of a bare reconnect.
+     */
+    async reconnectAsync(fromDeviceChange = false): Promise<void> {
         const devices   = await (navigator.usb?.getDevices() ?? Promise.resolve([] as pxt.usb.USBDevice[]));
         const jlinkDev  = devices.find(d => d.vendorId === JLINK_VID && d.productId === JLINK_PID);
+        // Which wrapper handles this board is the most useful fact when serial or flashing
+        // misbehaves; it hinges on a WebUSB *pairing* existing (distinct from the Web
+        // Serial grant). Debug level, since this fires on every reconnect.
+        log(`${devices.length} paired device(s) [`
+            + devices.map(d => `${d.productName || "?"} `
+                + `${d.vendorId?.toString(16)}:${d.productId?.toString(16)}`).join(", ")
+            + `] -> ${jlinkDev ? "jlink" : "dap"}`);
         if (jlinkDev) {
             // If JLinkPacketIOWrapper already registered its own connect listener and
             // is in the middle of reconnecting, don't start a second attempt.
             if (this.jlink?.isConnecting()) return;
-            if (!this.jlink)
+            // Tear the DAP session down first. Swapping v3 -> v2 flips the routing while
+            // the previous session's serial read loop is still issuing transfers, and
+            // WebUSB then rejects the J-Link claimInterface with "An operation that
+            // changes interface state is in progress".
+            //
+            // This must NOT be gated on dap.isConnected(): that is
+            // `io.isConnected() && initialized`, and io.isConnected() is already false
+            // once the board is unplugged -- while the read loop is still running.
+            // cancelReadersAsync() is safe to call unconditionally.
+            await this.dap.cancelReadersAsync().catch(() => {});
+            await this.dap.disconnectAsync().catch(() => {});
+            // Recreate the wrapper whenever getDevices() returns a different USBDevice
+            // object than the one it holds. Chrome issues a fresh object per attach, and
+            // the old one is permanently dead ("The device was disconnected" on open),
+            // so reusing the wrapper across a swap can never reconnect.
+            if (!this.jlink || !this.jlink.usesDevice(jlinkDev))
                 this.jlink = new JLinkPacketIOWrapper(this.io, jlinkDev);
             this.jlink.onSerial      = this._onSerial;
             this.jlink.onCustomEvent = this._onCustomEvent;
             this.familyID            = this.jlink.familyID;
-            return this.jlink.reconnectAsync();
+            // Surface a failed bring-up: pxt may swallow the rejection, and a silent
+            // failure here looks exactly like "serial just doesn't work".
+            return this.jlink.reconnectAsync()
+                .catch(e => {
+                    pxt.log(`packetio: jlink bring-up failed: ${(e as Error)?.message || e}`);
+                    throw e;
+                });
         }
+        // Same in the other direction: close any J-Link session before the DAP wrapper
+        // opens the newly attached board. Unconditional for the same reason as above --
+        // isConnected() is just `initialized`, which is already false after an unplug
+        // even though the device may still be open.
+        if (this.jlink)
+            await this.jlink.disconnectAsync().catch(() => {});
         this.jlink               = null;
         this.dap.onSerial        = this._onSerial;
         this.dap.onCustomEvent   = this._onCustomEvent;
         this.familyID            = this.dap.familyID;
-        return this.dap.reconnectAsync();
+        return fromDeviceChange ? this.dapDeviceChanged(true) : this.dap.reconnectAsync();
     }
 
     disconnectAsync() { return this._active.disconnectAsync(); }
@@ -1500,6 +1762,12 @@ class CalliopeWrapper implements pxt.packetio.PacketIOWrapper {
     }
     unsupportedParts() { return this._active.unsupportedParts?.() ?? []; }
     get devVariant()   { return (this._active as any).devVariant as string | undefined; }
+
+    /** Opening the device serial view: let the active wrapper prompt if it needs to. */
+    requestSerialAsync(): Promise<void> {
+        const a = this._active as any;
+        return a?.requestSerialAsync ? a.requestSerialAsync() : Promise.resolve();
+    }
 }
 
 // Set from editor/extension.tsx so the packetio wrapper can ask the editor to re-run the
@@ -1508,6 +1776,42 @@ class CalliopeWrapper implements pxt.packetio.PacketIOWrapper {
 let projectView: pxt.editor.IProjectView | undefined;
 export function setProjectView(view: pxt.editor.IProjectView) {
     projectView = view;
+
+    // The "Show data (device)" button is always visible (appTarget.serial.useEditor),
+    // but on a SEGGER board (mini v2.x) the serial stream needs a Web Serial port grant
+    // that only a user gesture can request. Wrap openDeviceSerial so that clicking the
+    // button is what raises the picker -- one prompt, at the moment the user asked for
+    // data, instead of appearing unprompted later.
+    const anyView = view as any;
+    if (anyView && !anyView.__calliopeSerialHook) {
+        // The indicator's click handler is `this.props.openSerial(false)` on the
+        // Sidepanel, which forwards to IProjectView.openSerial(isSim) -- NOT
+        // openDeviceSerial(). Hook openSerial and act only on the device side.
+        // openDeviceSerial is wrapped too, for callers that use it directly.
+        const askForPort = () => {
+            try {
+                currentWrapper?.requestSerialAsync();
+            } catch (e) {
+                pxt.log(`serial: could not request port: ${e}`);
+            }
+        };
+
+        if (typeof anyView.openSerial === "function") {
+            const original = anyView.openSerial.bind(view);
+            anyView.openSerial = (isSim: boolean) => {
+                if (!isSim) askForPort();
+                return original(isSim);
+            };
+        }
+        if (typeof anyView.openDeviceSerial === "function") {
+            const original = anyView.openDeviceSerial.bind(view);
+            anyView.openDeviceSerial = () => {
+                askForPort();
+                return original();
+            };
+        }
+        anyView.__calliopeSerialHook = true;
+    }
 }
 
 // Make the simulator show the board that is actually plugged in.
@@ -1530,10 +1834,7 @@ let simVariant: string | undefined = undefined;
 function syncSimulatorWithDevice(variant: string | undefined) {
     if (!variant || variant === simVariant) return;
     simVariant = variant;
-    // pxt.log, not this file's log(): the latter goes through pxt.debug, which is silent
-    // unless the editor runs in debug mode, and this one line is worth seeing when a board
-    // is connected.
-    pxt.log(`simulator: matching board to connected device (${variant})`);
+    log(`simulator: matching board to connected device (${variant})`);
     try {
         if (!projectView) return;
         // Stop, then start -- neither call on its own works here:
@@ -1549,16 +1850,57 @@ function syncSimulatorWithDevice(variant: string | undefined) {
         // The simState reset goes through React's setStateAsync, so start must not run in the
         // same tick; defer it. Stopping a running program is acceptable here: the simulated
         // board would otherwise keep showing the wrong Calliope mini revision.
+        // startSimulator() is refused while simState is 2 (starting) or 3 (running), and
+        // stopSimulator() resolves before React has committed simState: 0 -- it even
+        // returns Promise.resolve() when it thinks the state already matches. A single
+        // stop->start therefore races: the start can land while the previous restart is
+        // still in flight, get refused, and leave the simulator on the old board. (That
+        // is why downloading "fixed" it: the download triggers a later start of its own.)
+        //
+        // Retry a few times on a short delay. Each attempt re-issues the stop, so once
+        // the in-flight restart settles one of them takes effect. Cheap and idempotent:
+        // if the board is already correct, restarting it again changes nothing visible.
         const view = projectView;
-        Promise.resolve(view.stopSimulator())
-            .then(() => view.startSimulator())
-            .catch(e => pxt.log(`simulator: could not restart: ${e}`));
+        const attempt = (n: number): void => {
+            Promise.resolve(view.stopSimulator())
+                .then(() => view.startSimulator())
+                .catch(e => pxt.log(`simulator: restart attempt failed: ${e}`))
+                .then(() => {
+                    // There is no API to read the simulator's current board revision back,
+                    // so success cannot be confirmed -- retry blind, but only once, and
+                    // only if no other board has been plugged in meanwhile. One extra
+                    // stop/start is enough to cover the in-flight-restart race without
+                    // making the simulator flicker repeatedly.
+                    if (n > 0 && simVariant === variant)
+                        setTimeout(() => attempt(n - 1), 600);
+                });
+        };
+        attempt(1);
     } catch (e) {
         pxt.log(`simulator: could not request restart: ${e}`);
     }
 }
 
+/**
+ * Reveal the "Show data (device)" button without waiting for real serial output.
+ *
+ * Only used for SEGGER (mini v2.x) boards -- see the call site. An empty `data` payload
+ * activates the indicator without inserting anything into the serial view.
+ */
+function showDeviceSerialButton(): void {
+    try {
+        window.postMessage({ type: "serial", id: "n/a", data: "" }, "*");
+    } catch (e) {
+        logSerial(`could not reveal serial button: ${(e as Error).message}`);
+    }
+}
+
+// The most recently created wrapper. pxt.packetio keeps its instance private, so this is
+// how the openDeviceSerial hook below reaches it.
+let currentWrapper: CalliopeWrapper | undefined;
+
 export function mkPacketIOWrapper(io: pxt.packetio.PacketIO): pxt.packetio.PacketIOWrapper {
     pxt.log(`packetio: mk calliope wrapper`);
-    return new CalliopeWrapper(io);
+    currentWrapper = new CalliopeWrapper(io);
+    return currentWrapper;
 }

@@ -5,4 +5,8 @@ namespace pxsim.control {
         return board().hardwareVersion >= 3 ? "3" : "2";
     }
 
+    // control.simulatorBoardVersion(): the revision is applied in DalBoard.initAsync from the
+    // tracked compile-time argument, before the board is drawn; nothing to do at runtime.
+    export function simulatorBoardVersion(version: string) { }
+
 }

@@ -757,7 +757,6 @@ namespace pxsim.visuals {
         private motorRotors: SVGElement[];
         private motorGroups: SVGElement[];
         private buttonGroup: SVGGElement;
-        private versionToggle: SVGGElement;
         private pinDragSurfaces: Map<SVGElement> = {};
         private pinNmToCoord: Map<Coord> = {
 			"EXT_PWR": [
@@ -2533,50 +2532,6 @@ namespace pxsim.visuals {
 
             this.buttonGroup = svg.child(this.element, "g") as SVGGElement;
 
-            // Calliope mini revision toggle (v2 <-> v3), rendered inside the simulator.
-            this.buildVersionToggle();
-        }
-
-        // Small in-simulator button (top-right of the board) that switches the rendered
-        // Calliope mini revision between v2 and v3. It shows the current revision and, on
-        // click, persists the choice and rebuilds the board artwork in place.
-        private buildVersionToggle() {
-            const w = 70, h = 32, pad = 14;
-            const x = MB_WIDTH - w - pad, y = pad;
-            const g = svg.child(this.element, "g", { class: "sim-version-toggle" }) as SVGGElement;
-            (g.style as any).cursor = "pointer";
-            const bg = svg.child(g, "rect", {
-                x, y, width: w, height: h, rx: 7, ry: 7,
-                fill: "#044854", stroke: "#ffffff", "stroke-width": 1.5, opacity: 0.92
-            });
-            const label = svg.child(g, "text", {
-                x: x + w / 2, y: y + h / 2,
-                "text-anchor": "middle", "dominant-baseline": "central",
-                fill: "#ffffff", "font-size": 16, "font-weight": "bold",
-                "font-family": "sans-serif", "pointer-events": "none"
-            }) as SVGTextElement;
-            label.textContent = "mini " + (this.domHardwareVersion == 2 ? "v2" : "v3");
-            svg.hydrate(g, { title: pxsim.localization.lf("Switch Calliope mini revision (v2/v3)") });
-            // Keyboard/screen-reader operability: focusable button, Enter/Space toggles.
-            accessibility.makeFocusable(g);
-            accessibility.setAria(g, "button", pxsim.localization.lf("Switch Calliope mini revision (v2/v3)"));
-            accessibility.enableKeyboardInteraction(g, () => this.toggleHardwareVersion());
-            // Swallow pointer events so the board's tilt/accelerometer handlers don't react.
-            pointerEvents.down.forEach(evid => g.addEventListener(evid, (ev: Event) => ev.stopPropagation()));
-            g.addEventListener("click", (ev: Event) => {
-                ev.stopPropagation();
-                this.toggleHardwareVersion();
-            });
-            this.versionToggle = g;
-        }
-
-        // Flip the hardware revision (v2 <-> v3), persist it so the re-init picks it up, and
-        // restart the simulator exactly like the "Restart" toolbar button. initAsync() reads the
-        // persisted revision when the board is re-created, so the whole board is rebuilt cleanly.
-        private toggleHardwareVersion() {
-            const next = this.domHardwareVersion == 2 ? 3 : 2;
-            try { localStorage.setItem("calliope:simHwVersion", "" + next); } catch (e) { }
-            Runtime.postMessage(<pxsim.SimulatorCommandMessage>{ type: "simulator", command: "restart" });
         }
 
         private mkBtn(left: number, top: number, text: string): { outer: SVGElement, inner: SVGElement } {
