@@ -7,9 +7,10 @@ three-block program, so the whole class got about one image per second.
 
 The fix is a change to pxt (`pxtrunner`, `pxtblocks`, `pxtsim`), not to this
 target: [`render-server-performance.patch`](render-server-performance.patch),
-one commit on top of pxt `v13.1.8` (branch `obeya/render-server-cache` in the
-local pxt checkout). It also merges cleanly onto upstream `microsoft/pxt` master
-(as of 2026-10-30).
+one commit on top of pxt `v13.1.8`, kept for now on its own branch in the
+Calliope fork: `calliope-edu/pxt`, branch `render-server-perf`. It also merges
+cleanly onto upstream `microsoft/pxt` master (as of 2026-10-30); no upstream
+pull request has been opened yet.
 
 ## Where makecode.calliope.cc comes from
 
