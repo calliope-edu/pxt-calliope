@@ -1,0 +1,234 @@
+From 9473964ab340fc30ead5ad420426ea7d23ac559f Mon Sep 17 00:00:00 2001
+From: Juri Wolf <Amerlander@users.noreply.github.com>
+Date: Fri, 30 Oct 2026 02:18:17 +0100
+Subject: [PATCH] Speed up the blocks render server (--docs?render=1)
+
+Every renderblocks job used to recompile the package, fetch semantic.css
+and blockly.css again, create and dispose a Blockly workspace, parse the
+inlined stylesheet into the svg document and encode a png. A three-block
+program took about 1 s per image, so a page rendering many projects (a
+class overview) fell far behind.
+
+- compileBlocksAsync keeps the blocks info per package (requests without
+  assets) and only re-injects blocks when another render injected others.
+- blocklyToSvgAsync fetches the embedded stylesheets once per page and
+  splices the css into the serialized svg instead of parsing it into the
+  document; the resulting svg is unchanged.
+- render() can keep its workspace (reuseWorkspace); the render server
+  uses this, so jobs no longer create a workspace and AudioContext each.
+- New renderblocks option svgOnly: respond with the svg only, without
+  png and base64 data uri. Without it the response is as before.
+
+Measured on twelve sequential jobs of a small program: warm ~1000 ms per
+job before, ~340 ms after, ~60 ms with svgOnly. Rendered svgs of the
+pxt-calliope blocks tests are identical apart from Blockly's random ids.
+---
+ pxtblocks/layout.ts | 42 +++++++++++++++++++++++++++++++++---------
+ pxtblocks/render.ts | 11 +++++++----
+ pxtrunner/runner.ts | 28 ++++++++++++++++++++++++++--
+ pxtsim/embed.ts     |  2 ++
+ 4 files changed, 68 insertions(+), 15 deletions(-)
+
+diff --git a/pxtblocks/layout.ts b/pxtblocks/layout.ts
+index e3af974fc..6d967b75c 100644
+--- a/pxtblocks/layout.ts
++++ b/pxtblocks/layout.ts
+@@ -375,7 +375,22 @@ export function cleanUpBlocklySvg(svg: SVGElement, sourceSvg: SVGElement): SVGEl
+     return svg;
+ }
+ 
+-export async function blocklyToSvgAsync(sg: SVGElement, x: number, y: number, width: number, height: number, scale?: number): Promise<BlockSvg> {
++// the stylesheets embedded in every rendered svg; fetched once per page instead of per render
++let cssCache: pxt.Map<Promise<string>>;
++function loadCssAsync(href: string): Promise<string> {
++    if (!cssCache) cssCache = {};
++    if (!cssCache[href]) {
++        cssCache[href] = pxt.BrowserUtils.loadAjaxAsync(href)
++            .catch(e => {
++                delete cssCache[href];
++                throw e;
++            });
++    }
++    return cssCache[href];
++}
++
++// skipDataUri: leave BlockSvg.xml (the base64 data uri) undefined, for callers that only use the svg
++export async function blocklyToSvgAsync(sg: SVGElement, x: number, y: number, width: number, height: number, scale?: number, skipDataUri?: boolean): Promise<BlockSvg> {
+     if (!sg.childNodes[0])
+         return undefined;
+ 
+@@ -400,8 +415,8 @@ export async function blocklyToSvgAsync(sg: SVGElement, x: number, y: number, wi
+     const semanticCssHref = semanticCssLink?.href;
+ 
+     const customCss = await Promise.all([
+-        customCssHref ? pxt.BrowserUtils.loadAjaxAsync(customCssHref) : Promise.resolve(""),
+-        semanticCssHref ? pxt.BrowserUtils.loadAjaxAsync(semanticCssHref) : Promise.resolve("")
++        customCssHref ? loadCssAsync(customCssHref) : Promise.resolve(""),
++        semanticCssHref ? loadCssAsync(semanticCssHref) : Promise.resolve("")
+     ]);
+ 
+     const blocklySvg = pxt.Util.toArray(document.head.querySelectorAll("style"))
+@@ -413,7 +428,9 @@ export async function blocklyToSvgAsync(sg: SVGElement, x: number, y: number, wi
+     customCss.unshift(rendererStyle?.innerText || "");
+     // CSS may contain <, > which need to be stored in CDATA section
+     const cssString = (blocklySvg ? blocklySvg.innerText : "") + '\n\n' + customCss.map(el => el + '\n\n');
+-    cssLink.appendChild(xsg.createCDATASection(cssString));
++    // The css is spliced into the serialized svg below instead of being added to xsg here:
++    // the document would parse the whole stylesheet (semantic.css included) on every render.
++    cssLink.appendChild(xsg.createCDATASection(CSS_PLACEHOLDER));
+     xsg.documentElement.insertBefore(cssLink, xsg.documentElement.firstElementChild);
+ 
+     const disabledPattern = sg.style.getPropertyValue(DISABLED_PATTERN_PROP);
+@@ -424,19 +441,26 @@ export async function blocklyToSvgAsync(sg: SVGElement, x: number, y: number, wi
+     await expandImagesAsync(xsg);
+     await convertIconsToPngAsync(xsg);
+ 
++    const xml = new XMLSerializer().serializeToString(xsg)
++        .replace(`<![CDATA[${CSS_PLACEHOLDER}]]>`, () => `<![CDATA[${cssString}]]>`);
++
+     return <BlockSvg>{
+         width: renderWidth,
+         height: renderHeight,
+-        svg: serializeNode(xsg).replace('<style xmlns="http://www.w3.org/1999/xhtml">', '<style>'),
+-        xml: documentToSvg(xsg),
++        svg: serializeSvgString(xml).replace('<style xmlns="http://www.w3.org/1999/xhtml">', '<style>'),
++        xml: skipDataUri ? undefined : svgXmlToDataUri(xml),
+         css: cssString
+     };
+ }
+ 
++const CSS_PLACEHOLDER = "pxt-blocks-css";
++
+ export function documentToSvg(xsg: Node): string {
+-    const xml = new XMLSerializer().serializeToString(xsg);
+-    const data = "data:image/svg+xml;base64," + ts.pxtc.encodeBase64(unescape(encodeURIComponent(xml)));
+-    return data;
++    return svgXmlToDataUri(new XMLSerializer().serializeToString(xsg));
++}
++
++function svgXmlToDataUri(xml: string): string {
++    return "data:image/svg+xml;base64," + ts.pxtc.encodeBase64(unescape(encodeURIComponent(xml)));
+ }
+ 
+ let imageXLinkCache: pxt.Map<string>;
+diff --git a/pxtblocks/render.ts b/pxtblocks/render.ts
+index fc6f90515..9c49affdb 100644
+--- a/pxtblocks/render.ts
++++ b/pxtblocks/render.ts
+@@ -21,6 +21,8 @@ export interface BlocksRenderOptions {
+     forceCompilation?: boolean;
+     generateSourceMap?: boolean;
+     assets?: pxt.Map<string>;
++    // keep the rendering workspace for the next render instead of disposing it
++    reuseWorkspace?: boolean;
+ }
+ 
+ export function initRenderingWorkspace() {
+@@ -102,13 +104,14 @@ export function render(blocksXml: string, options: BlocksRenderOptions = { emPix
+             { applyHideMetaComment: true }
+         );
+ 
+-        return renderWorkspace(options);
++        const svg = renderWorkspace(options);
++        if (!options.reuseWorkspace)
++            cleanRenderingWorkspace();
++        return svg;
+     } catch (e) {
+         pxt.reportException(e);
+-        return undefined;
+-    }
+-    finally {
+         cleanRenderingWorkspace();
++        return undefined;
+     }
+ }
+ 
+diff --git a/pxtrunner/runner.ts b/pxtrunner/runner.ts
+index d542770a6..a70a1cf25 100644
+--- a/pxtrunner/runner.ts
++++ b/pxtrunner/runner.ts
+@@ -690,6 +690,8 @@ export function startRenderServer() {
+ 
+         const options = (msg.options || {}) as BlocksRenderOptions;
+         options.splitSvg = false; // don't split when requesting rendered images
++        options.reuseWorkspace = true; // creating a Blockly workspace per job is slow
++        const svgOnly = !!msg.options?.svgOnly;
+         pxt.tickEvent("renderer.job")
+         const isXml = /^\s*<xml/.test(msg.code);
+ 
+@@ -708,7 +710,7 @@ export function startRenderServer() {
+ 
+             let res: BlockSvg;
+             try {
+-                res = await blocklyToSvgAsync(blocksSvg, 0, 0, width, height);
++                res = await blocklyToSvgAsync(blocksSvg, 0, 0, width, height, undefined, svgOnly);
+             } catch (e) {
+                 pxt.reportException(e);
+                 throw e;
+@@ -717,7 +719,7 @@ export function startRenderServer() {
+             // try to render to png
+             let png: string;
+             try {
+-                png = res
++                png = res && !svgOnly
+                     ? await pxt.BrowserUtils.encodeToPngAsync(res.xml, { width, height })
+                     : undefined;
+             } catch (e) {
+@@ -1298,12 +1300,32 @@ function getApiInfo(program: ts.Program, opts: pxtc.CompileOptions) {
+     return apiCache[key];
+ }
+ 
++// Blocks info per package for compileBlocksAsync. The blocks XML being rendered
++// does not change the APIs of the package, so compiling the package once is
++// enough; only requests with assets (which add APIs) skip this cache.
++const blocksInfoCache: pxt.Map<{ apis: pxtc.ApisInfo, blocksInfo: pxtc.BlocksInfo }> = {};
++
+ export function compileBlocksAsync(code: string, options?: BlocksRenderOptions): Promise<DecompileResult> {
+     const { assets } = options || {};
+ 
+     const packageid = options && options.packageId ? "pub:" + options.packageId :
+         options && options.package ? "docs:" + options.package
+             : null;
++    const cacheKey = assets ? undefined : packageid || "";
++    const cached = cacheKey !== undefined && blocksInfoCache[cacheKey];
++    if (cached) {
++        return loadPackageAsync(packageid, "")
++            .then(() => {
++                // other renders may have injected a different set of blocks in the meantime
++                if (pxtblockly.cachedBlockInfo !== cached.blocksInfo)
++                    initializeAndInject(cached.blocksInfo);
++                return <DecompileResult>{
++                    package: mainPkg,
++                    blocksSvg: render(code, options),
++                    apiInfo: cached.apis
++                };
++            });
++    }
+     return loadPackageAsync(packageid, "")
+         .then(() => getCompileOptionsAsync(pxt.appTarget.compile ? pxt.appTarget.compile.hasHex : false))
+         .then(opts => {
+@@ -1322,6 +1344,8 @@ export function compileBlocksAsync(code: string, options?: BlocksRenderOptions):
+                 .then(() => {
+                     const blocksInfo = pxtc.getBlocksInfo(apis);
+                     initializeAndInject(blocksInfo);
++                    if (cacheKey !== undefined)
++                        blocksInfoCache[cacheKey] = { apis, blocksInfo };
+ 
+                     const tilemapJres = assets?.[pxt.TILEMAP_JRES];
+                     const assetsJres = assets?.[pxt.IMAGES_JRES];
+diff --git a/pxtsim/embed.ts b/pxtsim/embed.ts
+index e563493c6..90684e8ce 100644
+--- a/pxtsim/embed.ts
++++ b/pxtsim/embed.ts
+@@ -253,6 +253,8 @@ namespace pxsim {
+             packageId?: string;
+             package?: string;
+             snippetMode?: boolean;
++            // only send back the svg: no png and no data uri (uri stays undefined)
++            svgOnly?: boolean;
+         }
+     }
+ 
+-- 
+2.42.0.windows.2
+
