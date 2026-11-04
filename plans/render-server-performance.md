@@ -7,10 +7,11 @@ three-block program, so the whole class got about one image per second.
 
 The fix is a change to pxt (`pxtrunner`, `pxtblocks`, `pxtsim`), not to this
 target: [`render-server-performance.patch`](render-server-performance.patch),
-one commit on top of pxt `v13.1.8`, kept for now on its own branch in the
-Calliope fork: `calliope-edu/pxt`, branch `render-server-perf`. It also merges
-cleanly onto upstream `microsoft/pxt` master (as of 2026-10-30). Upstream pull
-request: [microsoft/pxt#11726](https://github.com/microsoft/pxt/pull/11726).
+two commits on top of pxt `v13.1.8` (the change and the fixes from review), on
+their own branch in the Calliope fork: `calliope-edu/pxt`, branch
+`render-server-perf` (with upstream master merged in). Upstream pull request:
+[microsoft/pxt#11726](https://github.com/microsoft/pxt/pull/11726), approved on
+2026-11-04.
 
 ## Where makecode.calliope.cc comes from
 
@@ -34,7 +35,7 @@ Profiled per warm job (headless Chrome, small program, local `pxt serve`):
 | `semantic.css` + `blockly.css` fetched again for every image | 150 ms to several s | fetched once per page (`loadCssAsync`) |
 | new Blockly workspace (incl. an `AudioContext`) created and disposed per render | ~140 ms | the render server keeps the workspace (`reuseWorkspace`) |
 | the ~1.4 MB inlined stylesheet parsed into the svg document | ~90 ms | css spliced into the serialized string instead |
-| package compile + `getBlocksInfo` + block injection (`compileBlocksAsync`) | 380–550 ms on the live site | blocks info cached per package; re-injected only when another render injected different blocks |
+| package compile + `getBlocksInfo` + block injection (`compileBlocksAsync`) | 380–550 ms on the live site | blocks info cached per package, used only in the locale it was built in; re-injected only when another render injected different blocks |
 | png encoding (`encodeToPngAsync`) | ~220 ms | skipped with the new option `svgOnly` |
 | base64 data uri of the svg | ~65 ms | skipped with `svgOnly` |
 
@@ -74,3 +75,7 @@ a comment and a disabled block were rendered with released and patched pxt
 (patched: twice, in different orders, to catch state left in the reused
 workspace). The svgs are identical apart from Blockly's random element ids, the
 embedded css is identical, and the rasterized images are byte-identical.
+
+After review, a locale switch inside the render page (language set to `de` with
+a German block label, then back to `en`) gives the same labels as released pxt,
+and a TypeScript job without options gives the same svg as released pxt.

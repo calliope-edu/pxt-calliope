@@ -1,7 +1,7 @@
 From 9473964ab340fc30ead5ad420426ea7d23ac559f Mon Sep 17 00:00:00 2001
 From: Juri Wolf <Amerlander@users.noreply.github.com>
 Date: Fri, 30 Oct 2026 02:18:17 +0100
-Subject: [PATCH] Speed up the blocks render server (--docs?render=1)
+Subject: [PATCH 1/2] Speed up the blocks render server (--docs?render=1)
 
 Every renderblocks job used to recompile the package, fetch semantic.css
 and blockly.css again, create and dispose a Blockly workspace, parse the
@@ -229,6 +229,74 @@ index e563493c6..90684e8ce 100644
          }
      }
  
+-- 
+2.42.0.windows.2
+
+
+From e666856566350657feff43b3a908740ec65354f6 Mon Sep 17 00:00:00 2001
+From: Juri Wolf <Amerlander@users.noreply.github.com>
+Date: Wed, 4 Nov 2026 21:14:47 +0100
+Subject: [PATCH 2/2] Address review: locale-aware blocks cache, reuse
+ workspace for TS jobs
+
+- The blocks info cache entry is only used in the locale it was built in.
+  The docs renderer can switch the locale (setEditorContextAsync), and the
+  apis are localized in place, so a switch rebuilds the entry; before,
+  blocks kept the labels of the previous language.
+- TypeScript render jobs without options now also reuse the rendering
+  workspace, with render()'s default layout (emPixels 18, Align).
+---
+ pxtrunner/runner.ts | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/pxtrunner/runner.ts b/pxtrunner/runner.ts
+index a70a1cf25..46642e337 100644
+--- a/pxtrunner/runner.ts
++++ b/pxtrunner/runner.ts
+@@ -698,7 +698,8 @@ export function startRenderServer() {
+         const doWork = async () => {
+             const result = isXml
+                 ? await compileBlocksAsync(msg.code, options)
+-                : await decompileSnippetAsync(msg.code, msg.options);
++                // without options, render() lays the blocks out with its defaults; keep those
++                : await decompileSnippetAsync(msg.code, msg.options ? options : { emPixels: 18, layout: pxt.editor.BlockLayout.Align, reuseWorkspace: true });
+ 
+             const blocksSvg = result.blocksSvg as SVGSVGElement;
+             if (!blocksSvg) {
+@@ -1302,8 +1303,11 @@ function getApiInfo(program: ts.Program, opts: pxtc.CompileOptions) {
+ 
+ // Blocks info per package for compileBlocksAsync. The blocks XML being rendered
+ // does not change the APIs of the package, so compiling the package once is
+-// enough; only requests with assets (which add APIs) skip this cache.
+-const blocksInfoCache: pxt.Map<{ apis: pxtc.ApisInfo, blocksInfo: pxtc.BlocksInfo }> = {};
++// enough; only requests with assets (which add APIs) skip this cache. An entry
++// is only used in the locale it was built in: the docs renderer can switch the
++// locale (setEditorContextAsync), and the apis are localized in place, so a
++// switch rebuilds the entry instead of keeping one per locale.
++const blocksInfoCache: pxt.Map<{ locale: string, apis: pxtc.ApisInfo, blocksInfo: pxtc.BlocksInfo }> = {};
+ 
+ export function compileBlocksAsync(code: string, options?: BlocksRenderOptions): Promise<DecompileResult> {
+     const { assets } = options || {};
+@@ -1312,8 +1316,9 @@ export function compileBlocksAsync(code: string, options?: BlocksRenderOptions):
+         options && options.package ? "docs:" + options.package
+             : null;
+     const cacheKey = assets ? undefined : packageid || "";
++    const locale = pxt.Util.localeInfo();
+     const cached = cacheKey !== undefined && blocksInfoCache[cacheKey];
+-    if (cached) {
++    if (cached && cached.locale === locale) {
+         return loadPackageAsync(packageid, "")
+             .then(() => {
+                 // other renders may have injected a different set of blocks in the meantime
+@@ -1345,7 +1350,7 @@ export function compileBlocksAsync(code: string, options?: BlocksRenderOptions):
+                     const blocksInfo = pxtc.getBlocksInfo(apis);
+                     initializeAndInject(blocksInfo);
+                     if (cacheKey !== undefined)
+-                        blocksInfoCache[cacheKey] = { apis, blocksInfo };
++                        blocksInfoCache[cacheKey] = { locale, apis, blocksInfo };
+ 
+                     const tilemapJres = assets?.[pxt.TILEMAP_JRES];
+                     const assetsJres = assets?.[pxt.IMAGES_JRES];
 -- 
 2.42.0.windows.2
 
