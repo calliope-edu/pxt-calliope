@@ -9,8 +9,8 @@ The fix is a change to pxt (`pxtrunner`, `pxtblocks`, `pxtsim`), not to this
 target: [`render-server-performance.patch`](render-server-performance.patch),
 one commit on top of pxt `v13.1.8`, kept for now on its own branch in the
 Calliope fork: `calliope-edu/pxt`, branch `render-server-perf`. It also merges
-cleanly onto upstream `microsoft/pxt` master (as of 2026-10-30); no upstream
-pull request has been opened yet.
+cleanly onto upstream `microsoft/pxt` master (as of 2026-10-30). Upstream pull
+request: [microsoft/pxt#11726](https://github.com/microsoft/pxt/pull/11726).
 
 ## Where makecode.calliope.cc comes from
 
