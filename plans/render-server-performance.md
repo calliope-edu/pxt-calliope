@@ -64,6 +64,14 @@ Twelve sequential jobs of a three-block program to one iframe (as in
 | patched, without option | ~340 ms |
 | patched, `svgOnly: true` | ~60 ms |
 
+Against the hosted editors on 2026-11-05 (same test, headless Chrome):
+
+| Editor | warm job (median) |
+| --- | --- |
+| `makecode.calliope.cc` (8.1.15, pxt 13.1.8) | ~800 ms |
+| `makecode.calliope.cc/beta` (8.1.16, pxt 13.3.1) | ~330 ms |
+| `makecode.calliope.cc/beta`, `svgOnly: true` | ~80 ms |
+
 The same headless browser measured ~1400 ms per job against the live site, where
 the campus document measured 850 ms in a desktop browser, so real numbers are
 likely lower still.
