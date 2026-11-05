@@ -10,8 +10,9 @@ target: [`render-server-performance.patch`](render-server-performance.patch),
 two commits on top of pxt `v13.1.8` (the change and the fixes from review), on
 their own branch in the Calliope fork: `calliope-edu/pxt`, branch
 `render-server-perf` (with upstream master merged in). Upstream pull request:
-[microsoft/pxt#11726](https://github.com/microsoft/pxt/pull/11726), approved on
-2026-11-04.
+[microsoft/pxt#11726](https://github.com/microsoft/pxt/pull/11726), merged on
+2026-11-05. It ships in pxt 13.3.1, which pxt-calliope `v8.1.16` uses; that release
+is on `https://makecode.calliope.cc/beta` (not yet live as of 2026-11-05).
 
 ## Where makecode.calliope.cc comes from
 
