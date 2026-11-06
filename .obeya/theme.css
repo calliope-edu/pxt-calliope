@@ -1,0 +1,264 @@
+/*
+ * Calliope theme for the demo pages Obeya shares (.obeya/theme.css).
+ *
+ * The same file sits in every repository of the Calliope canvas (calliope-campus, pxt-iot-sim,
+ * mini-connection-widget, calliope-ui, pxt-calliope, pxt), so all their pages look alike. Change it
+ * here and copy it, with fonts/ and calliope-mark.svg, to the others.
+ *
+ * Obeya puts it into every shared page after its own style; the markup it styles is listed in
+ * Obeya's design doc, chapter "Sharing demos" (A repository's theme). Files named with url() go into
+ * the page as data: URLs and must lie in .obeya/; anything on the internet is dropped.
+ *
+ * Values follow the calliope-ui tokens (@calliope-edu/ui, tokens.css): palette ink/white/mist/
+ * graphite, teal as brand, Roboto for text and Roboto Condensed for headings. Text stays black or
+ * white; teal marks lines (link underline, active chapter, focus), never text.
+ */
+
+/* Roboto and Roboto Condensed, Latin, variable weight (SIL OFL, see fonts/OFL.txt) */
+@font-face {
+	font-family: 'Roboto';
+	src: url('fonts/roboto-latin-wght-normal.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Roboto Condensed';
+	src: url('fonts/roboto-condensed-latin-wght-normal.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+:root {
+	/* Obeya's colour variables */
+	--bg: #ffffff; /* --cui-surface-page */
+	--card: #ffffff; /* --cui-surface-default */
+	--ink: #1b1c1d; /* --cui-text-default */
+	--muted: #1b1c1db3; /* --cui-text-muted */
+	--line: #e8edeb; /* --cui-border-subtle */
+	--chip: #e8edeb; /* --cui-surface-subtle */
+	--accent: #1d8286; /* --cui-accent-line, --cui-focus-ring */
+
+	/* the theme's own */
+	--band: #1b1c1d; /* the header band, ink in light and dark like Campus' header */
+	--band-line: transparent;
+	--brand: #42c8c8; /* --cui-brand-default */
+	--control: #1b1c1d99; /* --cui-border-control */
+	--hover: #1b1c1d14; /* --cui-action-hover */
+	--sans: Roboto, system-ui, 'Segoe UI', sans-serif;
+	--condensed: 'Roboto Condensed', 'Arial Narrow', sans-serif;
+	--radius: 8px; /* --cui-radius-lg: cards, panels */
+	--column: 1080px; /* Obeya's main, padding included */
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #000000;
+		--card: #1b1c1d;
+		--ink: #ffffff;
+		--muted: #ffffffb3;
+		--line: #323334;
+		--chip: #323334;
+		--accent: #42c8c8;
+		--band-line: #323334;
+		--control: #ffffff99;
+		--hover: #ffffff1f;
+	}
+}
+
+body {
+	font-family: var(--sans);
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* The header band: the Calliope mark and name above every page, aligned with the content column */
+body::before {
+	--edge: max(24px, calc((100% - var(--column)) / 2 + 24px));
+	content: 'Calliope';
+	display: flex;
+	align-items: center;
+	height: 56px;
+	padding-left: calc(var(--edge) + 38px);
+	background: var(--band) url('calliope-mark.svg') no-repeat var(--edge) center / 27px 26px;
+	border-bottom: 1px solid var(--band-line);
+	color: #ffffff;
+	font: 600 20px/1 var(--condensed);
+	letter-spacing: 0.01em;
+}
+
+body.alone::before {
+	display: none;
+}
+
+/* Text: black or white; links keep the ink and carry teal in their underline */
+a {
+	color: var(--ink);
+	text-decoration-color: var(--accent);
+	text-decoration-thickness: 2px;
+	text-underline-offset: 3px;
+}
+
+a:hover {
+	text-decoration-color: currentColor;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+h1 {
+	font: 700 32px/1.15 var(--condensed);
+	letter-spacing: -0.005em;
+}
+
+.top,
+.when {
+	font-size: 13px;
+}
+
+.text p {
+	max-width: 70ch;
+}
+
+/* Player: video, the big play button in the brand's teal, the chapters */
+video {
+	border-radius: var(--radius);
+}
+
+.start span {
+	background: var(--brand);
+	box-shadow: 0 2px 12px #0000004d;
+}
+
+.start:hover span {
+	background: var(--brand);
+}
+
+.start svg {
+	fill: #1b1c1d;
+}
+
+ol {
+	border-radius: var(--radius);
+}
+
+ol button {
+	border-radius: 4px;
+}
+
+ol button:hover {
+	background: var(--hover);
+}
+
+ol button.on {
+	background: var(--card);
+	box-shadow: inset 2px 0 0 var(--accent);
+	font-weight: 500;
+}
+
+.pr,
+.links {
+	font-weight: 500;
+}
+
+/* Artifact frame */
+.artifact {
+	border-radius: var(--radius);
+}
+
+/* Tags on a page and in the overview */
+.tag {
+	border-radius: 9999px;
+	font-weight: 500;
+}
+
+a.tag:hover {
+	border-color: var(--ink);
+}
+
+/* Several versions on one page */
+.sections a {
+	color: var(--muted);
+}
+
+.sections a:hover {
+	color: var(--ink);
+}
+
+section.addendum h2 {
+	font: 600 13px/1.4 var(--sans);
+	letter-spacing: 0.04em;
+}
+
+section.addendum h3 {
+	font: 700 26px/1.2 var(--condensed);
+}
+
+/* The overview */
+ul.demos a {
+	border-radius: var(--radius);
+	text-decoration: none;
+}
+
+ul.demos a:hover {
+	border-color: var(--ink);
+}
+
+ul.demos b {
+	font: 600 20px/1.25 var(--condensed);
+	margin-bottom: 2px;
+}
+
+ul.demos i em {
+	color: var(--ink);
+	font-weight: 500;
+}
+
+.filter input {
+	border: 1px solid var(--control);
+	border-radius: 6px;
+	padding: 8px 12px;
+}
+
+.filter input:focus {
+	border-color: var(--control);
+}
+
+.filter input:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+.chip {
+	border-radius: 9999px;
+	font-weight: 500;
+}
+
+.chip:hover {
+	border-color: var(--ink);
+}
+
+.chip[aria-pressed='true'] {
+	background: var(--ink);
+	border-color: var(--ink);
+	color: var(--bg);
+}
+
+.copy-all,
+.copy {
+	color: var(--ink);
+	font-weight: 500;
+}
+
+.copy:hover {
+	background: var(--hover);
+}
+
+.credit {
+	padding-top: 16px;
+	border-top: 1px solid var(--line);
+}
