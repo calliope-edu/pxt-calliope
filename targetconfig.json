@@ -198,6 +198,13 @@
                     "Display"
                 ]
             },
+            "waldbaer/pxt-ledmatrix": {
+                "tags": [
+                    "Display",
+                    "RGB",
+                    "Lights and Display"
+                ]
+            },
             "mkleinsb/scrolltext": {},
             "mkleinsb/pxt-bme680": {
                 "tags": [
