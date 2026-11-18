@@ -981,8 +981,9 @@ export function mkDAPLinkPacketIOWrapper(io: pxt.packetio.PacketIO): pxt.packeti
 // How long to wait before flushing serial bytes that never got a line terminator.
 // Matches the DAP path's 500ms rule in readSerial().
 const SERIAL_FLUSH_MS = 500;
-// Rate for the J-Link VCOM; see the note at port.open().
-const SERIAL_BAUD = 115200;
+// Rates for the J-Link VCOM; see the note at port.open(). The target UART runs at 115200.
+const SERIAL_BAUD_PRIME = 115200; // first open: only queues the rate in the J-Link
+const SERIAL_BAUD = 115201;       // second open: must differ, see port.open()
 const JLINK_VID = 0x1366;  // SEGGER
 const JLINK_PID = 0x1025;  // Calliope mini v2
 const JLINK_INTERFACE = 2; // Vendor-specific interface for J-Link commands
@@ -1410,12 +1411,15 @@ class JLinkPacketIOWrapper implements pxt.packetio.PacketIOWrapper {
         if (this.serialPort === port) return;
 
         try {
-            // The J-Link VCOM keeps its power-up 9600 until it receives SET_LINE_CODING.
-            // Chrome 155 on Linux sent none when opening at the standard 115200 (verified
-            // with usbmon), so the VCOM sampled the 115200 target as garbage
-            // (5c af af ef bd ff ...). Chrome 156 and Chrome on macOS work. If it comes
-            // back: opening at 115201 (non-standard rate, passed through by Chrome) made
-            // the J-Link switch immediately; 1 baud off is far below UART tolerance.
+            // The J-Link VCOM of the mini 2.1 starts at 9600 after USB connect and applies
+            // baud-rate requests one step late: an open at 115200 still runs at the previous
+            // rate and shows garbage (5c af af ef bd ff ...); the NEXT open then gets 115200.
+            // So open twice. The second rate must differ from the first, otherwise the
+            // kernel sends no SET_LINE_CODING at all (cdc_acm only sends on a change);
+            // 115201 is 1 baud off, far below any UART tolerance.
+            await port.open({ baudRate: SERIAL_BAUD_PRIME });
+            await port.close();
+            await pxt.Util.delay(100);
             await port.open({ baudRate: SERIAL_BAUD });
         } catch (e) {
             // e.g. the OS is still re-binding the CDC device after the
