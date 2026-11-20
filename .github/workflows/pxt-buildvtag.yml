@@ -43,5 +43,3 @@ jobs:
           CHROME_BIN: chromium-browser
           DISPLAY: :99.0
           CI: true
-          # pxt ci checks every docs snippet in one process and outgrows the default 4 GB heap
-          NODE_OPTIONS: --max-old-space-size=8192
