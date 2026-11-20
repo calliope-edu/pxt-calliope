@@ -218,7 +218,7 @@ declare namespace basic {
 
 
 
-    //% color=#c90072 weight=99 icon="\uf192"
+    //% color=#D400D4 weight=111 icon="\uf192"
 declare namespace input {
 
     /**
@@ -247,7 +247,7 @@ declare namespace input {
     function onButtonPressed(button: Button, body: () => void): void;
 
     /**
-     * Do something when when a gesture is done (like shaking the Calliope mini).
+     * Do something when when a gesture is done (like shaking the micro:bit).
      * @param gesture the type of gesture to track, eg: Gesture.Shake
      * @param body code to run when gesture is raised
      */
@@ -406,16 +406,6 @@ declare namespace input {
     //% advanced=true
     //% group="Configuration" shim=input::setAccelerometerRange
     function setAccelerometerRange(range: AcceleratorRange): void;
-
-    /**
-     * Returns 'true' when the compass is calibrated. Otherwise returns 'false'.
-     */
-    //% help=input/calibrate-compass advanced=true
-    //% blockId="input_compass_is_calibrated" block="is compass calibrated"
-    //% weight=19
-    //% group="System"
-    //% deprecated=true shim=input::isCalibratedCompass
-    function isCalibratedCompass(): boolean;
 }
 
 
@@ -453,7 +443,7 @@ declare namespace control {
     function waitForEvent(src: int32, value: int32): void;
 
     /**
-     * Resets the Calliope mini.
+     * Resets the BBC micro:bit.
      */
     //% weight=30 async help=control/reset blockGap=8
     //% blockId="control_reset" block="reset" shim=control::reset
@@ -624,7 +614,7 @@ declare namespace control {
 
 
 
-    //% color=#8169E6 weight=35 icon="\uf205"
+    //% color=#7600A8 weight=101 icon="\uf205"
 declare namespace led {
 
     /**

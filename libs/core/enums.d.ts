@@ -101,13 +101,13 @@ declare namespace basic {
     /**
      * Raised when the logo is upward and the screen is vertical
      */
-    //% block="tilt forward"
+    //% block="logo up"
     //% jres=gestures.tiltforward
     LogoUp = 1,  // MICROBIT_ACCELEROMETER_EVT_TILT_UP
     /**
      * Raised when the logo is downward and the screen is vertical
      */
-    //% block="tilt backward"
+    //% block="logo down"
     //% jres=gestures.tiltbackwards
     LogoDown = 2,  // MICROBIT_ACCELEROMETER_EVT_TILT_DOWN
     /**
